@@ -1,0 +1,96 @@
+<template name="navigation">
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+
+            <!-- Close canvas menu used only on OffCanvas page -->
+            <!-- You can remove this tag if you dont use offCanvas menu -->
+            <a class="close-canvas-menu"><i class="fa fa-times"></i></a>
+            <!-- End offCanvas menu toggle -->
+
+            <ul class="nav metismenu" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element"> <span>
+                            <img alt="image" class="img-circle" src="img/profile_small.jpg" />
+                             </span>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Akrem Sallemi</strong>
+                           <b class="caret"></b></span> </span> </a>
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                            <li><a href="{{pathFor route='profile'}}">Profile</a></li>
+                            <li><a href="{{pathFor route='contacts'}}">Contacts</a></li>
+                            <li><a href="{{pathFor route='mailbox'}}">Mailbox</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{{pathFor route='login'}}">Logout</a></li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        IN+
+                    </div>
+                </li>
+                <li>
+                    <a href="{{pathFor route='home'}}"><i class="fa fa-desktop"></i> <span class="nav-label" >Home</span> </a>
+                </li>
+
+                <li class="{{isActiveRoute regex='c3charts|graphFlot|graphMorris|graphRickshaw|graphChartJs|graphPeity|graphSparkline|graphChartist'}}">
+                    <a href="#"><i class="glyphicon glyphicon-user"></i> <span class="nav-label" data-i18n="nav.graphs">Accounts</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse {{isActiveRoute regex='c3charts|graphFlot|graphMorris|graphRickshaw|graphChartJs|graphPeity|graphSparkline|graphChartist' className='in'}}">
+                        <li class="{{isActiveRoute regex='graphFlot'}}"><a href="{{pathFor route='graphFlot'}}">New account</a></li>
+                        <li class="{{isActiveRoute regex='graphRickshaw'}}"><a href="{{pathFor route='graphRickshaw'}}">Dispaly all</a></li>
+                    </ul>
+                </li>
+                <li class="{{isActiveRoute regex='mailbox|emailView|emailCompose|emailTemplates'}}">
+                    <a href="#"><i class="fa fa-files-o"></i> <span class="nav-label" data-i18n="nav.mailbox">Invoices </span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse {{isActiveRoute regex='mailbox|emailView|emailCompose|emailTemplates' className='in'}}">
+                        <li class="{{isActiveRoute regex='mailbox'}}"><a href="{{pathFor route='mailbox'}}">New invoice</a></li>
+                        <li class="{{isActiveRoute regex='emailView'}}"><a href="{{pathFor route='emailView'}}">Display all</a></li>
+
+                    </ul>
+                </li>
+                <li >
+                    <a href="#"><i class="fa fa-file-o"></i> <span class="nav-label" data-i18n="nav.menulevels">Contracts </span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#">Articles <span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                <li><a href="#">New article</a></li>
+                                <li><a href="#">Dispaly all</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">New contract</a></li>
+                        <li><a href="#">Display all</a></li>
+                    </ul>
+                </li>
+                <li >
+                    <a href="#"><i class="glyphicon glyphicon-user"></i> <span class="nav-label" data-i18n="nav.menulevels">Clients </span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li><a href="{{pathFor route='newClient'}}">New client</a></li>
+                        <li><a href="{{pathFor route='allclients'}}">Display all</a></li>
+                    </ul>
+                </li>
+                <li class="{{isActiveRoute regex='contacts2|profile2|voteList|contacts|profile|projects|projectDetail|teamsBoard|clients|fullHeight|fileManager|calendar|issueTracker|blog|article|faq|timelineOne|pinBoard|socialFeed'}}">
+                    <a href="#"><i class="fa fa-laptop"></i> <span class="nav-label" data-i18n="nav.appviews">Screens</span><span class="fa arrow"></span>  </a>
+                    <ul class="nav nav-second-level collapse {{isActiveRoute regex='contacts2|profile2|voteList|contacts|profile|projects|projectDetail|teamsBoard|clients|fullHeight|fileManager|Calendar|issueTracker|blog|article|faq|timelineOne|pinBoard|socialFeed' className='in'}}">
+                        <li class="{{isActiveRoute regex='contacts'}}"><a href="{{pathFor route='contacts'}}">New screen</a></li>
+                        <li class="{{isActiveRoute regex='profile'}}"><a href="{{pathFor route='profile'}}">Display all</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-shopping-cart"></i> <span class="nav-label" data-i18n="nav.appviews">Booking</span><span class="fa arrow"></span>  </a>
+                    <ul class="nav nav-second-level collapse {{isActiveRoute regex='contacts2|profile2|voteList|contacts|profile|projects|projectDetail|teamsBoard|clients|fullHeight|fileManager|Calendar|issueTracker|blog|article|faq|timelineOne|pinBoard|socialFeed' className='in'}}">
+                        <li class="{{isActiveRoute regex='newBooking'}}"><a href="{{pathFor route='newBooking'}}">New booking</a></li>
+                        <li class="{{isActiveRoute regex='allBookings'}}"><a href="{{pathFor route='allBookings'}}">Display all</a></li>
+                    </ul>
+                </li>
+                <li class="{{isActiveRoute regex='tableStatic|dataTables|fooTables'}}">
+                    <a href="#"><i class="fa fa-cogs"></i> <span class="nav-label" data-i18n="nav.tables">Configuration</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse {{isActiveRoute regex='tableStatic|dataTables|fooTables' className='in'}}">
+                        <li class="{{isActiveRoute regex='tableStatic'}}"><a href="{{pathFor route='tableStatic'}}">Languages</a></li>
+                        <li class="{{isActiveRoute regex='fooTables'}}"><a href="{{pathFor route='fooTables'}}">Device</a></li>
+                        <li class="{{isActiveRoute regex='dataTables'}}"><a href="{{pathFor route='dataTables'}}">Time</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</template>

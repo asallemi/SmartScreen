@@ -1,0 +1,13 @@
+{
+  "name": "smartscreen",
+  "version": "1.0.0",
+  "description": "Swallow labs project",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Akrem Sallemi",
+  "license": "ISC",
+  "dependencies": {
+    "childish-process": "0.0.5"
+  }
+}
