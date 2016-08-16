@@ -176,13 +176,6 @@ Template.home.rendered = function () {
      }
      // get the screen location from the broker
      $(getScreenLocation).click(function(){
-       Meteor.methods({
-         var spawn = Npm.require('childish_process').spawn;
-         
-         /*var exec = require('childish-process').exec;
-         var Fiber = Npm.require('fibers');
-         var Future = Npm.require('fibers/future');*/
-       });
 
        });
 
