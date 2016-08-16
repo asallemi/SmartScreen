@@ -177,24 +177,6 @@ Template.home.rendered = function () {
      // get the screen location from the broker
      $(getScreenLocation).click(function(){
 
-       });
-
-       /*var spawn = Meteor.wrapAsync;
-       py = spawn('python3.5', ['/home/akrem/Akrem/Projects/ChanelProject/org/swallow_labs/T001.3.3-TestClient2Pull.py']);
-       console.log("Object py:" +py);
-       var dataString = '';
-       py.stdout.on('data', function(data){
-         dataString += data.toString();
-       });
-       py.stdout.on('end', function(){
-         console.log('Sum of numbers=',dataString);
-       });
-       runCmd = Meteor.wrapAsync;
-
-       var result = runCmd("git rev-parse HEAD");
-
-       console.log(result);*/
-
      });
      // Validate booking by click button
      $(validateBooking).click(function(){

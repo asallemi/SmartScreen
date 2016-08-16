@@ -8,6 +8,7 @@
   "author": "Akrem Sallemi",
   "license": "ISC",
   "dependencies": {
-    "childish-process": "0.0.5"
+    "childish-process": "0.0.5",
+    "meteor-node-stubs": "^0.2.3"
   }
 }
