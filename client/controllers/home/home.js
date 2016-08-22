@@ -65,7 +65,7 @@ Template.home.rendered = function () {
          //console.log("Rows number :"+ screens.count())
          // set all markers in the Map
          screens.forEach(function(doc){
-           //console.log(doc._id.toString());
+           //console.log("Doc id"+doc._id);
                if( doc.screenStatus===0){
                  var marker = new google.maps.Marker({
                    position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
@@ -83,12 +83,12 @@ Template.home.rendered = function () {
                }
                marker.setMap(map1);
                marker.addListener('click', function() {
-                   /* // Display a popup for more details
+                   // Display a popup for more details
                     swal({
                         title: "About this screen",
                         text: marker.title ,
                         html: true
-                    });*/
+                    });
                     Session.set({"screenID": marker.idScreen});
                     if(handleSegment.ready()){
                       var segments = Segments.find({ segmentScreenID : marker.idScreen });
@@ -166,56 +166,58 @@ Template.home.rendered = function () {
            // DAY click --> show a POPUP
            dayClick: function(date, jsEvent, view) {
              //alert("Date :"+ date.format());
-             let result = date.format().split("-");
-             var newDate = result[1]+"/"+result[2]+"/"+result[0];
+             //let result = date.format().split("-");
+            // var newDate = result[1]+"/"+result[2]+"/"+result[0];
             // alert("New date :"+newDate);
              //$('#map').modal();
              //$('#calendarModal').modal();
           }
        });
      }
-     // get the screen location from the broker
-     $(getScreenLocation).click(function(){
-
-     });
      // Validate booking by click button
      $(validateBooking).click(function(){
-       /*if(handleSegment.ready()){
-         Segments.update({'_id' : "1000" }, {'$set':{ 'segmentAvailability' : 0}});
-       }*/
        //var checkedValue = $('.eventxxx:checked').val();
-       //alert("You select : "+checkedValue);
-       /*var checkedValues = [];
-       var inputElements = document.getElementsByClassName('eventxxx');
-       for(var i=0; inputElements[i]; ++i){
-         if(inputElements[i].checked){
-           checkedValues.push(inputElements[i].value); // inputElements[i].value === segment ID === event (fullcalendar)
-           // save the slots booked
-           var booking = [
+      // alert("You select : "+checkedValue);
+       var checkedValues = [];
+       var checkboxes = document.getElementsByClassName('eventxxx');
+
+       for(var i=0; i<checkboxes.length; i++){
+         if(checkboxes[i].checked){
+           //alert("You select : "+checkboxes[i].value);
+           checkedValues.push(checkboxes[i].value); // inputElements[i].value === segment ID === event (fullcalendar)
+           var booking =
              {
-               'segmentID': inputElements[i].value,
+               'segmentID': checkboxes[i].value,
                'screenID': Session.get("screenID"),
                'bookedDate': new Date(),
+             };
+           if (handleBooking.ready()){
+             var cursor = Bookings.find({ "segmentID": booking.segmentID });
+             console.log("Deja booked "+cursor.count());
+             if( cursor.count() === 0){
+               swal("Done!", "Your slots are booked now!", "success");
+               Bookings.insert(booking);
+             }else{
+               swal("Sorry", "This slot has been booked few seconds ago", "success");
              }
-           ];
-           /*if (handleBooking.ready()){
-             Bookings.insert(booking);
-           }*/
-           /*if(handleSegment.ready()){
+           }
+
+           if(handleSegment.ready()){
              //var id = new ObjectID("'+inputElements[i].value+'");
-             var id = new Mongo.ObjectId(inputElements[i].value);
+             //var id = new Mongo.ObjectId(inputElements[i].value);
              //console.log(" ID :"+id);
-             console.log(" Segemnt id :"+inputElements[i].value);
-             Segments.update({'_id' : inputElements[i].value }, {'$set':{ 'segmentAvailability' : 0}});
+             //console.log(" Segemnt id :"+inputElements[i].value);
+             Segments.update({'_id' : checkboxes[i].value }, {'$set':{ 'segmentAvailability' : 0}});
              console.log("xxxxxx");
            }
            //swal("Done!", "Your slots are booked now!", "success");
            //location.reload();
-            //alert("event id :"+inputElements[i].value+"  screen id :"+Session.get("screenID"));
-         }//end for
+            //alert("event id :"+inputElements[i].value+"  screen id :"+Session.get("screenID")); */
 
-       } */
+         }
+       }
      });
+
      $('#data_1 .input-group.date').datepicker({
         todayBtn: "linked",
         keyboardNavigation: false,
@@ -326,4 +328,5 @@ Template.home.helpers({
   segmentCountByDate(){
     return Segments.find({ segmentDate : '07/30/2016' }).count();
   },
+
 });
