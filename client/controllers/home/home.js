@@ -10,7 +10,6 @@ let handleBooking =  Meteor.subscribe('bookings');
 
 Template.home.rendered = function () {
       // Options for Google map
-      // More info see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
       var mapOptions1 = {
           zoom: 9,
           center: new google.maps.LatLng(48.8534100, 2.3488000),
@@ -136,18 +135,10 @@ Template.home.rendered = function () {
 //********************* Calendar ***************************
      function initCalender(jsonArr){
        $('#calendar').fullCalendar({
-           customButtons: {
-             details: {
-             text: 'details',
-             click: function() {
-                alert('Show details!');
-             }
-            }
-           },
            header: {
              left: 'prev,next, today',
              center: 'title',
-             right: 'month,agendaWeek,agendaDay,details'
+             right: 'month,agendaWeek,agendaDay'
            },
            slotDuration: '00:10:00',
            defaultView: 'agendaDay',
@@ -165,25 +156,16 @@ Template.home.rendered = function () {
            },
            // DAY click --> show a POPUP
            dayClick: function(date, jsEvent, view) {
-             //alert("Date :"+ date.format());
-             //let result = date.format().split("-");
-            // var newDate = result[1]+"/"+result[2]+"/"+result[0];
-            // alert("New date :"+newDate);
-             //$('#map').modal();
              //$('#calendarModal').modal();
           }
        });
      }
      // Validate booking by click button
      $(validateBooking).click(function(){
-       //var checkedValue = $('.eventxxx:checked').val();
-      // alert("You select : "+checkedValue);
        var checkedValues = [];
        var checkboxes = document.getElementsByClassName('eventxxx');
-
        for(var i=0; i<checkboxes.length; i++){
          if(checkboxes[i].checked){
-           //alert("You select : "+checkboxes[i].value);
            checkedValues.push(checkboxes[i].value); // inputElements[i].value === segment ID === event (fullcalendar)
            var booking =
              {
@@ -193,31 +175,20 @@ Template.home.rendered = function () {
              };
            if (handleBooking.ready()){
              var cursor = Bookings.find({ "segmentID": booking.segmentID });
-             console.log("Deja booked "+cursor.count());
              if( cursor.count() === 0){
                swal("Done!", "Your slots are booked now!", "success");
                Bookings.insert(booking);
+               $('#calendar').fullCalendar('refetchEvents');
              }else{
                swal("Sorry", "This slot has been booked few seconds ago", "success");
              }
            }
-
            if(handleSegment.ready()){
-             //var id = new ObjectID("'+inputElements[i].value+'");
-             //var id = new Mongo.ObjectId(inputElements[i].value);
-             //console.log(" ID :"+id);
-             //console.log(" Segemnt id :"+inputElements[i].value);
              Segments.update({'_id' : checkboxes[i].value }, {'$set':{ 'segmentAvailability' : 0}});
-             console.log("xxxxxx");
            }
-           //swal("Done!", "Your slots are booked now!", "success");
-           //location.reload();
-            //alert("event id :"+inputElements[i].value+"  screen id :"+Session.get("screenID")); */
-
          }
        }
      });
-
      $('#data_1 .input-group.date').datepicker({
         todayBtn: "linked",
         keyboardNavigation: false,
@@ -225,8 +196,6 @@ Template.home.rendered = function () {
         calendarWeeks: true,
         autoclose: true
      });
-     // Initialize switchery
-
   };// end Template.home.rendered = function ()
 
 Template.home.events({
