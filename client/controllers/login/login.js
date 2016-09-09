@@ -19,7 +19,7 @@ Template.login.events({
           setTimeout(function() {
               var otp = Math.random().toString(36).substring(7);
               Session.set("OTP", otp);
-          }, 180*1000)
+          }, 180*1000);
 
           Router.go('otp');
           /*Meteor.call('loginWithOTP', function(error, result){
