@@ -28,3 +28,5 @@ check@1.2.3
 standard-minifier-css@1.1.8
 standard-minifier-js@1.1.8
 reactive-var
+typ:accounts-ldap
+email

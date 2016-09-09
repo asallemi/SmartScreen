@@ -14,6 +14,7 @@ Segments.allow({
   }
 });
 if (Meteor.isServer) {
+
   Meteor.publish('screens', function(){
         return Screens.find({});
   });
@@ -24,6 +25,11 @@ if (Meteor.isServer) {
         return Bookings.find({});
   });
   Meteor.startup(function () {
+    PWD = 'K@roum@1991'
+    process.env.MAIL_URL = 'smtp://asallemi%40swallow-labs.com:'+PWD+'@auth.smtp.1and1.fr:465/';
+    LDAP_DEFAULTS.url = 'ldap://10.10.10.2';
+    LDAP_DEFAULTS.dn = 'dc=swallow,dc=tn';
+    LDAP_DEFAULTS.port = '389';
     if (Screens.find().count() === 0) {
       var screen =
       {

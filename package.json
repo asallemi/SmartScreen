@@ -9,8 +9,11 @@
   "license": "ISC",
   "dependencies": {
     "childish-process": "0.0.5",
+    "ftps": "^0.4.7",
     "future": "^2.3.1",
+    "ldapjs": "^1.0.0",
     "meteor-node-stubs": "^0.2.3",
-    "moment": "^2.14.1"
+    "nodemailer": "^2.6.0",
+    "ssha": "^1.0.1"
   }
 }

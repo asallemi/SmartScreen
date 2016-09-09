@@ -1,49 +1,53 @@
 //Layout Configuration
 Router.configure({
-    layoutTemplate: 'mainLayout',
-    notFoundTemplate: 'notFound'
+  layoutTemplate: 'mainLayout',
+  notFoundTemplate: 'notFound'
 });
 Router.configure({
-      layoutTemplate:"loginLayout",
-      notFoundTemplate: 'notFound'
+  layoutTemplate:"loginLayout",
+  notFoundTemplate: 'notFound'
 });
 // END Layout Configuration
 
-//Simple Routes Config.
+//login
 Router.route('/login',  {
-      layoutTemplate: 'loginLayout'
+  layoutTemplate: 'loginLayout',
+  name : 'login'
 });
-
+//OTP
+Router.route('/otp',  {
+  layoutTemplate: 'loginLayout',
+  name : 'otp'
+});
+//home
 Router.route('/home', {
-      layoutTemplate: 'mainLayout'
+  layoutTemplate: 'mainLayout',
+  name: 'home'
 });
 
-//Login page
-Router.route('/login',{
-      name: 'login'
-});
-//Home page
-Router.route('/home',{
-      name: 'home'
-});
 // Booking
 Router.route('/newBooking',{
-      name: 'newBooking'
+  layoutTemplate: 'mainLayout',
+  name: 'newBooking'
 });
 Router.route('/allBookings',{
-      name: 'allBookings'
+  layoutTemplate: 'mainLayout',
+  name: 'allBookings'
 });
 // client
 Router.route('/newClient',{
-      name: 'newClient'
+  layoutTemplate: 'mainLayout',
+  name: 'newClient'
  });
 // Landing page
 Router.route('/landing',{
-      name: 'blankLayout'
+  layoutTemplate: 'mainLayout',
+  name: 'blankLayout'
 });
 // Other pages routes
 Router.route('/notFound',{
-      name: 'notFound'
+  layoutTemplate: 'mainLayout',
+  name: 'notFound'
 });
 // Default route
 // You can use direct name: ('template')

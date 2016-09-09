@@ -1,3 +1,3 @@
 ***Swallow Labs project***
 
-A web application developed by Swll Team.
+A web application developed by Swallow Team.

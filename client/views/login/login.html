@@ -1,28 +1,24 @@
-
-  <template name="login">
+<template name="login">
       <div class="middle-box text-center loginscreen animated fadeInDown">
           <div>
               <div>
-
                   <h1 class="logo-name">S²</h1>
-
               </div>
               <h3>Welcome to Smart Screen solution</h3>
               <p>Login in. To see it in action.</p>
-              <form class="m-t" role="form" action="{{pathFor route='dashboard1'}}">
+              <form class="m-t" role="form">
                   <div class="form-group">
-                      <input type="email" class="form-control" placeholder="Username" required="">
+                      <input type="text" name="login" class="form-control" placeholder="Username" required="">
                   </div>
                   <div class="form-group">
-                      <input type="password" class="form-control" placeholder="Password" required="">
+                      <input type="password" name="password" class="form-control" placeholder="Password" required="">
                   </div>
                   <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
 
                   <a href="#"><small>Forgot password?</small></a>
                   <p class="text-muted text-center"><small>Do not have an account?</small></p>
-
               </form>
               <p class="m-t"> <small>Swallow Labs solution &copy; 2016</small> </p>
           </div>
       </div>
-  </template>
+</template>

@@ -162,6 +162,7 @@ Template.home.rendered = function () {
      }
      // Validate booking by click button
      $(validateBooking).click(function(){
+       //Meteor.call('createPlayer');
        var checkedValues = [];
        var checkboxes = document.getElementsByClassName('eventxxx');
        for(var i=0; i<checkboxes.length; i++){
