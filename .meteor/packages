@@ -30,3 +30,5 @@ standard-minifier-js@1.1.8
 reactive-var
 typ:accounts-ldap
 email
+tomi:upload-server
+matteodem:server-session

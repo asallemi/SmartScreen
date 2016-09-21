@@ -11,6 +11,7 @@
     "childish-process": "0.0.5",
     "ftps": "^0.4.7",
     "future": "^2.3.1",
+    "get-video-duration": "0.0.1",
     "ldapjs": "^1.0.0",
     "meteor-node-stubs": "^0.2.3",
     "nodemailer": "^2.6.0",

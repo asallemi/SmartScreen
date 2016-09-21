@@ -1,0 +1,70 @@
+<template name="allContents">
+
+    <!-- Page heading -->
+    {{> pageHeading title='Content' category='List' }}
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                      <table border="0" style="width:130%">
+                        <tr>
+                          <td><input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search.."></td>
+                          <td><button type="button" id="uploadFile" class="btn btn-w-m btn-default">New content</button></td>
+                        </tr>
+                      </table>
+                        <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                          <thead>
+                          <tr>
+                              <th>File name</th>
+                              <th>Type</th>
+                              <th>Size</th>
+                              <th>Duration</th>
+                              <th>Action</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            {{#each contents}}
+                              <tr class="gradeX">
+                                  <td>{{contentName}}</td>
+                                  <td>{{contentType}}</td>
+                                  <td>{{contentSize}}</td>
+                                  <td class="center">{{contentDuration}}</td>
+                                  <td class="center"><button class="btn btn-danger btn-rounded btn-delete" >Delete</button></td>
+                              </tr>
+                            {{/each}}
+                          </tbody>
+                          <tfoot>
+                          <tr>
+                              <td colspan="5">
+                                <ul class="pagination pull-right"></ul>
+                              </td>
+                          </tr>
+                          </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="upload" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <i class="fa fa-file-movie-o modal-icon"></i>
+                    <h4 class="modal-title">New content</h4>
+                </div>
+                <div class="ibox-content">
+                    <!-- For more info about dropzone plugin see this: https://github.com/devonbarrett/meteor-dropzone/ -->
+                    {{> dropzone url='/upload' id='dropzoneDiv'}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</template>

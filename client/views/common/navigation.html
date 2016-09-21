@@ -77,6 +77,12 @@
                 <li>
                     <a href="#"><i class="fa fa-shopping-cart"></i> <span class="nav-label" data-i18n="nav.appviews">Booking</span><span class="fa arrow"></span>  </a>
                     <ul class="nav nav-second-level collapse {{isActiveRoute regex='contacts2|profile2|voteList|contacts|profile|projects|projectDetail|teamsBoard|clients|fullHeight|fileManager|Calendar|issueTracker|blog|article|faq|timelineOne|pinBoard|socialFeed' className='in'}}">
+                      <li>
+                          <a href="#">Contents <span class="fa arrow"></span></a>
+                          <ul class="nav nav-third-level">
+                              <li><a href="{{pathFor route='allContents'}}">All contents</a></li>
+                          </ul>
+                      </li>
                         <li class="{{isActiveRoute regex='newBooking'}}"><a href="{{pathFor route='newBooking'}}">New booking</a></li>
                         <li class="{{isActiveRoute regex='allBookings'}}"><a href="{{pathFor route='allBookings'}}">Display all</a></li>
                     </ul>

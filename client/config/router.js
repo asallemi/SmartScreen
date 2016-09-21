@@ -34,6 +34,15 @@ Router.route('/allBookings',{
   layoutTemplate: 'mainLayout',
   name: 'allBookings'
 });
+// Content
+Router.route('/newContent',{
+  layoutTemplate: 'mainLayout',
+  name: 'newContent'
+});
+Router.route('/allContents',{
+  layoutTemplate: 'mainLayout',
+  name: 'allContents'
+});
 // client
 Router.route('/newClient',{
   layoutTemplate: 'mainLayout',

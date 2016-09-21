@@ -1,0 +1,11 @@
+{
+  "otp_conf":
+  {
+    "username": "asallemi%40swallow-labs.com",
+    "password": "K@roum@1991",
+    "server": "smtp.1and1.com",
+    "port": "587",
+    "mail_subject": "Smart Screen OTP",
+    "mail_text": "You received this email because you want to login to Smart Sreen solution, this your code :"
+  }
+}

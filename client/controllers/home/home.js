@@ -106,7 +106,6 @@ Template.home.rendered = function () {
                         var m = result[1];
                         if (doc.segmentAvailability === 1){
                           jsonArr.push({
-                              //title: doc.segmentDate,
                               id: doc._id,// Segment ID
                               start: new Date(year, month-1, day, hour, min),
                               end: new Date(year, month-1, day, h, m), //We supposed the max slot is 10 minutes
@@ -115,7 +114,6 @@ Template.home.rendered = function () {
                           });
                         }else {
                           jsonArr.push({
-                              //title: doc.segmentDate,
                               id: doc._id,
                               start: new Date(year, month-1, day, hour, min),
                               end: new Date(year, month-1, day, h, m),
@@ -123,15 +121,15 @@ Template.home.rendered = function () {
                               allDay: false
                           });
                         }
-                      });//end foreach
-                    }// end if handle ready
+                      });
+                    }
                     // Initialize the calendar
                     initCalender(jsonArr);
-               });//end addlistener
-          });//end foreach
+               });
+          });
          c.stop()
-       }// end if handle ready
-     }); // end Tracker
+       }
+     });
 //********************* Calendar ***************************
      function initCalender(jsonArr){
        $('#calendar').fullCalendar({
@@ -156,7 +154,7 @@ Template.home.rendered = function () {
            },
            // DAY click --> show a POPUP
            dayClick: function(date, jsEvent, view) {
-             //$('#calendarModal').modal();
+             $('#calendarModal').modal();
           }
        });
      }
