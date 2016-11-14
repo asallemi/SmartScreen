@@ -2,7 +2,6 @@
 
     <!-- Page heading -->
     {{> pageHeading title='Bookings' category='List' }}
-
     <div class="wrapper wrapper-content animated fadeInRight">
 
         <div class="row">
@@ -11,296 +10,424 @@
                     <div class="ibox-title">
                         <h5>Assign a content to your slots reserved</h5>
 
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="fa fa-wrench"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-user">
-                                <li><a href="#">Config option 1</a>
-                                </li>
-                                <li><a href="#">Config option 2</a>
-                                </li>
-                            </ul>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
                     </div>
                     <div class="ibox-content">
-                        <input type="text" class="form-control input-sm m-b-xs" id="filter"
-                               placeholder="Search in table">
+                      <div class="clients-list">
 
-                        <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
-                            <thead>
-                            <tr>
-                                <th>Rendering engine</th>
-                                <th>Browser</th>
-                                <th data-hide="phone,tablet">Platform(s)</th>
-                                <th data-hide="phone,tablet">Engine version</th>
-                                <th data-hide="phone,tablet">CSS grade</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="gradeX">
-                                <td>Trident</td>
-                                <td>Internet
-                                    Explorer 4.0
-                                </td>
-                                <td>Win 95+</td>
-                                <td class="center">4</td>
-                                <td class="center">X</td>
-                            </tr>
-                            <tr class="gradeC">
-                                <td>Trident</td>
-                                <td>Internet
-                                    Explorer 5.0
-                                </td>
-                                <td>Win 95+</td>
-                                <td class="center">5</td>
-                                <td class="center">C</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Trident</td>
-                                <td>Internet
-                                    Explorer 5.5
-                                </td>
-                                <td>Win 95+</td>
-                                <td class="center">5.5</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Gecko</td>
-                                <td>Netscape Navigator 9</td>
-                                <td>Win 98+ / OSX.2+</td>
-                                <td class="center">1.8</td>
-                                <td class="center">A</td>
-                            </tr>
+                          <ul class="nav nav-tabs">
+                              <span class="pull-right small text-muted">{{bookingCount}} reservations</span>
+                              <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> All bookings</a></li>
+                              <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> Not assigned</a></li>
+                              <li class=""><a data-toggle="tab" href="#tab-3"><i class="fa fa-sliders"></i> Specific assigning</a></li>
+                          </ul>
+                          <div class="tab-content">
+                              <div id="tab-1" class="tab-pane active">
+                                  <div class="full-height-scroll">
+                                      <div class="table-responsive">
+                                        <input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search..">
+                                            <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                                                <thead>
+                                                <tr>
+                                                  <th>Screen address</th>
+                                                  <th>Slot date</th>
+                                                  <th>Slot booked</th>
+                                                  <th>Content</th>
+                                                  <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {{#each bookings}}
+                                                    <tr class="gradeX">
+                                                      <td>{{address}} </td>
+                                                      <td>{{segmentDate}}</td>
+                                                      <td>{{segmentStartTime}}-{{segmentEndTime}}</td>
+                                                      <td class="center">
+                                                        pub.mp4
+                                                      </td>
+                                                      <td class="center">
+                                                          <button type="button" class="btn btn-outline btn-success"><i class="fa fa-edit"></i> Edit</button>
+                                                      </td>
+                                                    </tr>
+                                                  {{/each}}
+                                                </tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <ul class="pagination pull-right"></ul>
+                                                    </td>
+                                                </tr>
+                                                </tfoot>
+                                          </table>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div id="tab-2" class="tab-pane">
+                                  <div class="full-height-scroll">
+                                      <div class="table-responsive">
+                                        <table border="0" style="align=center">
+                                          <tr>
+                                              <td class="col-xs-12 .col-md-8"><input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search.."></td>
+                                              <td class="col-xs-6 .col-md-4"><button type="button" id="assignPopup" class="btn btn-outline btn-primary"><i class="fa fa-file"></i>    Assign content</button></td>
+                                          </tr>
+                                        </table>
+                                        <table class="footable table table-hover table-stripped" data-page-size="15" data-filter=#filter>
+                                            <thead>
+                                            <tr>
+                                              <th>Select</th>
+                                              <th>Screen address</th>
+                                              <th>Slot date</th>
+                                              <th>Slot booked</th>
+                                              <th>Content</th>
+                                              <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                              {{#each bookings}}
+                                                <tr class="gradeX">
+                                                  <td><div><input type="checkbox" class="i-checks check" value="{{segmentDate}}*{{segmentStartTime}}*{{segmentEndTime}}"> </div></td>
+                                                  <td>{{address}} </td>
+                                                  <td>{{segmentDate}}</td>
+                                                  <td>{{segmentStartTime}}-{{segmentEndTime}}</td>
+                                                  <td class="center">
+                                                    <select class="select2_demo_3 form-control">
+                                                        <option>Select content</option>
+                                                      {{#each content}}
+                                                        <option>{{contentName}}</option>
+                                                      {{/each}}
+                                                    </select>
+                                                  </td>
+                                                  <td class="center">
+                                                    <form>
+                                                      <button type="submit" class="btn btn-outline btn-success validateAssign"><i class="fa fa-check"></i> Validated</button>
+                                                    </form>
+                                                  </td>
+                                                </tr>
+                                              {{/each}}
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <ul class="pagination pull-right"></ul>
+                                                </td>
+                                            </tr>
+                                            </tfoot>
+                                      </table>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div id="tab-3" class="tab-pane">
+                                <div class="full-height-scroll">
+                                  <div class="row">
+                                      <div class="col-lg-12">
+                                          <div class="ibox float-e-margins">
+                                              <div class="ibox-title">
+                                                  <h5>Specific assigning</h5>
+                                                  {{>iboxTools}}
+                                              </div>
+                                              <div class="ibox-content">
+                                                  <div class="row">
+                                                      <div class="col-sm-5 m-b-xs">
+                                                        <select class="input-sm form-control input-s-sm inline">
 
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>Safari 1.3</td>
-                                <td>OSX.3</td>
-                                <td class="center">312.8</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>Safari 2.0</td>
-                                <td>OSX.4+</td>
-                                <td class="center">419.3</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>Safari 3.0</td>
-                                <td>OSX.4+</td>
-                                <td class="center">522.1</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>OmniWeb 5.5</td>
-                                <td>OSX.4+</td>
-                                <td class="center">420</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>iPod Touch / iPhone</td>
-                                <td>iPod</td>
-                                <td class="center">420.1</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>S60</td>
-                                <td>S60</td>
-                                <td class="center">413</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera 7.0</td>
-                                <td>Win 95+ / OSX.1+</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera 7.5</td>
-                                <td>Win 95+ / OSX.2+</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera 8.0</td>
-                                <td>Win 95+ / OSX.2+</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera 8.5</td>
-                                <td>Win 95+ / OSX.2+</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera 9.0</td>
-                                <td>Win 95+ / OSX.3+</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera 9.2</td>
-                                <td>Win 88+ / OSX.3+</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera 9.5</td>
-                                <td>Win 88+ / OSX.3+</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Opera for Wii</td>
-                                <td>Wii</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Nokia N800</td>
-                                <td>N800</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Presto</td>
-                                <td>Nintendo DS browser</td>
-                                <td>Nintendo DS</td>
-                                <td class="center">8.5</td>
-                                <td class="center">C/A<sup>1</sup></td>
-                            </tr>
-                            <tr class="gradeC">
-                                <td>KHTML</td>
-                                <td>Konqureror 3.1</td>
-                                <td>KDE 3.1</td>
-                                <td class="center">3.1</td>
-                                <td class="center">C</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>KHTML</td>
-                                <td>Konqureror 3.3</td>
-                                <td>KDE 3.3</td>
-                                <td class="center">3.3</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>KHTML</td>
-                                <td>Konqureror 3.5</td>
-                                <td>KDE 3.5</td>
-                                <td class="center">3.5</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeX">
-                                <td>Tasman</td>
-                                <td>Internet Explorer 4.5</td>
-                                <td>Mac OS 8-9</td>
-                                <td class="center">-</td>
-                                <td class="center">X</td>
-                            </tr>
-                            <tr class="gradeC">
-                                <td>Tasman</td>
-                                <td>Internet Explorer 5.1</td>
-                                <td>Mac OS 7.6-9</td>
-                                <td class="center">1</td>
-                                <td class="center">C</td>
-                            </tr>
-                            <tr class="gradeC">
-                                <td>Tasman</td>
-                                <td>Internet Explorer 5.2</td>
-                                <td>Mac OS 8-X</td>
-                                <td class="center">1</td>
-                                <td class="center">C</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Misc</td>
-                                <td>NetFront 3.1</td>
-                                <td>Embedded devices</td>
-                                <td class="center">-</td>
-                                <td class="center">C</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Misc</td>
-                                <td>NetFront 3.4</td>
-                                <td>Embedded devices</td>
-                                <td class="center">-</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeX">
-                                <td>Misc</td>
-                                <td>Dillo 0.8</td>
-                                <td>Embedded devices</td>
-                                <td class="center">-</td>
-                                <td class="center">X</td>
-                            </tr>
-                            <tr class="gradeX">
-                                <td>Misc</td>
-                                <td>Links</td>
-                                <td>Text only</td>
-                                <td class="center">-</td>
-                                <td class="center">X</td>
-                            </tr>
-                            <tr class="gradeX">
-                                <td>Misc</td>
-                                <td>Lynx</td>
-                                <td>Text only</td>
-                                <td class="center">-</td>
-                                <td class="center">X</td>
-                            </tr>
-                            <tr class="gradeC">
-                                <td>Misc</td>
-                                <td>IE Mobile</td>
-                                <td>Windows Mobile 6</td>
-                                <td class="center">-</td>
-                                <td class="center">C</td>
-                            </tr>
-                            <tr class="gradeC">
-                                <td>Misc</td>
-                                <td>PSP browser</td>
-                                <td>PSP</td>
-                                <td class="center">-</td>
-                                <td class="center">C</td>
-                            </tr>
-                            <tr class="gradeU">
-                                <td>Other browsers</td>
-                                <td>All others</td>
-                                <td>-</td>
-                                <td class="center">-</td>
-                                <td class="center">U</td>
-                            </tr>
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <td colspan="5">
-                                    <ul class="pagination pull-right"></ul>
-                                </td>
-                            </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                                                              <option>Select content</option>
+                                                            {{#each content}}
+                                                              <option>{{contentName}}</option>
+                                                            {{/each}}
+
+                                                      </select>
+                                                      </div>
+                                                  </div>
+                                                  <div class="table-responsive">
+                                                    <table class="table table-stripped">
+                                                        <thead>
+                                                            <tr>
+                                                              <th>Months</th>
+                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Weeks</div></th>
+                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Days</div></th>
+                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Hours</div></th>
+                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Slots</div></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                          {{#each allBookings}}
+                                                            <tr>
+                                                                <td>
+                                                                  <button type="button" id="validateContent" class="btn btn-w-m btn-success">{{month}}</button>
+                                                                </td>
+                                                                <td>
+                                                                    <table class="table table-stripped">
+                                                                      {{#each allWeeks}}
+                                                                        <tr>
+                                                                          <td>
+                                                                            <button type="button" id="validateContent" class="btn btn-w-m btn-success">{{week1}}</button>
+                                                                          </td>
+                                                                        </tr>
+                                                                      {{/each}}
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                          {{/each}}
+                                                        </tbody>
+
+                                                  </table>
+                                                  <table border="0" style="align=center">
+                                                    <tr class="col-xs-12">
+                                                        <td style="width=100%"><div><button type="button" id="assignPopup" class="btn btn-outline btn-primary"><i class="fa fa-database"></i>    Save</button></div></td>
+                                                    </tr>
+                                                  </table>
+                                                  </div>
+
+                                              </div>
+                                          </div>
+                                      </div>
+                                </div>
+                              </div>
+                          </div>
+                     </div>
+                  </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal inmodal" id="assign" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <i class="fa fa-file modal-icon"></i>
+                    <h4 class="modal-title">Assign content</h4>
+                </div>
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="full-height-scroll">
+                            <div class="table-responsive">
+                                  <table class="footable table" data-page-size="10" data-filter=#filter>
+                                      <thead>
+                                        <tr>
+                                            <td>
+                                              <div class="form-group"><label class="col-sm-2 control-label">Choose content</label>
+                                                  <div class="col-sm-10"><select class="form-control m-b" name="account">
+                                                    <option>Select content</option>
+                                                      {{#each content}}
+                                                        <option>{{contentName}}</option>
+                                                      {{/each}}
+                                                  </select>
+                                                  </div>
+                                              </div>
+                                            </td>
+                                            <td><button type="button" class="btn btn-outline btn-success"><i class="fa fa-check"></i>Validate</button></td>
+                                        </tr>
+                                      <tr>
+                                        <th>Slot date</th>
+                                        <th>Slot booked</th>
+                                      </tr>
+                                      </thead>
+                                      <tbody>
+                                        {{#each selectedBookings}}
+                                          <tr class="gradeX">
+                                            <td>{{date}}</td>
+                                            <td>{{startSlot}}-{{endSlot}}</td>
+
+                                          </tr>
+                                        {{/each}}
+                                      </tbody>
+                                      <tfoot>
+                                      <tr>
+                                          <td colspan="5">
+                                              <ul class="pagination pull-right"></ul>
+                                          </td>
+                                      </tr>
+
+                                      </tfoot>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
 </template>
+<!--
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <form method="get" >
+                    <div class="form-group">
+
+                        <div class="col-xs-6">
+                          <div class="i-checks">
+                            <label> <input type="checkbox" name="c1" value="" onclick="showMe('data_5')">  To assign to range of days </label>
+                          </div>
+                          <div class="form-group div1" id="data_1">
+                              <label class="font-noraml">Enter the date</label>
+                              <div class="input-group date">
+                                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control">
+                              </div>
+                          </div>
+                          <div style="" class="form-group" id="data_5">
+                              <label class="font-noraml">Range select</label>
+                              <div class="input-daterange input-group" id="datepicker">
+                                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                  <input type="text" class="input-sm form-control" name="start"/>
+                                  <span class="input-group-addon">to</span>
+                                  <input type="text" class="input-sm form-control" name="end"/>
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <label class="font-noraml">Start time</label>
+                              <div class="input-group clockpicker" data-autoclose="true">
+                                <span class="input-group-addon">
+                                    <span class="fa fa-clock-o"></span>
+                                </span>
+                                <input type="text" class="form-control">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <label class="font-noraml">End time</label>
+                              <div class="input-group clockpicker" data-autoclose="true">
+                                <span class="input-group-addon">
+                                    <span class="fa fa-clock-o"></span>
+                                </span>
+                                <input type="text" class="form-control">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <label class="font-noraml">Choose your content </label>
+                              <div class="input-group date">
+                                <select class="select2_demo_3">
+                                    <option>Select content</option>
+                                    {{#each content}}
+                                    <option>{{contentName}}</option>
+                                    {{/each}}
+                                </select>
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <div class="col-sm-4 col-sm-offset-2">
+                                 <button type="submit" class="btn btn-block btn-outline btn-success">Save</button>
+                              </div>
+                          </div>
+                        </div>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+*****************************************************
+<div class="table-responsive">
+
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+            <th>Contents</th>
+            <th>Months</th>
+            <th><div><input type="checkbox" class="i-checks check" value="">Weeks</div></th>
+            <th><div><input type="checkbox" class="i-checks check" value="">Days</div></th>
+            <th><div><input type="checkbox" class="i-checks check" value="">Hours</div></th>
+            <th><div><input type="checkbox" class="i-checks check" value="">Slots</div></th>
+          </tr>
+      </thead>
+      <tbody>
+        <tr>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">xxxx.mp4</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">January</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week1</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">01/01/2017</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">12h-13h</button></td>
+            <td><div><input type="checkbox" class="i-checks check" value=""> <button type="button" id="validateContent" class="btn btn-outline btn-success">12:00-12:10</button></div></td>
+        </tr>
+        <tr>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">aaa.png</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">February</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week2</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">03/01/2017</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">16h-17h</button></td>
+            <td><div><input type="checkbox" class="i-checks check" value=""><button type="button" id="validateContent" class="btn btn-outline btn-success">16:00-16:10</button></div></td>
+        </tr>
+        <tr>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">xxxxxx.gif</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">March</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week3</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">05/01/2017</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">18h-19h</button></td>
+            <td><div><input type="checkbox" class="i-checks check" value=""><button type="button" id="validateContent" class="btn btn-outline btn-success">18:00-18:10</button></div></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">April</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week4</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">06/01/2017</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">May</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week5</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">June</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week1</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">July</button></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week2</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week3</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week4</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week5</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week1</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week2</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week3</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week4</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week5</button></td>
+        </tr>
+      </tbody>
+
+</table>
+<table border="0" style="align=center">
+  <tr class="col-xs-12">
+      <td style="width=100%"><div><button type="button" id="assignPopup" class="btn btn-outline btn-primary"><i class="fa fa-database"></i>    Save</button></div></td>
+  </tr>
+</table>
+</div>
+-->

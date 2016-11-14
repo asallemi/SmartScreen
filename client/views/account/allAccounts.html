@@ -1,0 +1,311 @@
+<template name="allAccounts">
+
+    <!-- Page heading -->
+    {{> pageHeading title='Account' category='Account' }}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-title">
+            <h5>All accounts</h5>
+            <div class="ibox-tools">
+                <button type="button" id="newAccount" class="btn btn-primary btn-xs"><i class="fa fa-male"></i>   Create new Account</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                       <input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search..">
+                        <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                          <thead>
+                          <tr>
+                              <th></th>
+                              <th>Name </th>
+                              <th>Email </th>
+                              <th>Password </th>
+                              <th>Action</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="project-people"><img alt="image" class="img-circle" src="img/a4.jpg"></td>
+                              <td>Karray Salmen</td>
+                              <td>skarray@swallow-labs.com</td>
+                              <td>slamen123</td>
+                              <td>
+                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-trash"></i> Delete </a>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="project-people"><a href=""><img alt="image" class="img-circle" src="img/a1.jpg"></a></td>
+                              <td>Sallemi Akrem</td>
+                              <td>asallemi@swallow-labs.com</td>
+                              <td>akrem123</td>
+                              <td>
+                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-trash"></i> Delete </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                          <tfoot>
+                          <tr>
+                              <td colspan="5">
+                                <ul class="pagination pull-right"></ul>
+                              </td>
+                          </tr>
+                          </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="addAccountPopUp" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+        <form class="wizard-big form">
+          <div class="modal-content animated bounceInRight" style="width:725px; left: -100px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="glyphicon glyphicon-user modal-icon"></i>
+                <h2 class="modal-title">New account</h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                          <div class="ibox-content">
+                                  <fieldset>
+                                      <h2>Account Information</h2>
+                                      <div class="row">
+                                          <div class="col-lg-8">
+                                              <div class="form-group">
+                                                  <label>Email *</label>
+                                                  <input name="mail" type="email" class="form-control required email">
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Password *</label>
+                                                  <input id="pass1" name="password" type="text" class="form-control required">
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Confirm Password *</label>
+                                                  <input id="pass2" name="confirm" type="text" class="form-control required">
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2>Profile Information</h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>CIN *</label>
+                                                <input name="cin" type="text" class="form-control required">
+                                            </div>
+                                              <div class="form-group">
+                                                  <label>First name *</label>
+                                                  <input name="fname" type="text" class="form-control required">
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Last name *</label>
+                                                  <input name="surname" type="text" class="form-control required">
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Birth date *</label>
+                                                  <input type="text" name="dateOfBirth" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control required">
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                  <label>Phone number *</label>
+                                                  <input name="phone" type="text" class="form-control required">
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Address *</label>
+                                                  <input name="address" type="text" class="form-control ">
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2>Privileges</h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <div class="i-checks"><label> <input id="home" type="checkbox" value=""> <i></i> Booking management</label></div>
+                                            </div>
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="dashboard" type="checkbox" value=""> <i></i> Dashborad management</label></div>
+                                              </div>
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="account" type="checkbox" value=""> <i></i> Accounts management</label></div>
+                                              </div>
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="contract" type="checkbox" value=""> <i></i> Contracts management</label></div>
+                                              </div>
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="invoice" type="checkbox" value=""> <i></i> Invoices management</label></div>
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="client" type="checkbox" value=""> <i></i> Clients management</label></div>
+                                              </div>
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="screen" type="checkbox" value=""> <i></i> Screens management</label></div>
+                                              </div>
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="segment" type="checkbox" value=""> <i></i> Segments management </label></div>
+                                              </div>
+                                              <div class="form-group">
+                                                <div class="i-checks"><label> <input id="booking" type="checkbox" value=""> <i></i> Assigning contents </label></div>
+                                              </div>
+
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                          </div>
+                      </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="ladda-button btn btn-danger" id="saveNewAccount" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+
+              </div>
+          </div>
+          </form>
+      </div>
+    </div>
+</template>
+<!--
+<div class="modal inmodal" id="addAccountPopUp" tabindex="-1" role="dialog" aria-hidden="false">
+  <div class="modal-dialog">
+    <form action="#" class="form">
+      <div class="modal-content animated bounceInRight" style="width:725px; left: -100px;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <i class="glyphicon glyphicon-user modal-icon"></i>
+            <h2 class="modal-title">New account</h2>
+          </div>
+          <div class="modal-body" >
+            <div class="row">
+              <div class="col-lg-12">
+                  <div class="ibox">
+                      <div class="ibox-content" style="heigh=300">
+                        <div class="clients-list">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> Account Information</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> Profile Information</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3"><i class="fa fa-sliders"></i> Privelege</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="tab-1" class="tab-pane active">
+                                  <fieldset>
+                                      <h2>Account Information</h2>
+                                      <div class="row">
+                                          <div class="col-lg-8">
+                                              <div class="form-group">
+                                                  <label>Email *</label>
+                                                  <input name="mail" type="email" class="form-control required email">
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Password *</label>
+                                                  <input id="pass1" name="password" type="text" class="form-control required">
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Confirm Password *</label>
+                                                  <input id="pass2" name="confirm" type="text" class="form-control required">
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                </div>
+                                <div id="tab-2" class="tab-pane">
+                                    <div class="full-height-scroll">
+                                      <fieldset>
+                                          <h2>Profile Information</h2>
+                                          <div class="row">
+                                              <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label>CIN *</label>
+                                                    <input name="cin" type="text" class="form-control required">
+                                                </div>
+                                                  <div class="form-group">
+                                                      <label>First name *</label>
+                                                      <input name="fname" type="text" class="form-control required">
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <label>Last name *</label>
+                                                      <input name="surname" type="text" class="form-control required">
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <label>Birth date *</label>
+                                                      <input type="text" name="dateOfBirth" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control required">
+                                                  </div>
+                                              </div>
+                                              <div class="col-lg-6">
+                                                  <div class="form-group">
+                                                      <label>Phone number *</label>
+                                                      <input name="phone" type="text" class="form-control required">
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <label>Address *</label>
+                                                      <input name="address" type="text" class="form-control required">
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </fieldset>
+                                    </div>
+                                </div>
+                                <div id="tab-3" class="tab-pane">
+                                    <div class="full-height-scroll">
+                                      <fieldset>
+                                          <h2>Profile Information</h2>
+                                          <div class="row">
+                                              <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label>CIN *</label>
+                                                    <input name="cin" type="text" class="form-control required">
+                                                </div>
+                                                  <div class="form-group">
+                                                      <label>First name *</label>
+                                                      <input name="fname" type="text" class="form-control required">
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <label>Last name *</label>
+                                                      <input name="surname" type="text" class="form-control required">
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <label>Birth date *</label>
+                                                      <input type="text" name="dateOfBirth" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control required">
+                                                  </div>
+                                              </div>
+                                              <div class="col-lg-6">
+                                                  <div class="form-group">
+                                                      <label>Phone number *</label>
+                                                      <input name="phone" type="text" class="form-control required">
+                                                  </div>
+                                                  <div class="form-group">
+                      required                                <label>Address *</label>
+                                                      <input name="address" type="text" class="form-control required">
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </fieldset>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <button type="submit" class="ladda-button btn btn-danger" id="saveNewAccount" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+     </form>
+  </div>
+</div>
+-->

@@ -1,4 +1,3 @@
-
 Meteor.methods({
     'sendLoginInfo': function(login, password){
       var name   = login.substring(0, login.lastIndexOf("@"));
@@ -47,6 +46,26 @@ Meteor.methods({
         });
       });
       console.log("result :"+myFuture.wait());
+      return myFuture.wait();
+    },
+    'addUser': function(dn, userType, email, password, fname, surname, cin, dateOfBirth, phone, address, AAssigningContent, ADashboradGA, AInvoiceGA, AContartGA, AClientGA, AScreensGA, ASegmentGA, ABookingGA, AAccountGA){
+      const child_process = Npm.require('child_process');
+      const exec = child_process.exec;
+      Future = Npm.require('fibers/future');
+      var myFuture = new Future();
+
+      // We passed by a problem when we sent a string(for exemple address) "Rue de tunis km4.5"
+      // the object received by the script pushCapsuleLDAP contains just "Rue" it ignore the rest of the string sented even there is other data after the address
+      var payload = "add*"+dn+"*"+userType+"*"+AAssigningContent+"*"+ADashboradGA+"*"+AInvoiceGA+"*"+AContartGA+"*"+AClientGA+"*"+AScreensGA+"*"+ASegmentGA+"*"+ABookingGA+"*"+AAccountGA+"*"+email+"*"+password+"*"+fname.split(' ').join('-')+"*"+surname.split(' ').join('-')+"*"+cin+"*"+dateOfBirth+"*"+phone+"*"+address.split(' ').join('-');
+      exec('python3.5 /home/akrem/Akrem/Projects/ChanelProjectMeteor/org/swallow_labs/test/pushCapsuleLDAP.py '+payload+' ', function (error, stdout, stderr) {
+          console.log("STDOUT"+stdout);
+          console.log("ERROR"+error);
+          if(error){
+            myFuture.return(0);
+          }else{
+            myFuture.return(1);
+          }
+      });
       return myFuture.wait();
     },
 

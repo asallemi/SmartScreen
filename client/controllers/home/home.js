@@ -82,12 +82,6 @@ Template.home.rendered = function () {
                }
                marker.setMap(map1);
                marker.addListener('click', function() {
-                   // Display a popup for more details
-                    swal({
-                        title: "About this screen",
-                        text: marker.title ,
-                        html: true
-                    });
                     Session.set({"screenID": marker.idScreen});
                     if(handleSegment.ready()){
                       var segments = Segments.find({ segmentScreenID : marker.idScreen });
@@ -124,15 +118,15 @@ Template.home.rendered = function () {
                       });
                     }
                     // Initialize the calendar
+                    $('#screenDetailsPopup').modal();
                     initCalender(jsonArr);
                });
           });
          c.stop()
        }
      });
-//********************* Calendar ***************************
      function initCalender(jsonArr){
-       $('#calendar').fullCalendar({
+         $('#calendar2').fullCalendar({
            header: {
              left: 'prev,next, today',
              center: 'title',
@@ -145,18 +139,16 @@ Template.home.rendered = function () {
            eventOverlap: false,
            events: jsonArr,
            axisFormat: 'H:mm', // uppercase H for 24-hour clock
-	         timeFormat: 'H:mm',
-           // add checkbox in every available slot
+           timeFormat: 'H:mm',
            eventRender: function (event, element) {
              if (!event.color.localeCompare('#1ab394')){
                element.html('<input type="checkbox" class="eventxxx" name="segemntSelected" value="'+event.id+'" style="align:right; vertical-align:top; padding:0px; margin:0;"/>');
                }
            },
-           // DAY click --> show a POPUP
-           dayClick: function(date, jsEvent, view) {
-             $('#calendarModal').modal();
-          }
-       });
+         });
+         $('#agendaPopUp').on('shown.bs.modal', function () {
+           $("#calendar2").fullCalendar('render');
+         });
      }
      // Validate booking by click button
      $(validateBooking).click(function(){
@@ -177,7 +169,7 @@ Template.home.rendered = function () {
              if( cursor.count() === 0){
                swal("Done!", "Your slots are booked now!", "success");
                Bookings.insert(booking);
-               $('#calendar').fullCalendar('refetchEvents');
+               Router.go('allBookings');
              }else{
                swal("Sorry", "This slot has been booked few seconds ago", "success");
              }
@@ -195,9 +187,12 @@ Template.home.rendered = function () {
         calendarWeeks: true,
         autoclose: true
      });
-  };// end Template.home.rendered = function ()
+};// end Template.home.rendered = function ()
 
 Template.home.events({
+    'click .btn-bookingAgenda'() {
+      $('#agendaPopUp').modal();
+    },
     'submit .searchByDate'(event) {
       event.preventDefault();
       const target = event.target;

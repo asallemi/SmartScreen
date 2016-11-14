@@ -9,7 +9,9 @@
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
                         <h5>Clients list</h5>
-                        {{>iboxTools}}
+                        <div class="ibox-tools">
+                            <button type="button" id="newClient" class="btn btn-primary btn-xs"><i class="fa fa-male"></i>   New client</button>
+                        </div>
                     </div>
                     <div class="ibox-content">
 
@@ -26,86 +28,28 @@
                             </thead>
                             <tbody>
                             <tr class="gradeX">
-                                <td>Trident</td>
-                                <td>Internet
-                                    Explorer 4.0
+                                <td>TT</td>
+                                <td>Tunisie Telecom</td>
+                                <td>1Z0OSSD123</td>
+                                <td class="center">100000</td>
+                                <td>
+                                  <a href="#" class="btn btn-white btn-sm"><i class="fa fa-key"></i> Accounts </a>
+                                  <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                  <a href="#" class="btn btn-white btn-sm"><i class="fa fa-trash"></i> Delete </a>
                                 </td>
-                                <td>Win 95+</td>
-                                <td class="center">4</td>
-                                <td class="center">X</td>
                             </tr>
 
                             <tr class="gradeA">
-                                <td>Gecko</td>
-                                <td>Mozilla 1.4</td>
-                                <td>Win 95+ / OSX.1+</td>
-                                <td class="center">1.4</td>
-                                <td class="center">A</td>
+                                <td>BS</td>
+                                <td>Bein Sport</td>
+                                <td>700MNH5050</td>
+                                <td class="center">70000</td>
+                                <td>
+                                  <a href="#" class="btn btn-white btn-sm"><i class="fa fa-key"></i> Accounts </a>
+                                  <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                  <a href="#" class="btn btn-white btn-sm"><i class="fa fa-trash"></i> Delete </a>
+                                </td>
                             </tr>
-                            <tr class="gradeA">
-                                <td>Gecko</td>
-                                <td>Mozilla 1.5</td>
-                                <td>Win 95+ / OSX.1+</td>
-                                <td class="center">1.5</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Gecko</td>
-                                <td>Mozilla 1.6</td>
-                                <td>Win 95+ / OSX.1+</td>
-                                <td class="center">1.6</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Gecko</td>
-                                <td>Mozilla 1.7</td>
-                                <td>Win 98+ / OSX.1+</td>
-                                <td class="center">1.7</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Gecko</td>
-                                <td>Mozilla 1.8</td>
-                                <td>Win 98+ / OSX.1+</td>
-                                <td class="center">1.8</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Gecko</td>
-                                <td>Seamonkey 1.1</td>
-                                <td>Win 98+ / OSX.2+</td>
-                                <td class="center">1.8</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>Safari 1.3</td>
-                                <td>OSX.3</td>
-                                <td class="center">312.8</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>Safari 2.0</td>
-                                <td>OSX.4+</td>
-                                <td class="center">419.3</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>Safari 3.0</td>
-                                <td>OSX.4+</td>
-                                <td class="center">522.1</td>
-                                <td class="center">A</td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Webkit</td>
-                                <td>OmniWeb 5.5</td>
-                                <td>OSX.4+</td>
-                                <td class="center">420</td>
-                                <td class="center">A</td>
-                            </tr>
-
                             </tbody>
                             <tfoot>
                             <tr>
@@ -123,5 +67,49 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal inmodal" id="newClientPopUp" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog" style="height: 200px;">
+          <div class="modal-content animated bounceInRight" style="width:700px; left: -60px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                  </button>
+                  <h4 class="modal-title">New client</h4>
+              </div>
+              <div class="modal-body" >
+
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> Corporatif</a></li>
+                        <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> Not corporatif</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="full-height-scroll">
+                              <div class="form-group"><label>First name</label> <input type="text" name="fname" placeholder="Enter first name" class="form-control"></div>
+                              <div class="form-group"><label>Second name</label> <input type="text" name="sname" placeholder="Enter second name" class="form-control"></div>
+                              <div class="form-group"><label>Email</label> <input type="email" name="email" placeholder="Enter email" class="form-control"></div>
+                              <div class="form-group"><label>Password</label> <input type="password" name="password" placeholder="Enter password" class="form-control"></div>
+                              <div class="form-group"><label>Confirm password</label> <input type="password" name="confirmPassword" placeholder="Confirm password" class="form-control"></div>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="full-height-scroll">
+                              <div class="form-group"><label>First name</label> <input type="text" name="fname" placeholder="Enter first name" class="form-control"></div>
+                              <div class="form-group"><label>Second name</label> <input type="text" name="sname" placeholder="Enter second name" class="form-control"></div>
+                              <div class="form-group"><label>Email</label> <input type="email" name="email" placeholder="Enter email" class="form-control"></div>
+                              <div class="form-group"><label>Password</label> <input type="password" name="password" placeholder="Enter password" class="form-control"></div>
+                              <div class="form-group"><label>Confirm password</label> <input type="password" name="confirmPassword" placeholder="Confirm password" class="form-control"></div>
+                            </div>
+                        </div>
+               </div>
+
+              </div>
+              <div class="modal-footer">
+                  <button class="ladda-button btn btn-danger" id="saveNewClient" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+              </div>
+          </div>
+      </div>
     </div>
 </template>

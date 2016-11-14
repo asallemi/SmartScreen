@@ -24,7 +24,16 @@ Router.route('/home', {
   layoutTemplate: 'mainLayout',
   name: 'home'
 });
-
+//home
+Router.route('/accounts', {
+  layoutTemplate: 'mainLayout',
+  name: 'allAccounts'
+});
+// Segment
+Router.route('/Segment',{
+  layoutTemplate: 'mainLayout',
+  name: 'segment'
+});
 // Booking
 Router.route('/newBooking',{
   layoutTemplate: 'mainLayout',
@@ -44,9 +53,9 @@ Router.route('/allContents',{
   name: 'allContents'
 });
 // client
-Router.route('/newClient',{
+Router.route('/client',{
   layoutTemplate: 'mainLayout',
-  name: 'newClient'
+  name: 'allclients'
  });
 // Landing page
 Router.route('/landing',{

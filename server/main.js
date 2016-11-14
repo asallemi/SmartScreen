@@ -55,7 +55,6 @@ if (Meteor.isServer) {
     // Dropzone uploading
     var getDuration = Npm.require('get-video-duration');
     var future = new Future();
-
     UploadServer.init({
       tmpDir: process.env.PWD + '/public/uploads',
       uploadDir: process.env.PWD + '/public/uploads',
@@ -82,7 +81,7 @@ if (Meteor.isServer) {
             'contentType': file.type,
             'contentDuration': duration,
             'contentClientID': '10010',
-            'uploadedDate': new Date(),
+            'uploadedDate': new Date()
           };
           Contents.insert(content);
       }
@@ -126,14 +125,78 @@ if (Meteor.isServer) {
           };
         Segments.insert(segment);
     }
+
     if (Bookings.find().count() === 0) {
-        var booking =
+        var booking1 =
           {
-            'segmentID': '57a896236675fe82c76345cd',
-            'screenID': 'uWhymNmycA8pqSENR',
-            'bookedDate': new Date(),
-          };
-        Bookings.insert(booking);
+            'segmentID': '1001',
+            'screenID': '1005',
+            'bookingStatus': 0,
+            'contentID' : 'GQYyHzRhE949M9j7F',
+            'clientID' : '10010',
+            'contentPath' : '/home/device/'
+        };
+        var booking2 =
+            {
+              'segmentID': '1002',
+              'screenID': '1005',
+              'bookingStatus': 1,
+              'contentID' : 'gjEcDZAmovhujZiSF',
+              'clientID' : '10010',
+              'contentPath' : '/home/device/'
+        };
+        var booking3 =
+          {
+            'segmentID': '1003',
+            'screenID': '1003',
+            'bookingStatus': 0,
+            'contentID' : 'GQYyHzRhE949M9j7F',
+            'clientID' : '10010',
+            'contentPath' : '/home/device/'
+        };
+        var booking4 =
+          {
+            'segmentID': '1004',
+            'screenID': '1004',
+            'bookingStatus': 0,
+            'contentID' : 'GQYyHzRhE949M9j7F',
+            'clientID' : '10010',
+            'contentPath' : '/home/device/'
+        };
+        var booking5 =
+          {
+            'segmentID': '1005',
+            'screenID': '1004',
+            'bookingStatus': 0,
+            'contentID' : 'GQYyHzRhE949M9j7F',
+            'clientID' : '10010',
+            'contentPath' : '/home/device/'
+        };
+        var booking6 =
+          {
+            'segmentID': '1006',
+            'screenID': '1009',
+            'bookingStatus': 0,
+            'contentID' : 'GQYyHzRhE949M9j7F',
+            'clientID' : '10010',
+            'contentPath' : '/home/device/'
+        };
+        var booking7 =
+          {
+            'segmentID': '1007',
+            'screenID': '1005',
+            'bookingStatus': 0,
+            'contentID' : 'GQYyHzRhE949M9j7F',
+            'clientID' : '10010',
+            'contentPath' : '/home/device/'
+        };
+        Bookings.insert(booking1);
+        Bookings.insert(booking2);
+        Bookings.insert(booking3);
+        Bookings.insert(booking4);
+        Bookings.insert(booking5);
+        Bookings.insert(booking6);
+        Bookings.insert(booking7);
     }
     if (Contents.find().count() === 0) {
         var content =
