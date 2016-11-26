@@ -32,3 +32,4 @@ typ:accounts-ldap
 email
 tomi:upload-server
 matteodem:server-session
+raix:handlebar-helpers

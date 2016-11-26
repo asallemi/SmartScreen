@@ -3,9 +3,15 @@ Clients = new Mongo.Collection('clients');
 Segments = new Mongo.Collection('segments');
 Bookings = new Mongo.Collection('bookings');
 Contents = new Mongo.Collection('contents');
+Roles = new Mongo.Collection('roles');
 
 Bookings.allow({
   insert: function (userId, doc) {
+    return true;
+  }
+});
+Roles.allow({
+  insert: function (doc) {
     return true;
   }
 });
@@ -32,6 +38,9 @@ if (Meteor.isServer) {
   });
   Meteor.publish('contents', function(){
         return Contents.find({});
+  });
+  Meteor.publish('roles', function(){
+        return Roles.find({});
   });
   Meteor.startup(function () {
     // Sending mail in OTP authentication
@@ -210,57 +219,86 @@ if (Meteor.isServer) {
           };
         Contents.insert(content);
     }
-  });
-  //*************************************************************************************************************
-  /*const child_process = Npm.require('child_process');
-  const exec = child_process.exec;
-
-  Future = Npm.require('fibers/future');
-  var myFuture = new Future();
-
-  console.log("I am server");
-  var jsonArray =[];
-  exec('python3.5 /home/akrem/Akrem/Projects/ChanelProjectMeteor/org/swallow_labs/test/T001.3.3-TestClient2Pull.py', function (error, stdout, stderr) {
-      console.log("STDOUT"+stdout);
-      console.log("ERROR"+error);
-      jsonArray = JSON.parse(stdout);
-      if(error){
-        myFuture.throw(error);
-      }else{
-        myFuture.return(jsonArray);
-      }
-  });
-  var array = myFuture.wait();
-  if(array.length >1){
-    for(i=0 ; i< array.length; i++){
-      console.log("JSONARRAY[i]"+ array[i].type);
-      var screen = {
-          '_id': array[i].id_sender.toString(),
-          'screenLatitude': array[i].payload.latitude,
-          'screenLongitude': array[i].payload.longitude,
-          'screenDimension': '150x100',
-          'screenDescription': 'Screen added by broker',
-          'screenAddedAt': new Date(),
-          'screenStatus': 1,
-          'screenAddress':'Allahou a3lam'
-      };
-      if(array[i].type === 'GPS_MESSAGE'){
-        Screens.insert(screen);
-      }
-
+    if (Roles.find().count() === 0) {
+        var role =
+          {
+            'roleName': 'Test Role',
+            'accountAdd': 'NO',
+            'accountUpdate': 'NO',
+            'accountDelete': 'NO',
+            'accountDisplay': 'NO',
+            'accountPrint': 'NO',
+            'accountValidate': 'NO',
+            'contractAdd': 'NO',
+            'contractUpdate': 'NO',
+            'contractDelete': 'NO',
+            'contractDisplay': 'NO',
+            'contractPrint': 'NO',
+            'contractValidate': 'NO',
+            'contractSign': 'NO',
+            'articleAdd': 'NO',
+            'articleUpdate': 'NO',
+            'articleDelete': 'NO',
+            'articleDisplay': 'NO',
+            'articlePrint': 'NO',
+            'articleValidate': 'NO',
+            'invoiceAdd': 'NO',
+            'invoiceUpdate': 'NO',
+            'invoiceDelete': 'NO',
+            'invoiceDisplay': 'NO',
+            'invoicePrint': 'NO',
+            'invoiceValidate': 'NO',
+            'clientAdd': 'NO',
+            'clientUpdate': 'NO',
+            'clientDelete': 'NO',
+            'clientDisplay': 'NO',
+            'clientPrint': 'NO',
+            'clientValidate': 'NO',
+            'clientAccountManagement': 'NO',
+            'screenUpdate': 'NO',
+            'screenDelete': 'NO',
+            'screenDisplay': 'NO',
+            'screenPrint': 'NO',
+            'screenValidate': 'NO',
+            'screenShow': 'NO',
+            'screenUpdateSystem': 'NO',
+            'screenClear': 'NO',
+            'screenMonitor': 'NO',
+            'screenActivate': 'NO',
+            'screenOnOff': 'NO',
+            'segmentUpdate': 'NO',
+            'segmentDelete': 'NO',
+            'segmentDisplay': 'NO',
+            'segmentPrint': 'NO',
+            'segmentAffect': 'NO',
+            'segmentValidate': 'NO',
+            'tariffAdd': 'NO',
+            'tariffUpdate': 'NO',
+            'tariffDelete': 'NO',
+            'tariffDisplay': 'NO',
+            'tariffPrint': 'NO',
+            'tariffAffect': 'NO',
+            'tariffValidate': 'NO',
+            'bookingAdd': 'NO',
+            'bookingUpdate': 'NO',
+            'bookingDelete': 'NO',
+            'bookingDisplay': 'NO',
+            'bookingPrint': 'NO',
+            'bookingValidate': 'NO',
+            'contentAdd': 'NO',
+            'contentDelete': 'NO',
+            'contentDisplay': 'NO',
+            'contentValidate': 'NO',
+            'roleAdd': 'NO',
+            'roleUpdate': 'NO',
+            'roleDelete': 'NO',
+            'roleDisplay': 'NO',
+            'rolePrint': 'NO',
+            'roleAffect': 'NO',
+            'roleValidate': 'NO',
+            'signatureAdd': 'NO'
+          };
+        Roles.insert(role);
     }
-  }else{
-    var screen = {
-      '_id': array[i].id_sender,
-      'screenLatitude': array[0].payload.latitude,
-      'screenLongitude': array[0].payload.longitude,
-      'screenDimension': '150x100',
-      'screenDescription': 'Screen added by broker',
-      'screenAddedAt': new Date(),
-      'screenStatus': 1,
-      'screenAddress':'Allahou a3lam'
-    };
-    Screens.insert(array);
-  }*/
-
+  });
 }

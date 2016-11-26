@@ -29,6 +29,11 @@ Router.route('/accounts', {
   layoutTemplate: 'mainLayout',
   name: 'allAccounts'
 });
+//home
+Router.route('/roles', {
+  layoutTemplate: 'mainLayout',
+  name: 'allRoles'
+});
 // Segment
 Router.route('/Segment',{
   layoutTemplate: 'mainLayout',

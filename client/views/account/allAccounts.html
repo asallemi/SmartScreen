@@ -17,34 +17,25 @@
                         <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
                           <thead>
                           <tr>
-                              <th></th>
                               <th>Name </th>
                               <th>Email </th>
-                              <th>Password </th>
+                              <th>Address </th>
                               <th>Action</th>
                           </tr>
                           </thead>
                           <tbody>
-                            <tr>
-                              <td class="project-people"><img alt="image" class="img-circle" src="img/a4.jpg"></td>
-                              <td>Karray Salmen</td>
-                              <td>skarray@swallow-labs.com</td>
-                              <td>slamen123</td>
-                              <td>
-                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
-                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-trash"></i> Delete </a>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="project-people"><a href=""><img alt="image" class="img-circle" src="img/a1.jpg"></a></td>
-                              <td>Sallemi Akrem</td>
-                              <td>asallemi@swallow-labs.com</td>
-                              <td>akrem123</td>
-                              <td>
-                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
-                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-trash"></i> Delete </a>
-                              </td>
-                            </tr>
+                            {{#each users}}
+                              <tr class="gradeX">
+                                  <td>{{userLastName}} {{userFirstName}}</td>
+                                  <td>{{userEmail}}</td>
+                                  <td>{{userAddress}}</td>
+                                  <td class="center">
+                                    <button type="button" id="details" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i> Details </button>
+                                    <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i> Edit </button>
+                                    <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i> Delete </button>
+                                  </td>
+                              </tr>
+                            {{/each}}
                           </tbody>
                           <tfoot>
                           <tr>
@@ -80,15 +71,15 @@
                                           <div class="col-lg-8">
                                               <div class="form-group">
                                                   <label>Email *</label>
-                                                  <input name="mail" type="email" class="form-control required email">
+                                                  <input name="mail" type="email" class="form-control email" required>
                                               </div>
                                               <div class="form-group">
                                                   <label>Password *</label>
-                                                  <input id="pass1" name="password" type="text" class="form-control required">
+                                                  <input id="pass1" name="password" type="password" class="form-control" required>
                                               </div>
                                               <div class="form-group">
                                                   <label>Confirm Password *</label>
-                                                  <input id="pass2" name="confirm" type="text" class="form-control required">
+                                                  <input id="pass2" name="confirm" type="password" class="form-control" required>
                                               </div>
                                           </div>
                                       </div>
@@ -99,29 +90,229 @@
                                           <div class="col-lg-6">
                                             <div class="form-group">
                                                 <label>CIN *</label>
-                                                <input name="cin" type="text" class="form-control required">
+                                                <input name="cin" type="text" class="form-control" required>
                                             </div>
                                               <div class="form-group">
                                                   <label>First name *</label>
-                                                  <input name="fname" type="text" class="form-control required">
+                                                  <input name="fname" type="text" class="form-control" required>
                                               </div>
                                               <div class="form-group">
                                                   <label>Last name *</label>
-                                                  <input name="surname" type="text" class="form-control required">
+                                                  <input name="surname" type="text" class="form-control" required>
                                               </div>
                                               <div class="form-group">
                                                   <label>Birth date *</label>
-                                                  <input type="text" name="dateOfBirth" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control required">
+                                                  <input type="text" name="dateOfBirth" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control" required>
                                               </div>
                                           </div>
                                           <div class="col-lg-6">
                                               <div class="form-group">
                                                   <label>Phone number *</label>
-                                                  <input name="phone" type="text" class="form-control required">
+                                                  <input name="phone" type="text" class="form-control" required>
                                               </div>
                                               <div class="form-group">
                                                   <label>Address *</label>
-                                                  <input name="address" type="text" class="form-control ">
+                                                  <input name="address" type="text" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+
+                                      <h2>Choose roles</h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            {{#each roles}}
+                                              <div class="form-group">
+                                                  <div class="i-checks"><label> <input id="{{_id}}" type="checkbox" value=""> <i></i> {{ roleName }}</label></div>
+                                              </div>
+                                            {{/each}}
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                          </div>
+                      </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="ladda-button btn btn-danger" id="saveNewAccount" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+              </div>
+          </div>
+          </form>
+      </div>
+    </div>
+    <div class="modal inmodal" id="userDetailsPopUp" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width:725px; left: -100px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-spinner modal-icon"></i>
+                <h2 class="modal-title">Details</h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                          <div class="ibox-content">
+                                  <fieldset>
+                                      <h2>Account Information</h2>
+                                      <div class="row">
+                                          <div class="col-lg-8">
+                                              <div class="form-group">
+                                                  <label>Email :  </label>
+                                                  <h5 style="color:'blue'">{{userDetails.userEmail}}</h5>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2>Profile Information</h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>CIN :  </label>
+                                                <h5>{{userDetails.userCIN}}</h5>
+                                            </div>
+                                              <div class="form-group">
+                                                  <label>First name :  </label>
+                                                  <h5>{{userDetails.userFirstName}}</h5>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Last name :  </label>
+                                                  <h5>{{userDetails.userLastName}}</h5>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Birth date :  </label>
+                                                  <h5>{{userDetails.userDateOfBirth}}</h5>
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                  <label>Phone number :  </label>
+                                                  <h5>{{userDetails.userPhone}}</h5>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Address :  </label>
+                                                  <h5>{{userDetails.userAddress}}</h5>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2>Privileges</h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                  <label> Booking management  : {{userDetails.bookingsMenu}}</label>
+                                              </div>
+                                              <div class="form-group">
+                                                <label> Dashborad management  : {{userDetails.dashboradMenu}}</label>
+                                              </div>
+                                              <div class="form-group">
+                                                <label> Accounts management  : {{userDetails.accountsMenu}}</label>
+                                              </div>
+                                              <div class="form-group">
+                                                <label> Contracts management  : {{userDetails.contartsMenu}}</label>
+                                              </div>
+                                              <div class="form-group">
+                                                <label> Invoices management  : {{userDetails.invoicesMenu}}</label>
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                <label> Clients management  : {{userDetails.clientsMenu}}</label>
+                                              </div>
+                                              <div class="form-group">
+                                                <label> Screens management  : {{userDetails.screensMenu}}</label>
+                                              </div>
+                                              <div class="form-group">
+                                                <label> Segments management  : {{userDetails.segmentsMenu}}</label>
+                                              </div>
+                                              <div class="form-group">
+                                                <label> Assigning contents  : {{userDetails.assigningContentMenu}}</label>
+                                              </div>
+
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="userUpdatePopUp" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="width:725px; left: -100px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-pencil modal-icon"></i>
+                <h2 class="modal-title">Update user</h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                          <div class="ibox-content">
+                                  <fieldset>
+                                      <h2>Account Information</h2>
+                                      <div class="row">
+                                          <div class="col-lg-8">
+                                              <div class="form-group">
+                                                  <label>Email *</label>
+                                                  <input name="email" type="text" value="{{userDetails.userEmail}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Old password *</label>
+                                                  <input name="oldPassword" type="text" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>New password *</label>
+                                                  <input name="newPassword" type="text" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Confirm new password *</label>
+                                                  <input name="confirmPassword" type="text" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2>Profile Information</h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>CIN *</label>
+                                                <input name="cin" type="text" value="{{userDetails.userCIN}}" class="form-control" required>
+                                            </div>
+                                              <div class="form-group">
+                                                  <label>First name *</label>
+                                                  <input name="fname" type="text" value="{{userDetails.userFirstName}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Last name *</label>
+                                                  <input name="surname" type="text" value="{{userDetails.userLastName}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Birth date *</label>
+                                                  <input type="text" name="dateOfBirth" value="{{userDetails.userDateOfBirth}}" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control" required>
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                  <label>Phone number *</label>
+                                                  <input name="phone" type="text" value="{{userDetails.userPhone}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label>Address *</label>
+                                                  <input name="address" type="text" value="{{userDetails.userAddress}}" class="form-control" required>
                                               </div>
                                           </div>
                                       </div>
@@ -131,10 +322,30 @@
                                       <div class="row">
                                           <div class="col-lg-6">
                                             <div class="form-group">
-                                                <div class="i-checks"><label> <input id="home" type="checkbox" value=""> <i></i> Booking management</label></div>
+                                                <div class="i-checks">
+                                                  <label>
+                                                    {{#if userDetails.bookingsMenu}}
+                                                      <input id="home" type="checkbox" value="" checked> <i></i>
+                                                        Booking management
+                                                    {{else}}
+                                                      <input id="home" type="checkbox" value=""> <i></i>
+                                                      Booking management
+                                                    {{/if}}
+                                                  </label>
+                                                </div>
                                             </div>
                                               <div class="form-group">
-                                                <div class="i-checks"><label> <input id="dashboard" type="checkbox" value=""> <i></i> Dashborad management</label></div>
+                                                <div class="i-checks">
+                                                  <label>
+                                                    {{#if userDetails.dashboradMenu}}
+                                                      <input id="dashboard" type="checkbox" value="" checked> <i></i>
+                                                        Dashborad management
+                                                    {{else}}
+                                                      <input id="dashboard" type="checkbox" value=""> <i></i>
+                                                        Dashborad management
+                                                    {{/if}}
+                                                  </label>
+                                                </div>
                                               </div>
                                               <div class="form-group">
                                                 <div class="i-checks"><label> <input id="account" type="checkbox" value=""> <i></i> Accounts management</label></div>
@@ -166,15 +377,12 @@
                           </div>
                       </div>
                   </div>
-
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="submit" class="ladda-button btn btn-danger" id="saveNewAccount" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
-
+                <button type="submit" class="ladda-button btn btn-danger" id="updateAccount" data-style="expand-right"><i class="fa fa-database"></i>    Validate</button>
               </div>
           </div>
-          </form>
       </div>
     </div>
 </template>

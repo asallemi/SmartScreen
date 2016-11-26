@@ -1,0 +1,1706 @@
+<template name="allRoles">
+
+    <!-- Page heading -->
+    {{> pageHeading title='List' category='Roles' }}
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="ibox-title">
+          <h5>All roles</h5>
+          <div class="ibox-tools">
+              <button type="button" id="newRole" class="btn btn-primary btn-xs"><i class="fa fa-key"></i>       Create new role</button>
+          </div>
+      </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search..">
+                        <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                          <thead>
+                          <tr>
+                              <th style="width: 700px;">Role name</th>
+                              <th>Action</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            {{#each roles}}
+                              <tr class="gradeX">
+                                  <td >{{roleName}}</td>
+                                  <td class="center">
+                                    <button type="button" id="details" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i> Details </button>
+                                    <button type="button" id="btn-edit" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i> Edit </button>
+                                    <button type="button" id="btn-delete" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i> Delete </button>
+                                  </td>
+                              </tr>
+                            {{/each}}
+                          </tbody>
+                          <tfoot>
+                          <tr>
+                              <td colspan="5">
+                                <ul class="pagination pull-right"></ul>
+                              </td>
+                          </tr>
+                          </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="newRolePopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <form class="wizard-big form">
+            <div class="modal-content animated bounceInRight" style="width:1265px; left: -345px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <i class="fa fa-key modal-icon"></i>
+                    <h4 class="modal-title">New role</h4>
+                </div>
+                <div class="modal-body" >
+                  <fieldset>
+                      <div class="row">
+                          <div class="col-lg-8">
+                              <div class="form-group">
+                                  <label>Role name *</label>
+                                  <input name="roleName" type="text" class="form-control" placeholder="Enter role name" required>
+                              </div>
+                          </div>
+                      </div>
+                  </fieldset>
+                    <div class="clients-list">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1"> Account</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2"> Contracts</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-11"> Articles</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-3"> Invoices</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-4"> Clients</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-5"> Screens</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-6"> Segments</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-7"> Tariffs</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-8"> Bookings</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-9"> Contents</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-10"> Roles</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-12"> Signature</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tab-1" class="tab-pane active" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-2" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                            <th class="center">Sign</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractSign"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractSign"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractSign"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-11" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articlePrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articlePrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articlePrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-3" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoicePrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoicePrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoicePrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-4" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                            <th class="center">Account Management</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientAccountManagement"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientAccountManagement"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientAccountManagement"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-5" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                            <th class="center">Show</th>
+                                            <th class="center">Update system</th>
+                                            <th class="center">Clear</th>
+                                            <th class="center">Monitor</th>
+                                            <th class="center">Activate</th>
+                                            <th class="center">ON/OFF</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenShow"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenShow"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenShow"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenUpdateSystem"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenUpdateSystem"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenUpdateSystem"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenClear"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenClear"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenClear"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenMonitor"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenMonitor"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenMonitor"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenActivate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenActivate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenActivate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenOnOff"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenOnOff"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenOnOff"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-6" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Affect</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentAffect"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentAffect"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentAffect"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-7" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Affect</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffAffect"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffAffect"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffAffect"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-8" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-9" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-10" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Affect</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="rolePrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="rolePrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="rolePrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleAffect"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleAffect"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleAffect"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-12" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                      <thead>
+                                        <tr>
+                                          <th class="center">Add</th>
+                                          <th class="center"><div class="i-checks"><label> <input type="radio" value="YES" name="signatureAdd"> <i></i> Yes </label></div></th>
+                                          <th class="center"><div class="i-checks"><label> <input type="radio" value="NO" name="signatureAdd"> <i></i> No </label></div>  </th>
+                                          <th class="center"><div class="i-checks"><label> <input type="radio" checked="" value="NA" name="signatureAdd"> <i></i> NA </label></div></th>
+
+                                        </tr>
+                                      </thead>
+
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                   </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="ladda-button btn btn-success" id="recap" data-style="expand-right"><i class="fa fa-sliders"></i>    Recap</button>
+                  <button type="submit" class="ladda-button btn btn-danger" id="saveNewRole" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="modal inmodal" id="editRolePopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <form class="wizard-big form">
+            <div class="modal-content animated bounceInRight" style="width:1265px; left: -345px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <i class="fa fa-key modal-icon"></i>
+                    <h4 class="modal-title">New role</h4>
+                </div>
+                <div class="modal-body" >
+                  <fieldset>
+                      <div class="row">
+                          <div class="col-lg-8">
+                              <div class="form-group">
+                                  <label>Role name</label>
+                                  <input name="roleName" type="text" value="{{roleSelected.roleName}}" class="form-control" required>
+                              </div>
+                          </div>
+                      </div>
+                  </fieldset>
+                    <div class="clients-list">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1"> Account</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2"> Contracts</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-11"> Articles</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-3"> Invoices</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-4"> Clients</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-5"> Screens</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-6"> Segments</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-7"> Tariffs</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-8"> Bookings</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-9"> Contents</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-10"> Roles</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-12"> Signature</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tab-1" class="tab-pane active" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="accountValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="accountValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="accountValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-2" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                            <th class="center">Sign</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contractSign"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contractSign"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contractSign"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-11" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articlePrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articlePrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articlePrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="articleValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="articleValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="articleValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-3" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoicePrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoicePrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoicePrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="invoiceValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="invoiceValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="invoiceValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-4" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                            <th class="center">Account Management</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="clientAccountManagement"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="clientAccountManagement"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="clientAccountManagement"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-5" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                            <th class="center">Show</th>
+                                            <th class="center">Update system</th>
+                                            <th class="center">Clear</th>
+                                            <th class="center">Monitor</th>
+                                            <th class="center">Activate</th>
+                                            <th class="center">ON/OFF</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenShow"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenShow"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenShow"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenUpdateSystem"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenUpdateSystem"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenUpdateSystem"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenClear"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenClear"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenClear"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenMonitor"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenMonitor"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenMonitor"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenActivate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenActivate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenActivate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="screenOnOff"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="screenOnOff"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="screenOnOff"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-6" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Affect</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentAffect"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentAffect"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentAffect"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="segmentValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="segmentValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="segmentValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-7" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Affect</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffAffect"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffAffect"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffAffect"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="tariffValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="tariffValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="tariffValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-8" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingPrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingPrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingPrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="bookingValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="bookingValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="bookingValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-9" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="contentValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="contentValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="contentValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-10" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th class="center">Add</th>
+                                            <th class="center">Update</th>
+                                            <th class="center">Delete  </th>
+                                            <th class="center">Display</th>
+                                            <th class="center">Print  </th>
+                                            <th class="center">Affect</th>
+                                            <th class="center">Validate</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleAdd"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleAdd"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleAdd"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleUpdate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleUpdate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleUpdate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleDelete"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleDelete"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleDelete"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleDisplay"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleDisplay"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleDisplay"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="rolePrint"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="rolePrint"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="rolePrint"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleAffect"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleAffect"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleAffect"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="form-group">
+                                              <div class="i-checks"><label> <input type="radio" value="YES" name="roleValidate"> <i></i> Yes </label></div>
+                                              <div class="i-checks"><label> <input type="radio" value="NO" name="roleValidate"> <i></i> No </label></div>
+                                              <div class="i-checks"><label> <input type="radio" checked="" value="NA" name="roleValidate"> <i></i> NA </label></div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="tab-12" class="tab-pane" style="height: 100px;">
+                              <div class="full-height-scroll">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                      <thead>
+                                        <tr>
+                                          <th class="center">Add</th>
+                                          <th class="center"><div class="i-checks"><label> <input type="radio" value="YES" name="signatureAdd"> <i></i> Yes </label></div></th>
+                                          <th class="center"><div class="i-checks"><label> <input type="radio" value="NO" name="signatureAdd"> <i></i> No </label></div>  </th>
+                                          <th class="center"><div class="i-checks"><label> <input type="radio" checked="" value="NA" name="signatureAdd"> <i></i> NA </label></div></th>
+
+                                        </tr>
+                                      </thead>
+
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                   </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="ladda-button btn btn-danger" id="saveNewRole" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+
+    </div>
+
+</template>
