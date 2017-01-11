@@ -123,6 +123,77 @@ if (Meteor.isServer) {
         };
       Contents_Live.insert(content);
   }*/
+
+  /*if (Users_Live.find().count() === 0) {
+      var user =
+        {
+          'fname' : 'Akrem',
+          'surname' : 'Sallemi',
+          'legalIdentifier' : 11860468,
+          'dateOfBirth' : '13/11/1991',
+          'phone' : '+21620710978',
+          'address' : 'Sfax Tunisia',
+          'email' : 'asallemi@swallow_labs.com',
+          'password' : 'akrem',
+          'photo' : '/public/upload/users/1001',
+          'roles': 'rXyBusbuQS',
+          'currentNumber': 0,
+          'status': 'LIVE',
+          'inputter': 'test',
+          'authorizer': 'test',
+          'dateTime': '01/01/2017 10:00',
+          'code': '#1000'
+        };
+      Users_Live.insert(user);
+  }*/
+  /*if (Clients_Live.find().count() === 0) {
+      var client =
+        {
+          'name' : 'Swallow_labs',
+          'shortName' : 'SL',
+          'code' : '10XF20065',
+          'sector' : 'Computer engineering',
+          'email' : 'administration@swallow_labs.com',
+          'phone' : '+21674704201',
+          'fax' : '+21674704201',
+          'street' : 'Route de Tunis',
+          'codePostal' : 3000,
+          'province' : 'Sakkiet Ezzit',
+          'city' : 'Sfax',
+          'country' : 'Tunisia',
+          'balance' : 0,
+          'accountNumber' : 5,
+          'logo' : '/home/clients/',
+          'currentNumber': 0,
+          'status': 'LIVE',
+          'inputter': 'Ali',
+          'authorizer': 'Med',
+          'dateTime': ''
+        };
+      Clients_Live.insert(client);
+  }
+  if (Clients_Authorization.find().count() === 0) {
+      var client =
+        {
+          'name' : 'Swallow_labs',
+          'shortName' : 'SL',
+          'code' : '10XF20065',
+          'sector' : 'Computer engineering',
+          'email' : 'administration@swallow_labs.com',
+          'phone' : '+21674704201',
+          'fax' : '+21674704201',
+          'address' : 'Sfax centre',
+          'balance' : 0,
+          'accountNumber' : 5,
+          'logo' : '/home/clients/',
+          'currentNumber': 0,
+          'status': 'LIVE',
+          'inputter': 'Ali',
+          'authorizer': 'Med',
+          'dateTime': ''
+        };
+      Clients_Authorization.insert(client);
+  }*/
   if (Roles_Live.find().count() === 0) {
       var role =
         {

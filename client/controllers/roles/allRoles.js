@@ -312,7 +312,14 @@ function getValuesFromForm(){
   var rolePrint = null;
   var roleAffect = null;
   var roleValidate = null;
+  var firmwareAdd = null;
+  var firmwareUpdate = null;
+  var firmwareDelete = null;
+  var firmwareDisplay = null;
+  var firmwarePrint = null;
+  var firmwareValidate = null;
   var signatureAdd = null;
+  var signatureValidate = null;
   if( $('input[name="accountAdd"]:checked').val() == "YES"){
     accountAdd = true;
   }else if( $('input[name="accountAdd"]:checked').val() == "YES"){
@@ -812,10 +819,52 @@ function getValuesFromForm(){
   }
   if( $('input[name="roleValidate"]:checked').val() == "YES"){
     roleValidate = true;
-  }else if ($('input[name="roleValidate1"]:checked').val() == "NO") {
+  }else if ($('input[name="roleValidate"]:checked').val() == "NO") {
     roleValidate = false;
   }else{
     roleValidate = null;
+  }
+  if( $('input[name="firmwareAdd"]:checked').val() == "YES"){
+    firmwareAdd = true;
+  }else if ($('input[name="firmwareAdd"]:checked').val() == "NO") {
+    firmwareAdd = false;
+  }else{
+    firmwareAdd = null;
+  }
+  if( $('input[name="firmwareUpdate"]:checked').val() == "YES"){
+    firmwareUpdate = true;
+  }else if ($('input[name="firmwareUpdate"]:checked').val() == "NO") {
+    firmwareUpdate = false;
+  }else{
+    firmwareUpdate = null;
+  }
+  if( $('input[name="firmwareDelete"]:checked').val() == "YES"){
+    firmwareDelete = true;
+  }else if ($('input[name="firmwareDelete"]:checked').val() == "NO") {
+    firmwareDelete = false;
+  }else{
+    firmwareDelete = null;
+  }
+  if( $('input[name="firmwareDisplay"]:checked').val() == "YES"){
+    firmwareDisplay = true;
+  }else if ($('input[name="firmwareDisplay"]:checked').val() == "NO") {
+    firmwareDisplay = false;
+  }else{
+    firmwareDisplay = null;
+  }
+  if( $('input[name="firmwarePrint"]:checked').val() == "YES"){
+    firmwarePrint = true;
+  }else if ($('input[name="firmwarePrint"]:checked').val() == "NO") {
+    firmwarePrint = false;
+  }else{
+    firmwarePrint = null;
+  }
+  if( $('input[name="firmwareValidate"]:checked').val() == "YES"){
+    firmwareValidate = true;
+  }else if ($('input[name="firmwareValidate1"]:checked').val() == "NO") {
+    firmwareValidate = false;
+  }else{
+    firmwareValidate = null;
   }
   if( $('input[name="signatureAdd"]:checked').val() == "YES"){
     signatureAdd = true;
@@ -823,6 +872,13 @@ function getValuesFromForm(){
     signatureAdd = false;
   }else{
     signatureAdd = null;
+  }
+  if( $('input[name="signatureValidate"]:checked').val() == "YES"){
+    signatureValidate = true;
+  }else if ($('input[name="signatureValidate"]:checked').val() == "NO") {
+    signatureValidate = false;
+  }else{
+    signatureValidate = null;
   }
   var role =
     {
@@ -900,7 +956,14 @@ function getValuesFromForm(){
       'rolePrint': rolePrint,
       'roleAffect': roleAffect,
       'roleValidate': roleValidate,
-      'signatureAdd': signatureAdd
+      'firmwareAdd': firmwareAdd,
+      'firmwareUpdate': firmwareUpdate,
+      'firmwareDelete': firmwareDelete,
+      'firmwareDisplay': firmwareDisplay,
+      'firmwarePrint': firmwarePrint,
+      'firmwareValidate': firmwareValidate,
+      'signatureAdd': signatureAdd,
+      'signatureValidate': signatureValidate
     };
   return role;
 }
@@ -978,7 +1041,14 @@ function getItemSelected(){
   var rolePrint = null;
   var roleAffect = null;
   var roleValidate = null;
+  var firmwareAdd = null;
+  var firmwareUpdate = null;
+  var firmwareDelete = null;
+  var firmwareDisplay = null;
+  var firmwarePrint = null;
+  var firmwareValidate = null;
   var signatureAdd = null;
+  var signatureValidate = null;
   var account = false;
   var contract = false;
   var article = false;
@@ -990,6 +1060,7 @@ function getItemSelected(){
   var booking = false;
   var content = false;
   var role = false;
+  var firmware = false;
   var signature = false;
 
   if( $('input[name="accountAdd"]:checked').val() == "YES"){
@@ -1634,11 +1705,65 @@ function getItemSelected(){
   if( $('input[name="roleValidate"]:checked').val() == "YES"){
     roleValidate = true;
     role = true;
-  }else if ($('input[name="roleValidate1"]:checked').val() == "NO") {
+  }else if ($('input[name="roleValidate"]:checked').val() == "NO") {
     roleValidate = false;
     role = true;
   }else{
     roleValidate = null;
+  }
+  if( $('input[name="firmwareAdd"]:checked').val() == "YES"){
+    firmwareAdd = true;
+    firmware = true;
+  }else if ($('input[name="firmwareAdd"]:checked').val() == "NO") {
+    firmwareAdd = false;
+    firmware = true;
+  }else{
+    firmwareAdd = null;
+  }
+  if( $('input[name="firmwareUpdate"]:checked').val() == "YES"){
+    firmwareUpdate = true;
+    firmware = true;
+  }else if ($('input[name="firmwareUpdate"]:checked').val() == "NO") {
+    firmwareUpdate = false;
+    firmware = true;
+  }else{
+    firmwareUpdate = null;
+  }
+  if( $('input[name="firmwareDelete"]:checked').val() == "YES"){
+    firmwareDelete = true;
+    firmware = true;
+  }else if ($('input[name="firmwareDelete"]:checked').val() == "NO") {
+    firmwareDelete = false;
+    firmware = true;
+  }else{
+    firmwareDelete = null;
+  }
+  if( $('input[name="firmwareDisplay"]:checked').val() == "YES"){
+    firmwareDisplay = true;
+    firmware = true;
+  }else if ($('input[name="firmwareDisplay"]:checked').val() == "NO") {
+    firmwareDisplay = false;
+    firmware = true;
+  }else{
+    firmwareDisplay = null;
+  }
+  if( $('input[name="firmwarePrint"]:checked').val() == "YES"){
+    firmwarePrint = true;
+    firmware = true;
+  }else if ($('input[name="firmwarePrint"]:checked').val() == "NO") {
+    firmwarePrint = false;
+    firmware = true;
+  }else{
+    firmwarePrint = null;
+  }
+  if( $('input[name="firmwareValidate"]:checked').val() == "YES"){
+    firmwareValidate = true;
+    firmware = true;
+  }else if ($('input[name="firmwareValidate"]:checked').val() == "NO") {
+    firmwareValidate = false;
+    firmware = true;
+  }else{
+    firmwareValidate = null;
   }
   if( $('input[name="signatureAdd"]:checked').val() == "YES"){
     signatureAdd = true;
@@ -1648,6 +1773,15 @@ function getItemSelected(){
     signature = true;
   }else{
     signatureAdd = null;
+  }
+  if( $('input[name="signatureValidate"]:checked').val() == "YES"){
+    signatureValidate = true;
+    signature = true;
+  }else if ($('input[name="signatureValidate"]:checked').val() == "NO") {
+    signatureValidate = false;
+    signature = true;
+  }else{
+    signatureValidate = null;
   }
   var array = [];
   if( account == true){
@@ -1743,6 +1877,9 @@ Template.allRoles.rendered = function(){
           'contractUpdate': null,
           'contractDelete': null,
           'contractDisplay': null,
+          'contractPrint': null,
+          'contractValidate': null,
+          'contractSign': null,
           'articleAdd': null,
           'articleUpdate': null,
           'articleDelete': null,
@@ -1803,7 +1940,14 @@ Template.allRoles.rendered = function(){
           'rolePrint': null,
           'roleAffect': null,
           'roleValidate': null,
-          'signatureAdd': null
+          'firmwareAdd': null,
+          'firmwareUpdate': null,
+          'firmwareDelete': null,
+          'firmwareDisplay': null,
+          'firmwarePrint': null,
+          'firmwareValidate': null,
+          'signatureAdd': null,
+          'signatureValidate': null
         };
        input(role);
     });
@@ -1988,7 +2132,14 @@ Template.allRoles.helpers({
           'rolePrint': doc.rolePrint,
           'roleAffect': doc.roleAffect,
           'roleValidate': doc.roleValidate,
+          'firmwareAdd': doc.firmwareAdd,
+          'firmwareUpdate': doc.firmwareUpdate,
+          'firmwareDelete': doc.firmwareDelete,
+          'firmwareDisplay': doc.firmwareDisplay,
+          'firmwarePrint': doc.firmwarePrint,
+          'firmwareValidate': doc.firmwareValidate,
           'signatureAdd': doc.signatureAdd,
+          'signatureValidate': doc.signatureValidate,
           'buttonEdit' : button.editAu,
           'buttonValidate' : button.validateAu,
           'buttonAuthorize' : button.authorizeAu,

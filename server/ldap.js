@@ -6,6 +6,16 @@ function change(x){
     return 0;
   }
 };
+/*Meteor.startup(function () {
+  // Run mini broker
+  const child_process = Npm.require('child_process');
+  const exec = child_process.exec;
+  exec('export PYTHONPATH=/home/akrem/Akrem/Projects/ChanelProject;cd /home/akrem/Akrem/Projects/ChanelProject/org/swallow_labs/test; python3.5 T00.5.1-RunClientTest.py', function (error, stdout, stderr) {
+    console.log("STDOUT"+stdout);
+    console.log("ERROR"+error);
+  });
+
+});*/
 Meteor.methods({
     'sendLoginInfo': function(login, password){
       var name   = login.substring(0, login.lastIndexOf("@"));

@@ -2,6 +2,10 @@ Screens_Live = new Mongo.Collection('screens_live');
 Screens_Authorization = new Mongo.Collection('screens_authorization');
 Screens_History = new Mongo.Collection('screens_history');
 
+Users_Live = new Mongo.Collection('users_live');
+Users_Authorization = new Mongo.Collection('users_authorization');
+Users_History = new Mongo.Collection('users_history');
+
 Clients_Live = new Mongo.Collection('clients_live');
 Clients_Authorization = new Mongo.Collection('clients_authorization');
 Clients_History = new Mongo.Collection('clients_history');

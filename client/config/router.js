@@ -58,9 +58,17 @@ Router.route('/allContents',{
   name: 'allContents'
 });
 // client
-Router.route('/client',{
+Router.route('/clients',{
   layoutTemplate: 'mainLayout',
-  name: 'allclients'
+  name: 'allClients'
+ });
+ Router.route('/clientsUsers',{
+   layoutTemplate: 'mainLayout',
+   name: 'allClientsUsers'
+  });
+ Router.route('/clientsRoles',{
+   layoutTemplate: 'mainLayout',
+   name: 'allClientsRoles'
  });
 // Landing page
 Router.route('/landing',{

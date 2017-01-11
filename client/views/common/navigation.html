@@ -1,12 +1,7 @@
 <template name="navigation">
     <nav class="navbar-default navbar-static-side" role="navigation">
         <div class="sidebar-collapse">
-
-            <!-- Close canvas menu used only on OffCanvas page -->
-            <!-- You can remove this tag if you dont use offCanvas menu -->
             <a class="close-canvas-menu"><i class="fa fa-times"></i></a>
-            <!-- End offCanvas menu toggle -->
-
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
                     <div class="dropdown profile-element"> <span>
@@ -29,7 +24,7 @@
                     <a href="{{pathFor route='home'}}"><i class="fa fa-institution"></i> <span class="nav-label" >Home</span> </a>
                 </li>
                 <li>
-                    <a href="{{pathFor route='allAccounts'}}"><i class="glyphicon glyphicon-user"></i> <span class="nav-label" >Accounts</span> </a>
+                    <a href="{{pathFor route='allAccounts'}}"><i class="glyphicon glyphicon-user"></i> <span class="nav-label" >Users account</span> </a>
                 </li>
                 <li>
                     <a href="{{pathFor route='allRoles'}}"><i class="fa fa-key"></i> <span class="nav-label" >Roles</span> </a>
@@ -52,7 +47,12 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="{{pathFor route='allclients'}}"><i class="fa fa-users"></i> <span class="nav-label" >Clients</span> </a>
+                    <a href="#"><i class="fa fa-users"></i> <span class="nav-label" data-i18n="nav.menulevels">Clients </span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li><a href="{{pathFor route='allClientsRoles'}}">Roles</a></li>
+                        <li><a href="{{pathFor route='allClientsUsers'}}">Clients users</a></li>
+                        <li><a href="{{pathFor route='allClients'}}">All clients</a></li>
+                    </ul>
                 </li>
                 <li>
                     <a href="{{pathFor route='allScreens'}}"><i class="fa fa-laptop"></i> <span class="nav-label" >Screens</span> </a>
@@ -70,8 +70,6 @@
                     <a href="#"><i class="fa fa-cogs"></i> <span class="nav-label" data-i18n="nav.tables">Configuration</span><span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse {{isActiveRoute regex='tableStatic|dataTables|fooTables' className='in'}}">
                         <li class="{{isActiveRoute regex='tableStatic'}}"><a href="{{pathFor route='tableStatic'}}">Languages</a></li>
-                        <li class="{{isActiveRoute regex='fooTables'}}"><a href="{{pathFor route='fooTables'}}">Device</a></li>
-                        <li class="{{isActiveRoute regex='dataTables'}}"><a href="{{pathFor route='dataTables'}}">Time</a></li>
                     </ul>
                 </li>
             </ul>
