@@ -8,8 +8,10 @@ function change(x){
 };
 /*Meteor.startup(function () {
   // Run mini broker
+
   const child_process = Npm.require('child_process');
   const exec = child_process.exec;
+  console.log("Start up done");
   exec('export PYTHONPATH=/home/akrem/Akrem/Projects/ChanelProject;cd /home/akrem/Akrem/Projects/ChanelProject/org/swallow_labs/test; python3.5 T00.5.1-RunClientTest.py', function (error, stdout, stderr) {
     console.log("STDOUT"+stdout);
     console.log("ERROR"+error);
@@ -17,7 +19,7 @@ function change(x){
 
 });*/
 Meteor.methods({
-    'sendLoginInfo': function(login, password){
+    'sendLoginInfo': function(login, password, code){
       var name   = login.substring(0, login.lastIndexOf("@"));
       var domain = login.substring(login.lastIndexOf("@") +1);
       var entreprise = domain.substring(0, domain.lastIndexOf("."));
@@ -40,28 +42,65 @@ Meteor.methods({
           scope: 'sub',
           //attributes: ['dn', 'sn', 'cn', 'uid']
         };
-        client.search('CUserEmail='+login+',ou='+entreprise+',o=Establishments,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
-          res.on('error', function(err) {
-            result = 0;
-            myFuture.return(result);
-            console.log("Denied");
-          });
-          res.on('searchEntry', function(entry) {
-            var jsonEntry = JSON.parse(JSON.stringify(entry.object));
-            console.log('Json entry: ' + JSON.stringify(entry.object));
-            console.log('Json entry login : ' + jsonEntry.CUserLogin);
-            console.log('Json entry Password : ' + jsonEntry.userPassword);
-            if( login === jsonEntry.CUserEmail && ssha.verify(password, jsonEntry.userPassword)){
-              console.log("Success");
-              result = 1;
-              myFuture.return(result);
-            }else{
+        if(entreprise == "administration"){
+          console.log("Admin case");
+          client.search('AEmail='+login+',o=Administrators,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
+            res.on('error', function(err) {
               result = 0;
               myFuture.return(result);
-              console.log("Denied");
-            }
+              console.log("Denied ***");
+            });
+            res.on('searchEntry', function(entry) {
+              var jsonEntry = JSON.parse(JSON.stringify(entry.object));
+              console.log('Json entry: ' + JSON.stringify(entry.object));
+              console.log('Json entry login : ' + jsonEntry.AEmail);
+              console.log('Json entry Password : ' + jsonEntry.pwd);
+              var pwd = CryptoJS.AES.decrypt(jsonEntry.pwd, 'SmartScreen').toString(CryptoJS.enc.Utf8);
+              console.log("Compared password :", pwd);
+              if( login == jsonEntry.AEmail && pwd == password ){
+                console.log("Success");
+                result = 1;
+                myFuture.return(result);
+              }else{
+                result = 0;
+                myFuture.return(result);
+                console.log("Denied");
+              }
+            });
           });
-        });
+        }
+        if(entreprise != "administration"){
+          console.log("Establishments case");
+          if(code != null){
+            console.log("Code != null");
+            client.search('CUserEmail='+login+',ECode='+code+',o=Establishments,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
+              res.on('error', function(err) {
+                result = 0;
+                myFuture.return(result);
+                console.log("Denied");
+              });
+              res.on('searchEntry', function(entry) {
+                var jsonEntry = JSON.parse(JSON.stringify(entry.object));
+                console.log('Json entry: ' + JSON.stringify(entry.object));
+                console.log('Json entry email : ' + jsonEntry.CUserEmail);
+                console.log('Json entry Password : ' + jsonEntry.pwd);
+                var pwd = CryptoJS.AES.decrypt(jsonEntry.pwd, 'SmartScreen').toString(CryptoJS.enc.Utf8);
+                console.log("Compared password :", pwd);
+                if( login == jsonEntry.CUserEmail && pwd == password ){
+                  console.log("Success");
+                  result = 1;
+                  myFuture.return(result);
+                }else{
+                  result = 0;
+                  myFuture.return(result);
+                  console.log("Denied");
+                }
+              });
+            });
+          }else {
+            myFuture.return(0);
+          }
+        }
       });
       console.log("result :"+myFuture.wait());
       return myFuture.wait();

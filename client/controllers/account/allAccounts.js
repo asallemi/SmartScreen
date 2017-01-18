@@ -5,7 +5,7 @@ Users_Authorization = new Mongo.Collection('users_authorization');
 let UsersAuthorization = Meteor.subscribe('usersAuthorization');
 
 Users_History = new Mongo.Collection('users_history');
-
+var administrationCode = "0000";
 function nextState(status){
   var matrix = Matrix.find({ "state" : status});
   // Array contains all next state of "status"
@@ -86,7 +86,7 @@ function input(user){
   if ( user._id == null ){
     user._id = Random.id([17]);
     user.currentNumber = 0;
-    user.code = "1002";
+    user.code = administrationCode;
     $('#newUserPopup').modal();
     situation = false;
   }else{
@@ -460,7 +460,7 @@ function getValuesFromFormForAdd(){
       'inputter': 'test',
       'authorizer': null,
       'dateTime': new Date(),
-      'code': '10002'
+      'code': administrationCode
     };
   return user;
 }
@@ -798,7 +798,7 @@ function sendCapsule(user, state){
   var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var capsule = {
     'id_sender': 20,
-    'id_receiver': 75,
+    'id_receiver': 10,
     'sort': null,
     'priority': 1,
     'payload': null,
@@ -824,7 +824,7 @@ function sendCapsule(user, state){
     }
     Session.set("userConnected","admin");
     if (Session.get("userConnected") == "admin"){
-      var payload = {'att': ['dn', 'objectClass', 'AFirstName', 'ALastName', 'AAdress', 'userPassword', 'AEmail',
+      var payload = {'att': ['dn', 'objectClass', 'AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail',
         'APhone', 'ADateOfBirth', 'APicture', 'ACIN', 'ContractAdd',
         'ContractUpdate', 'ContractDelete', 'ContractDisplay', 'ContractPrint', 'ContractSign',
         'ContractValidator', 'AccountAdd', 'AccountUpdate', 'AccountDelete',
@@ -851,7 +851,7 @@ function sendCapsule(user, state){
         'AFirstName': user.fname,
         'ALastName': user.surname,
         'AAdress': user.address,
-        'userPassword': user.password,
+        'pwd': user.password,
         'AEmail': user.email,
         'APhone': user.phone,
         'ADateOfBirth': user.dateOfBirth,
@@ -958,7 +958,7 @@ function sendCapsule(user, state){
       //var userX = Users_Live.findOne({ "_id" : user._id });
       var payload = {
         'att':['dn','changetype','replace'],'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn','changetype': 'modify',
-        'replace': ['AFirstName','ALastName','AAdress','userPassword','APhone','ADateOfBirth','APicture','ACIN','ContractAdd',
+        'replace': ['AFirstName','ALastName','AAdress','pwd','APhone','ADateOfBirth','APicture','ACIN','ContractAdd',
         'ContractUpdate', 'ContractDelete', 'ContractDisplay', 'ContractPrint', 'ContractSign',
         'ContractValidator', 'AccountAdd', 'AccountUpdate', 'AccountDelete',
         'AccountDisplay', 'AccountPrint', 'AccountValidator', 'InvoiceAdd',
@@ -981,7 +981,7 @@ function sendCapsule(user, state){
         'AFirstName': user.fname,
         'ALastName': user.surname,
         'AAdress': user.address,
-        'userPassword': user.password,
+        'pwd': user.password,
         'APhone': user.phone,
         'ADateOfBirth': user.dateOfBirth,
         'APicture': user.photo,
@@ -1141,6 +1141,7 @@ Template.allAccounts.rendered = function(){
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
+
     $(newUser).click(function(){
       var user =
         {
@@ -1277,14 +1278,11 @@ Template.allAccounts.events({
   },
 });
 Template.allAccounts.helpers({
-  users() {
-    return Session.get("allAdminUsers");
-  },
-  userLive(){
-    return Users_Live.find();
+  userLive: function() {
+    return Users_Live.find({ "code": administrationCode });
   },
   userAuthorization(){
-    var users = Users_Authorization.find();
+    var users = Users_Authorization.find({ "code": administrationCode });
     var usersAuthorization = [];
     users.forEach(function(doc){
       var buttonDetails = true;

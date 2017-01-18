@@ -1,6 +1,7 @@
 Clients_Live = new Mongo.Collection('clients_live');
 let clientsLive = Meteor.subscribe('clientsLive');
 
+
 Clients_Authorization = new Mongo.Collection('clients_authorization');
 let clientsAuthorization = Meteor.subscribe('clientsAuthorization');
 
@@ -656,8 +657,17 @@ Template.allClients.rendered = function(){
      });
 };
 Template.allClients.events({
-  'click #showsimple' : function(){
-      toastr.success('Without any options','Simple notification!');
+  'click .btnUsers'(){
+    var client = Clients_Live.findOne({ "_id" : this._id });
+    //console.log("Code : ", client.code);
+    Session.set("CLIENT_CODE", client.code);
+    Session.set("CLIENT_NAME", client.name);
+  },
+  'click .btnRoles'(){
+    var client = Clients_Live.findOne({ "_id" : this._id });
+    //console.log("Code : ", client.code);
+    Session.set("CLIENT_CODE_X", client.code);
+    Session.set("CLIENT_NAME_X", client.name);
   },
   'click .btn-edit'() {
     var client = Clients_Live.findOne({ "_id" : this._id });
@@ -693,7 +703,7 @@ Template.allClients.events({
     if(query != undefined){
       // Update case
       // client exist in LIVE TABLE
-      sendCapsule(user, "edit");
+      sendCapsule(client, "edit");
       console.log("edit");
     }
     var query2 = Clients_Authorization.findOne({ "_id": client._id });
@@ -743,7 +753,9 @@ Template.allClients.events({
 });
 Template.allClients.helpers({
   clientsLive(){
-     return Clients_Live.find();
+
+    console.log("Client Live: ",Clients_Live.find({}).count());
+    return Clients_Live.find({});
   },
   clientAuthorization(){
     //console.log("Client authorization: ",Clients_Authorization.find({}).count());

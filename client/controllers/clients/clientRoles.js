@@ -1,14 +1,3 @@
-Roles_Live = new Mongo.Collection('roles_live');
-let rolesLive = Meteor.subscribe('roles');
-
-Roles_Authorization = new Mongo.Collection('roles_authorization');
-let rolesAuthorization = Meteor.subscribe('roles_authorization');
-
-Roles_History = new Mongo.Collection('roles_history');
-
-Matrix = new Mongo.Collection('matrix');
-let matrixHandle = Meteor.subscribe('matrix');
-
 function nextState(status){
   var matrix = Matrix.find({ "state" : status});
   // Array contains all next state of "status"
@@ -87,7 +76,6 @@ function input(role){
   if ( role._id == null ){
     role._id = Random.id([10]);
     role.currentNumber = 0;
-    role.code = "0000";
   }
   $('#rolePopup').modal();
   Session.set("roleSelected", role);
@@ -109,7 +97,7 @@ function input(role){
       roleAdded.status = role.status;
       roleAdded.inputter = role.inputter;
       roleAdded.authorizer = role.authorizer;
-      roleAdded.code = "0000";
+      roleAdded.code = Session.get("CLIENT_CODE_X");
       roleAdded.dateTime = new Date();
       Roles_Authorization.insert(roleAdded);
       location.reload();
@@ -132,8 +120,8 @@ function input(role){
       roleAdded.status = 'INAU';
       roleAdded.inputter = role.inputter;
       roleAdded.authorizer = role.authorizer;
-      roleAdded.code = "0000";
       roleAdded.dateTime = new Date();
+      roleAdded.code = Session.get("CLIENT_CODE_X");
       Roles_Authorization.insert(roleAdded);
       location.reload();
     }else{
@@ -234,7 +222,11 @@ function deleteRole(role){
   Roles_Authorization.insert(role);
 }
 function getValuesFromForm(){
-  var roleName = document.getElementById("roleName").value;
+  if (document.getElementById('roleName') != null) {
+    var roleName = document.getElementById("roleName").value;
+  }else {
+    var roleName = null;
+  }
   var currentNumber = 0;
   var status = "";
   var inputter = "";
@@ -885,6 +877,12 @@ function getValuesFromForm(){
   var role =
     {
       'roleName': roleName,
+      'currentNumber' : 0,
+      'status': "",
+      'inputter': "",
+      'authorizer': "",
+      'dateTime': "",
+      'code': Session.get("CLIENT_CODE_X"),
       'accountAdd': accountAdd,
       'accountUpdate': accountUpdate,
       'accountDelete': accountDelete,
@@ -1854,7 +1852,11 @@ function getItemSelected(){
   }
   return array;
 }
-Template.allRoles.rendered = function(){
+Template.allClientsRoles.rendered = function(){
+  $('#rolePopup').on('shown.bs.modal', function () {
+    $('.select2_demo_2', this).chosen();
+  });
+
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
@@ -1868,7 +1870,7 @@ Template.allRoles.rendered = function(){
           'inputter': '',
           'authorizer': '',
           'dateTime': '',
-          'code': "0000",
+          'code': Session.get("CLIENT_CODE_X"),
           'accountAdd': null,
           'accountUpdate': null,
           'accountDelete': null,
@@ -1960,7 +1962,7 @@ Template.allRoles.rendered = function(){
     });
 
 };
-Template.allRoles.events({
+Template.allClientsRoles.events({
   'click .btn-edit'() {
     var role = Roles_Live.findOne({ "_id" : this._id });
     if (verifyEdit(role._id)){
@@ -1976,14 +1978,12 @@ Template.allRoles.events({
   },
   'click .editAu'() {
     var role = Roles_Authorization.findOne({ "_id" : this._id });
-    //console.log("Role name :",role.roleName);
     updateRole(role);
   },
   'click .validateAu'() {
     var role = Roles_Authorization.findOne({ "_id" : this._id });
     validate(role);
   },
-
   'click .btn-delete'() {
     var role = Roles_Live.findOne({ "_id" : this._id });
     if (verifyDelete(role._id)){
@@ -2004,13 +2004,11 @@ Template.allRoles.events({
   'click .authorizeAu'() {
     $('#checkAuthorising').modal();
     var role = Roles_Authorization.findOne({ "_id" : this._id });
-    //role.code = "0000";
+    role.code = Session.get("CLIENT_CODE_X");
     Session.set("RoleAuthorized",role);
   },
   'click .BtnAuthorize'() {
-    var role = Session.get("RoleAuthorized");
-    role.code = "0000";
-    authorize(role);
+    authorize(Session.get("RoleAuthorized"));
   },
   'click .cancelAu'() {
     cancelRole(this._id);
@@ -2037,15 +2035,21 @@ Template.allRoles.events({
     Session.set("RECAP",getItemSelected());
   },
 });
-Template.allRoles.helpers({
+Template.allClientsRoles.helpers({
+  clients(){
+    return Clients_Live.find();
+  },
+  client(){
+    return Session.get("CLIENT_NAME_X");
+  },
   roles_live() {
-    return Roles_Live.find({ "code" : "0000" });
+    return Roles_Live.find({ "code" : Session.get("CLIENT_CODE_X") });
   },
   recap() {
     return Session.get("RECAP");;
   },
   roles_authorization() {
-    var roles = Roles_Authorization.find({ "code" : "0000" });
+    var roles = Roles_Authorization.find({ "code" : Session.get("CLIENT_CODE_X") });
     var rolesAuthorization = [];
     roles.forEach(function(doc){
       var buttonDetails = true;

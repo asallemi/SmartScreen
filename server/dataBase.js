@@ -123,8 +123,7 @@ if (Meteor.isServer) {
         };
       Contents_Live.insert(content);
   }*/
-
-  /*if (Users_Live.find().count() === 0) {
+  if (Users_Live.find().count() === 0) {
       var user =
         {
           'fname' : 'Akrem',
@@ -142,10 +141,10 @@ if (Meteor.isServer) {
           'inputter': 'test',
           'authorizer': 'test',
           'dateTime': '01/01/2017 10:00',
-          'code': '#1000'
+          'code': '1005000PM'
         };
       Users_Live.insert(user);
-  }*/
+  }
   /*if (Clients_Live.find().count() === 0) {
       var client =
         {
