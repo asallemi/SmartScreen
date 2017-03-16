@@ -1,12 +1,4 @@
-Clients_Live = new Mongo.Collection('clients_live');
-let clientsLive = Meteor.subscribe('clientsLive');
-
-
-Clients_Authorization = new Mongo.Collection('clients_authorization');
 let clientsAuthorization = Meteor.subscribe('clientsAuthorization');
-
-Clients_History = new Mongo.Collection('clients_history');
-
 function nextState(status){
   var matrix = Matrix.find({ "state" : status});
   // Array contains all next state of "status"
@@ -79,69 +71,6 @@ function getButtonsAu(array){
   }
   return button;
 }
-function input(client){  // situation == true ---> Edit user case else Add user case
-  if ( client._id == null ){
-    client._id = Random.id([17]);
-    client.currentNumber = 0;
-    $('#newClientPopUp').modal();
-  }else{
-    $('#editClientPopUp').modal();
-    Session.set("clientSelected", client);
-  }
-  client.currentNumber = client.currentNumber + 1 ;
-  client.status = 'HLD';
-  client.inputter = "Med Saleh";
-  client.authorizer = null;
-  var array = nextState(client.status);
-  hideShowButtons(array);
-  $("#save").click(function() {
-    var clientAdded = getValuesFromFormForAdd();
-    clientAdded._id = client._id;
-    clientAdded.currentNumber = client.currentNumber;
-    clientAdded.status = client.status;
-    clientAdded.inputter = client.inputter;
-    clientAdded.authorizer = client.authorizer;
-    clientAdded.dateTime = new Date();
-    Clients_Authorization.insert(clientAdded);
-    //toastr.success('With success','Add operation done ');
-    location.reload();
-  });
-  $("#validate").click(function() {
-    var clientAdded = getValuesFromFormForAdd();
-    clientAdded._id = client._id;
-    clientAdded.currentNumber = client.currentNumber;
-    clientAdded.inputter = client.inputter;
-    clientAdded.status = 'INAU';
-    clientAdded.authorizer = client.authorizer;
-    clientAdded.dateTime = new Date();
-    Clients_Authorization.insert(clientAdded);
-    //toastr.success('With success','Add operation done ');
-    location.reload();
-  });
-  $("#saveUpdate").click(function() {
-    var clientUpdated = getValuesFromFormForEdit();
-    clientUpdated._id = client._id;
-    clientUpdated.currentNumber = client.currentNumber;
-    clientUpdated.status = client.status;
-    clientUpdated.inputter = client.inputter;
-    clientUpdated.authorizer = client.authorizer;
-    clientUpdated.dateTime = new Date();
-    Clients_Authorization.insert(clientUpdated);
-    location.reload();
-  });
-  $("#validateUpadte").click(function() {
-    var clientUpdated = getValuesFromFormForEdit();
-    clientUpdated._id = client._id;
-    clientUpdated.currentNumber = client.currentNumber;
-    clientUpdated.status = 'INAU';
-    clientUpdated.inputter = client.inputter;
-    clientUpdated.authorizer = client.authorizer;
-    clientUpdated.dateTime = new Date();
-    Clients_Authorization.insert(clientUpdated);
-    //toastr.success('With success','Update operation done ');
-    location.reload();
-  });
-}
 function authorize(client){
   if(client._id.indexOf("#") > 0){
     client._id = client._id.replace("#D", "");
@@ -175,46 +104,11 @@ function authorize(client){
     client.dateTime = new Date();
     Clients_Live.insert(client);
     Clients_Authorization.remove(client._id);
+    // If client authorized, the app will create a directory inside /home/akrem/sshfs/display named "code" of the client
+    Meteor.call('createClientDirectory', client.code);
   }
 }
-function updateClient(client){
-  $('#editClientAuthorization').modal();
-  Session.set("clientSelectedForUpdate", client);
-  client.inputter = "User X";
-  var array = nextState(client.status);
-  hideShowButtons(array);
-  $("#saveUpdateAuthorization").click(function() {
-    var clientUpdated = getValuesFromFormForEditAu();
-    clientUpdated._id = client._id;
-    clientUpdated.currentNumber = client.currentNumber;
-    clientUpdated.status = client.status;
-    clientUpdated.inputter = client.inputter;
-    clientUpdated.authorizer = client.authorizer;
-    clientUpdated.dateTime = new Date();
-    Clients_Authorization.remove(client._id)
-    Clients_Authorization.insert(clientUpdated);
-    toastr.success('With success','Updating operation done ');
-    location.reload();
-  });
-  $("#validateUpadteAuthorization").click(function() {
-    var clientUpdated = getValuesFromFormForEditAu();
-    clientUpdated._id = client._id;
-    clientUpdated.currentNumber = client.currentNumber;
-    clientUpdated.status = 'INAU';
-    clientUpdated.inputter = client.inputter;
-    clientUpdated.authorizer = client.authorizer;
-    clientUpdated.dateTime = new Date();
-    Clients_Authorization.remove(client._id)
-    Clients_Authorization.insert(clientUpdated);
-    toastr.success('With success','Updating operation done ');
-    location.reload();
-  });
-}
-function cancelClient(id){
-  //console.log("ID :",id);
-  Clients_Authorization.remove(id);
-  toastr.success('With success','Deleting operation done ');
-}
+
 function getDate(){
   var d = new Date().toString();
   var res = d.split(" ");
@@ -244,7 +138,7 @@ function deleteClient(client){
   Clients_Authorization.insert(client);
 }
 function validate(client){
-  Clients_Authorization.update({'_id' : client._id }, {'$set':{ 'status' : 'INAU', 'inputter' : 'Ali Tounsi' , 'dateTime' : new Date() }});
+  Clients_Authorization.update({'_id' : client._id }, {'$set':{ 'status' : 'INAU', 'inputter' : "Zzzzz" , 'dateTime' : new Date() }});
 }
 function getValuesFromFormForAdd(){
   if (document.getElementById('name') != null) {
@@ -335,7 +229,7 @@ function getValuesFromFormForAdd(){
       'logo' : '/home/clients/',
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'WXXXX',
+      'inputter': 'From Add',
       'authorizer': null,
       'dateTime': date
     };
@@ -434,7 +328,7 @@ function getValuesFromFormForEdit(){
       'logo' : '/home/clients/',
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'WXXXX',
+      'inputter': 'Edit live',
       'authorizer': null,
       'dateTime': date
     };
@@ -545,7 +439,7 @@ function sendCapsule(client, state){
   var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var capsule = {
     'id_sender': 20,
-    'id_receiver': 10,
+    'id_receiver': 50,
     'sort': null,
     'priority': 1,
     'payload': null,
@@ -579,7 +473,6 @@ function sendCapsule(client, state){
       capsule.payload = payload;
      }
     }else if( state == "edit"){
-      //var clientX = Clients_Live.findOne({ "_id" : client._id });
       var payload = {
         'att':['dn','changetype','replace'],
         'dn': 'ECode='+client.code+',o=Establishments,o=WebApp,dc=swallow,dc=tn','changetype': 'modify',
@@ -608,44 +501,37 @@ function sendCapsule(client, state){
     if(error){
       alert('Error');
     }else{
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Authorization done ');
+      }else {
+        toastr.success('Avec succès','Autorisation fait !');
+      }
       console.log("OK");
     }
   });
 }
-Template.allClients.rendered = function(){
+function addAuthorised(code){
+  var client = Clients_Live.findOne({ "code" : code });
+  var users = Users_Live.find({ "code" : code });
+  var usersNumber = users.count();
+  console.log("Account Number :",client.accountNumber);
+  console.log("Users Number: ",usersNumber);
+  if((client.accountNumber - usersNumber) > 0){
+    return true;
+  }
+  return false;
+}
+Template.allClients.onCreated(function() {
+  let clientsLive = Meteor.subscribe('clientsLive');
+});
+Template.allClients.onRendered(function(){
+    settingLanguage();
+    var userLogged = Session.get("UserLogged");
+    console.log("User logged (client) : ",userLogged);
     // Initialize dataTables
-    $('.dataTables-example').DataTable();
-    $('.dataTables-example2').DataTable();
-    $(newClient).click(function(){
-      var client =
-        {
-          '_id' : null,
-          'name' : '',
-          'shortName' : '',
-          'code' : '',
-          'sector' : '',
-          'email' : '',
-          'phone' : '',
-          'fax' : '',
-          'street' : '',
-          'codePostal' : null,
-          'province' : '',
-          'city' : '',
-          'country' : '',
-          'balance' : '',
-          'accountNumber' : '',
-          'logo' : '',
-          'currentNumber': '',
-          'status': '',
-          'inputter': '',
-          'authorizer': '',
-          'dateTime': ''
-        };
-      input(client);
-    });
-    $(upload).click(function(){
-      $('#uploadPopup').modal();
-    });
+    $('.footable').footable();
+    $('.footable2').footable();
+    //$('body').append('<script type="text/javascript" src="client/plugins/dataTables/datatables.min.js"></script>');
     $(document).ready(function() {
        $('input[type="radio"]').click(function() {
            if($(this).attr('id') == 'radioX') {
@@ -655,8 +541,9 @@ Template.allClients.rendered = function(){
            }
        });
      });
-};
+});
 Template.allClients.events({
+  //              LIVE events            //
   'click .btnUsers'(){
     var client = Clients_Live.findOne({ "_id" : this._id });
     //console.log("Code : ", client.code);
@@ -669,17 +556,62 @@ Template.allClients.events({
     Session.set("CLIENT_CODE_X", client.code);
     Session.set("CLIENT_NAME_X", client.name);
   },
+  'click .newClient'(){
+    $('#newClientPopUp').modal();
+  },
+  'click .save'(){
+    var client = getValuesFromFormForAdd();
+    Clients_Authorization.insert(client);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Save done !');
+    }else {
+      toastr.success('Avec succès','Enregistrer fait !');
+    }
+  },
+  'click .validate'(){
+    var client = getValuesFromFormForAdd();
+    client.status = "INAU";
+    Clients_Authorization.insert(client);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Validation done !');
+    }else {
+      toastr.success('Avec succès','Validation fait !');
+    }
+  },
   'click .btn-edit'() {
     var client = Clients_Live.findOne({ "_id" : this._id });
     if (verifyEdit(client._id)){
-      input(client);
+      Session.set("clientSelectedLive", client);
+      $('#editClientPopUp').modal();
     }else{
-      swal({
-        title: "Access denied",
-        text: "Edit operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
-      });
+      $('#edictState').modal();
+    }
+  },
+  'click .saveUpdate'() {
+    var clientUpdated = getValuesFromFormForEdit();
+    var client = Session.get("clientSelectedLive");
+    clientUpdated.inputter = "Saver LIVE ";
+    clientUpdated._id = client._id;
+    clientUpdated.currentNumber = client.currentNumber + 1;
+    Clients_Authorization.insert(clientUpdated);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
+    }
+  },
+  'click .validateUpdate'() {
+    var clientUpdated = getValuesFromFormForEdit();
+    var client = Session.get("clientSelectedLive");
+    clientUpdated.inputter = "Saver LIVE ";
+    clientUpdated._id = client._id;
+    clientUpdated.currentNumber = client.currentNumber + 1
+    clientUpdated.status = "INAU";
+    Clients_Authorization.insert(clientUpdated);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
     }
   },
   'click .btn-details'() {
@@ -687,6 +619,27 @@ Template.allClients.events({
     Session.set("ClientDetails",client);
     $('#clientDetailsPopUp').modal();
   },
+  'click .btn-delete'() {
+    var client = Clients_Live.findOne({ "_id" : this._id });
+    if (verifyDelete(client._id)){
+      $('#checkDeleting').modal();
+      Session.set("ClientForDelete",client);
+    }else{
+      $('#deletionState').modal();
+    }
+  },
+  'click .BtnDelete'() {
+    deleteClient(Session.get("ClientForDelete"));
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Deletion done !');
+    }else {
+      toastr.success('Avec succès','Suppression fait !');
+    }
+  },
+  'click .upload'(){
+    $('#uploadPopup').modal();
+  },
+  //          Authorization events            //
   'click .authorizeAu'() {
     var oldClient = Clients_Live.findOne({ "_id" : this._id });
     var newClient = Clients_Authorization.findOne({ "_id" : this._id });
@@ -716,24 +669,7 @@ Template.allClients.events({
       console.log("delete");
     }
     authorize(client);
-  },
-  'click .btn-delete'() {
-    var client = Clients_Live.findOne({ "_id" : this._id });
-    if (verifyDelete(client._id)){
-      $('#checkDeleting').modal();
-      $("#BtnDelete").click(function(){
-        deleteClient(client);
-        toastr.success('Without any options','Simple notification!');
-        //location.reload();
-      });
-    }else{
-      swal({
-        title: "Access denied",
-        text: "Delete operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
-      });
-    }
+
   },
   'click .validateAu'() {
     var client = Clients_Authorization.findOne({ "_id" : this._id });
@@ -741,10 +677,43 @@ Template.allClients.events({
   },
   'click .editAu'() {
     var client = Clients_Authorization.findOne({ "_id" : this._id });
-    updateClient(client);
+    Session.set("clientSelectedForUpdate", client);
+    $('#editClientAuthorization').modal();
+  },
+  'click .saveUpdateAuthorization'() {
+    var clientUpdated = getValuesFromFormForEditAu();
+    var client = Session.get("clientSelectedForUpdate");
+    clientUpdated.inputter = "Saver AUTH";
+    clientUpdated._id = client._id;
+    Clients_Authorization.remove(client._id);
+    Clients_Authorization.insert(clientUpdated);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
+    }
+  },
+  'click .validateUpdateAuthorization'() {
+    var clientUpdated = getValuesFromFormForEditAu();
+    var client = Session.get("clientSelectedForUpdate");
+    clientUpdated.inputter = "Saver AUTH";
+    clientUpdated.status = "INAU";
+    clientUpdated._id = client._id;
+    Clients_Authorization.remove(client._id);
+    Clients_Authorization.insert(clientUpdated);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
+    }
   },
   'click .cancelAu'() {
-    cancelClient(this._id);
+    Clients_Authorization.remove(this._id);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Deletion done !');
+    }else {
+      toastr.success('Avec succès','Suppression fait !');
+    }
   },
   'click .detailsAu'() {
     Session.set("ClientDetails", Clients_Authorization.findOne({ "_id" : this._id }));
@@ -752,8 +721,10 @@ Template.allClients.events({
   },
 });
 Template.allClients.helpers({
+  role(){
+    return Session.get("USER_ROLE_XX");
+  },
   clientsLive(){
-
     console.log("Client Live: ",Clients_Live.find({}).count());
     return Clients_Live.find({});
   },
@@ -806,6 +777,9 @@ Template.allClients.helpers({
   },
   clientSelected(){
     return Session.get("clientSelected");
+  },
+  clientSelectedLive(){
+    return Session.get("clientSelectedLive");
   },
   clientSelectedAu(){
     return Session.get("clientSelectedForUpdate");

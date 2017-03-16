@@ -1,4 +1,5 @@
 if (Meteor.isServer) {
+
   /*if (Screens_Live.find().count() === 0) {
     var screen =
     {
@@ -8,7 +9,9 @@ if (Meteor.isServer) {
         'screenDescription': 'second screen of smart screen solution',
         'screenAddedAt': new Date(),
         'screenStatus': 1,
-        'screenAddress':'xxx'
+        'screenAddress':'xxx',
+        'highPrice': 100,
+        'lowPrice': 50,
     };
     Screens_Live.insert(screen);
   }

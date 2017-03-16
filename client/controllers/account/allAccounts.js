@@ -1,12 +1,6 @@
-Users_Live = new Mongo.Collection('users_live');
 let rolesLive = Meteor.subscribe('usersLive');
-
-Users_Authorization = new Mongo.Collection('users_authorization');
 let UsersAuthorization = Meteor.subscribe('usersAuthorization');
-
-Users_History = new Mongo.Collection('users_history');
-var administrationCode = "0000";
-function nextState(status){
+nextState = function (status){
   var matrix = Matrix.find({ "state" : status});
   // Array contains all next state of "status"
   var array = [];
@@ -17,7 +11,7 @@ function nextState(status){
   });
   return array;
 }
-function hideShowButtons(array){
+hideShowButtons = function (array){
   if (array.indexOf("HLD") < 0 ){
     $("#save").hide();
   }
@@ -57,7 +51,7 @@ function verifyDelete(id){
   }
   return false;
 }
-function getButtonsAu(array){
+getButtonsAu = function (array){
   var button = {
     'editAu' :false,
     'validateAu' :false,
@@ -80,273 +74,7 @@ function getButtonsAu(array){
   }
   return button;
 }
-function input(user){
-  // situation == true ---> Edit user case else Add user case
-  var situation = true;
-  if ( user._id == null ){
-    user._id = Random.id([17]);
-    user.currentNumber = 0;
-    user.code = administrationCode;
-    $('#newUserPopup').modal();
-    situation = false;
-  }else{
-    $('#editUserPopUp').modal();
-    Session.set("userSelected", user);
-    var res = user.roles.split("*");
-    var roles = Roles_Live.find();
-    var rolesList = [];
-    roles.forEach(function(doc){
-      var obj = {};
-      if( res.indexOf(doc._id) > -1 ){
-        obj.id = doc._id;
-        obj.roleName = doc.roleName;
-        obj.status = true;
-        rolesList.push(obj);
-      }else{
-        obj.id = doc._id;
-        obj.roleName = doc.roleName;
-        obj.status = false;
-        rolesList.push(obj);
-      }
-    });
-    Session.set("RoleList", rolesList);
-  }
-  user.currentNumber = user.currentNumber + 1 ;
-  user.status = 'HLD';
-  user.inputter = "Med Saleh";
-  user.authorizer = null;
-  var array = nextState(user.status);
-  hideShowButtons(array);
-  $("#save").click(function() {
-    console.log("Save");
-    if( situation == false){
-      console.log("Add case");
-      var userAdded = getValuesFromFormForAdd();
-      userAdded._id = user._id;
-      userAdded.currentNumber = user.currentNumber;
-      userAdded.status = user.status;
-      userAdded.inputter = user.inputter;
-      userAdded.authorizer = user.authorizer;
-      userAdded.dateTime = new Date();
-      Users_Authorization.insert(userAdded);
-      location.reload();
-    }else{
-      console.log("Edit case");
-      var userAdded = getValuesFromFormForEdit();
-      if( document.getElementById("newPassword").value != ""){ // The case where the user want change password
-        if ( checkConfirmPassword() ){
-          if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
-            userAdded._id = user._id;
-            userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
-            userAdded.currentNumber = user.currentNumber;
-            userAdded.status = user.status;
-            userAdded.inputter = user.inputter;
-            userAdded.authorizer = user.authorizer;
-            userAdded.dateTime = new Date();
-            Users_Authorization.insert(userAdded);
-            location.reload();
-          }else{
-            swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
-          }
-        }else{
-          swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
-        }
-      }else{
-        userAdded._id = user._id;
-        userAdded.currentNumber = user.currentNumber;
-        userAdded.password = user.password;
-        userAdded.status = user.status;
-        userAdded.inputter = user.inputter;
-        userAdded.authorizer = user.authorizer;
-        userAdded.dateTime = new Date();
-        Users_Authorization.insert(userAdded);
-        location.reload();
-      }
-    }
-  });
-  $("#validate").click(function() {
-    if( situation == false){
-      var userAdded = getValuesFromFormForAdd();
-      userAdded._id = user._id;
-      userAdded.currentNumber = user.currentNumber;
-      userAdded.status = 'INAU';
-      userAdded.inputter = user.inputter;
-      userAdded.authorizer = user.authorizer;
-      userAdded.dateTime = new Date();
-      Users_Authorization.insert(userAdded);
-      location.reload();
-    }else{
-      var userAdded = getValuesFromFormForEdit();
-      if( document.getElementById("newPassword").value != ""){
-         // The case where the user will change password
-        if ( checkConfirmPassword() ){
-          if ( checkOldPassword(user._id, document.getElementById("oldPassword").value)) {
-            userAdded._id = user._id;
-            userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
-            userAdded.currentNumber = user.currentNumber;
-            userAdded.status = 'INAU';
-            userAdded.inputter = user.inputter;
-            userAdded.authorizer = user.authorizer;
-            userAdded.dateTime = new Date();
-            Users_Authorization.insert(userAdded);
-            location.reload();
-          }else{
-            swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
-          }
-        }else{
-          swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
-        }
-      }else{
-        userAdded._id = user._id;
-        userAdded.currentNumber = user.currentNumber;
-        userAdded.password = user.password;
-        userAdded.status = 'INAU';
-        userAdded.inputter = user.inputter;
-        userAdded.authorizer = user.authorizer;
-        userAdded.dateTime = new Date();
-        Users_Authorization.insert(userAdded);
-        location.reload();
-      }
-    }
-  });
-  $("#saveAdd").click(function() {
-    if( situation == false){
-      var userAdded = getValuesFromFormForAdd();
-    }else{
-      var userAdded = getValuesFromFormForEdit();
-    }
-    if(testRoles(userAdded.roles) == false){
-      console.log("Warning");
-      $('#warning').modal();
-    }else{
-      userAdded._id = user._id;
-      userAdded.currentNumber = user.currentNumber;
-      userAdded.status = user.status;
-      userAdded.inputter = user.inputter;
-      userAdded.authorizer = user.authorizer;
-      userAdded.dateTime = new Date();
-      Users_Authorization.insert(userAdded);
-      location.reload();
-    }
-  });
-  $("#validateAdd").click(function() {
-    if( situation == false){
-      var userAdded = getValuesFromFormForAdd();
-    }else{
-      var userAdded = getValuesFromFormForEdit();
-    }
-    if(testRoles(userAdded.roles) == false){
-      console.log("Warning");
-      $('#warning').modal();
-    }else{
-      userAdded._id = user._id;
-      userAdded.currentNumber = user.currentNumber;
-      userAdded.status = 'INAU';
-      userAdded.inputter = user.inputter;
-      userAdded.authorizer = user.authorizer;
-      userAdded.dateTime = new Date();
-      Users_Authorization.insert(userAdded);
-      location.reload();
-    }
-  });
-}
-function updateUser(user){
-  $('#editUserPopUp').modal();
-  Session.set("userSelected", user);
-  var res = user.roles.split("*");
-  var roles = Roles_Live.find();
-  var rolesList = [];
-  roles.forEach(function(doc){
-    var obj = {};
-    if( res.indexOf(doc._id) > -1 ){
-      obj.id = doc._id;
-      obj.roleName = doc.roleName;
-      obj.status = true;
-      rolesList.push(obj);
-    }else{
-      obj.id = doc._id;
-      obj.roleName = doc.roleName;
-      obj.status = false;
-      rolesList.push(obj);
-    }
-  });
-  Session.set("RoleList", rolesList);
-  user.inputter = "User X";
-  var array = nextState(user.status);
-  hideShowButtons(array);
-  $("#save").click(function() {
-    var userUpdated = getValuesFromFormForEdit();
-    console.log("user roles: ", userUpdated.roles);
-    if( document.getElementById("newPassword").value != ""){
-      // The case where the user will change the password
-      if ( checkConfirmPassword() ){
-        if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
-          userUpdated._id = user._id;
-          userUpdated.currentNumber = user.currentNumber;
-          userUpdated.status = user.status;
-          userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
-          userUpdated.inputter = user.inputter;
-          userUpdated.authorizer = user.authorizer;
-          userUpdated.dateTime = new Date();
-          Users_Authorization.remove(user._id);
-          Users_Authorization.insert(userUpdated);
-          location.reload();
-        }else{
-          swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
-        }
-      }else{
-        swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
-      }
-    }else{
-      // The case where the user wont change the password
-      userUpdated._id = user._id;
-      userUpdated.currentNumber = user.currentNumber;
-      userUpdated.status = user.status;
-      userUpdated.inputter = user.inputter;
-      userUpdated.password = user.password;
-      userUpdated.authorizer = user.authorizer;
-      userUpdated.dateTime = new Date();
-      Users_Authorization.remove(user._id);
-      Users_Authorization.insert(userUpdated);
-      location.reload();
-    }
-  });
-  $("#validate").click(function() {
-    var userUpdated = getValuesFromFormForEdit();
-    if( document.getElementById("newPassword").value != ""){ // The case where the user want change password
-      if ( checkConfirmPassword() ){
-        if ( checkOldPassword(user._id, document.getElementById("oldPassword").value)) {
-          userUpdated._id = user._id;
-          userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
-          userUpdated.currentNumber = user.currentNumber;
-          userUpdated.status = 'INAU';
-          userUpdated.inputter = user.inputter;
-          userUpdated.authorizer = user.authorizer;
-          userUpdated.dateTime = new Date();
-          Users_Authorization.remove(user._id);
-          Users_Authorization.insert(userUpdated);
-          location.reload();
-        }else{
-          swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
-        }
-      }else{
-        swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
-      }
-    }else{
-      userUpdated._id = user._id;
-      userUpdated.currentNumber = user.currentNumber;
-      userUpdated.status = 'INAU';
-      userUpdated.inputter = user.inputter;
-      userUpdated.password = user.password;
-      userUpdated.authorizer = user.authorizer;
-      userUpdated.dateTime = new Date();
-      Users_Authorization.remove(user._id);
-      Users_Authorization.insert(userUpdated);
-      location.reload();
-    }
-  });
-}
-function authorize(user){
+authorize = function (user){
   if(user._id.indexOf("#") > 0){
     user._id = user._id.replace("#D", "");
   }
@@ -381,16 +109,16 @@ function authorize(user){
     Users_Authorization.remove(user._id);
   }
 }
-function encryptPassword(password){
+encryptPassword = function encryptPassword(password){
   //encrypt/decrypt data with AES using Crypto-JS
   return CryptoJS.AES.encrypt(password, 'SmartScreen').toString();
 }
-function decryptPassword(password){
+decryptPassword = function (password){
   //encrypt/decrypt data with AES using Crypto-JS
   return CryptoJS.AES.decrypt(password, 'SmartScreen').toString(CryptoJS.enc.Utf8);
 }
 function getValuesFromFormForAdd(){
-  var roles = Roles_Live.find();
+  var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
   var arrayIDs = [];
   roles.forEach(function(doc){
     arrayIDs.push(doc._id);
@@ -460,13 +188,86 @@ function getValuesFromFormForAdd(){
       'inputter': 'test',
       'authorizer': null,
       'dateTime': new Date(),
-      'code': administrationCode
+      'code': Session.get("UserLogged").code
     };
   return user;
 }
-
+function getValuesFromFormForEditAu(){
+  var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
+  var arrayIDs = [];
+  roles.forEach(function(doc){
+    arrayIDs.push(doc._id);
+  });
+  var rolesID = '';
+  for( var i=0; i < arrayIDs.length; i++){
+    var x = arrayIDs[i];
+    if( document.getElementById(x+"##").checked ) {
+      rolesID = rolesID + arrayIDs[i]+"*";
+    }
+  }
+  if (document.getElementById('fnameEdit1') != null) {
+    var fname = document.getElementById("fnameEdit1").value;
+  }else {
+    var fname = null;
+  }
+  if (document.getElementById('surnameEdit1') != null) {
+    var surname = document.getElementById("surnameEdit1").value;
+  }else {
+    var surname = null;
+  }
+  if (document.getElementById('legalIdentifierEdit1') != null) {
+    var legalIdentifier = document.getElementById("legalIdentifierEdit1").value;
+  }else {
+    var legalIdentifier = null;
+  }
+  if (document.getElementById('dateOfBirthEdit1') != null) {
+    var dateOfBirth = document.getElementById("dateOfBirthEdit1").value;
+  }else {
+    var dateOfBirth = null;
+  }
+  if (document.getElementById('phoneEdit1') != null) {
+    var phone = document.getElementById("phoneEdit1").value;
+  }else {
+    var phone = null;
+  }
+  if (document.getElementById('addressEdit1') != null) {
+    var address = document.getElementById("addressEdit1").value;
+  }else {
+    var address = null;
+  }
+  if (document.getElementById('mailEdit1') != null) {
+    var email = document.getElementById("mailEdit1").value;
+  }else {
+    var email = null;
+  }
+  if (document.getElementById('newPassword1') != null) {
+    var newPassword = document.getElementById("newPassword1").value;
+  }else {
+    var newPassword = null;
+  }
+  var user =
+    {
+      'fname' : fname,
+      'surname' : surname,
+      'legalIdentifier' : legalIdentifier,
+      'dateOfBirth' : dateOfBirth,
+      'phone' : phone,
+      'address' : address,
+      'email' : email,
+      'password' : newPassword,
+      'photo' : '/public/upload/users/',
+      'roles': rolesID.slice(0, rolesID.length-1),
+      'currentNumber': 0,
+      'status': 'HLD',
+      'inputter': 'test',
+      'authorizer': null,
+      'dateTime': new Date(),
+      'code': Session.get("UserLogged").code
+    };
+  return user;
+}
 function getValuesFromFormForEdit(){
-  var roles = Roles_Live.find();
+  var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
   var arrayIDs = [];
   roles.forEach(function(doc){
     arrayIDs.push(doc._id);
@@ -535,35 +336,24 @@ function getValuesFromFormForEdit(){
       'inputter': 'test',
       'authorizer': null,
       'dateTime': new Date(),
-      'code': '10002'
+      'code': Session.get("UserLogged").code
     };
   return user;
 }
-function checkOldPassword(id, oldPassword){
+checkOldPassword = function (id, oldPassword){
   var user = Users_Live.findOne({ "_id" : id });
   if(user == undefined){
     user = Users_Authorization.findOne({ "_id" : id });
   }
-  console.log("oldPassword from Form:", oldPassword);
+  /*console.log("oldPassword from Form:", oldPassword);
   console.log("decrypted oldPassword from DB:", user.password);
-  console.log("decrypted oldPassword from DB:", decryptPassword(user.password));
+  console.log("decrypted oldPassword from DB:", decryptPassword(user.password));*/
   if( decryptPassword(user.password) == oldPassword ){
     return true;
   }
   return false;
 }
-function validate(user){
-  Users_Authorization.update({'_id' : user._id }, {'$set':{ 'status' : 'INAU', 'inputter' : 'Ali Tounsi' , 'dateTime' : new Date() }});
-}
-function deleteUser(user){
-  user._id = user._id+"#D"
-  user.status = "RNAU";
-  user.inputter = "HEDI";
-  user.dateTime = new Date();
-  user.authorizer = null;
-  Users_Authorization.insert(user);
-}
-function checkConfirmPassword(){
+checkConfirmPassword = function (){
   var pass1 = document.getElementById("newPassword").value;
   var pass2 = document.getElementById("confirmPassword").value;
   if( pass1 == pass2 ){
@@ -571,12 +361,7 @@ function checkConfirmPassword(){
   }
   return false
 }
-function cancelUser(id){
-  //console.log("ID :",id);
-  Users_Authorization.remove(id);
-}
-function compare(val1, val2){
-  //console.log("Val",i," : ",val1, "Val :",val2);
+compare = function(val1, val2){
   if (val1 == true && val1 == true){
     return true;
   }
@@ -605,7 +390,7 @@ function compare(val1, val2){
     return null;
   }
 }
-function getFinalRole(listRoles){
+getFinalRole = function(listRoles){
   var role = {
       'accountAdd': listRoles[0].accountAdd,
       'accountUpdate': listRoles[0].accountUpdate,
@@ -777,7 +562,7 @@ function getFinalRole(listRoles){
 }
 //This function return an array, each item contains an object of role
 // It takes a string in argument(IDs of roles seperated by "*")
-function getListOfRoles(roles){
+getListOfRoles = function(roles){
   var res = roles.split("*");
   var role;
   var listRoles = [];
@@ -798,7 +583,7 @@ function sendCapsule(user, state){
   var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var capsule = {
     'id_sender': 20,
-    'id_receiver': 10,
+    'id_receiver': 50,
     'sort': null,
     'priority': 1,
     'payload': null,
@@ -955,7 +740,6 @@ function sendCapsule(user, state){
         }
         role = getFinalRole(listRoles);
       }
-      //var userX = Users_Live.findOne({ "_id" : user._id });
       var payload = {
         'att':['dn','changetype','replace'],'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn','changetype': 'modify',
         'replace': ['AFirstName','ALastName','AAdress','pwd','APhone','ADateOfBirth','APicture','ACIN','ContractAdd',
@@ -1081,23 +865,22 @@ function sendCapsule(user, state){
     if(error){
       alert('Error');
     }else{
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Authorization done ');
+      }else {
+        toastr.success('Avec succès','Autorisation fait !');
+      }
       console.log("OK");
     }
   });
-   /*else{
-    var dn = "o=Establishments,o=WebApp,dc=swallow,dc=tn";
-    var userType = "client";
-    var result = Meteor.call('addUser',dn, userType, listRoles);
-  }*/
-
 }
-function verify(val1 , val2){
+verify = function (val1 , val2){
   if( (val1 == true && val2 == false) || (val2 == true && val1 == false)){
     return false
   }
   return true;
 }
-function testRoles(roles){
+testRoles = function (roles){
   var actions = [ 'accountAdd', 'accountUpdate', 'accountDelete','accountDisplay', 'accountPrint', 'accountValidate', 'invoiceAdd',
   'invoiceUpdate', 'invoiceDelete', 'invoiceDisplay', 'invoicePrint', 'invoiceSign', 'invoiceValidate', 'clientAdd', 'clientUpdate', 'clientDelete',
   'clientDisplay', 'clientPrint', 'clientAccountManagment', 'clientValidate', 'screenActivation', 'screenDelete', 'screenDisplay', 'screenPrint',
@@ -1138,80 +921,186 @@ function testRoles(roles){
   return true;
 }
 Template.allAccounts.rendered = function(){
+    var userLogged = Session.get("UserLogged");
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
-
-    $(newUser).click(function(){
-      var user =
-        {
-          '_id' : null,
-          'fname' : '',
-          'surname' : '',
-          'legalIdentifier' : '',
-          'dateOfBirth' : '',
-          'phone' : '',
-          'address' : '',
-          'email' : '',
-          'password' : '',
-          'photo' : '/public/upload/users/',
-          'roles': '',
-          'currentNumber': '',
-          'status': '',
-          'inputter': '',
-          'authorizer': '',
-          'dateTime': '',
-          'code': ''
-        };
-      input(user);
-    });
-    /*Meteor.call('getAdminUsers', function(error, result){
-      // Result contains the list of users
-      Session.set("allAdminUsers",result);
-    });
-    // List of users request
-    if (Session.get("userConnected") === "admin"){
-      var dn = "o=Administrators,o=WebApp,dc=swallow,dc=tn";
-      var userType = "admin";
-      Meteor.call('sendCapsuleLDAP', dn, userType, function(error, result){
-        // Depends from the result , a popup display if the capsule didn't received
-      });
-    }else{
-      var dn = "o=Establishments,o=WebApp,dc=swallow,dc=tn";
-      var userType = "client";
-      Meteor.call('sendCapsuleLDAP', dn, userType, function(error, result){
-        // Depends from the result , a popup display if the capsule didn't received
-      });
-    }*/
-
+    console.log("USER ROLE : ", Session.get("USER_ROLE_XX"));
+    console.log(Session.get("UserLogged").language);
+    settingLanguage();
+    $("[data-toggle=tooltip]").tooltip();
 };
 Template.allAccounts.events({
+  'click .newUser'() {
+    $('#newUserPopup').modal();
+  },
+  'click .saveAdd'() {
+    var userAdded = getValuesFromFormForAdd();
+    if(userAdded.password != null && userAdded.email != null){
+      $('#enterEmailPwd').modal();
+    }else {
+      Users_Authorization.insert(userAdded);
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Save done !');
+      }else {
+        toastr.success('Avec succès','Enregistrer fait !');
+      }
+    }
+  },
+  'click .validateAdd'() {
+    var userAdded = getValuesFromFormForAdd();
+    if(userAdded.password != null && userAdded.email != null){
+      $('#enterEmailPwd').modal();
+    }else {
+      userAdded.status = "INAU";
+      Users_Authorization.insert(userAdded);
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Validation done !');
+      }else {
+        toastr.success('Avec succès','Validation fait !');
+      }
+
+    }
+  },
+  //         LIVE events         //
   'click .btn-edit'() {
     var user = Users_Live.findOne({ "_id" : this._id });
     //sendCapsule(user);
     if (verifyEdit(user._id)){
-      input(user);
-    }else{
-      swal({
-        title: "Access denied",
-        text: "Edit operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
+      Session.set("userSelected", user);
+      var res = user.roles.split("*");
+      var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
+      var rolesList = [];
+      roles.forEach(function(doc){
+        var obj = {};
+        if( res.indexOf(doc._id) > -1 ){
+          obj.id = doc._id;
+          obj.roleName = doc.roleName;
+          obj.status = true;
+          rolesList.push(obj);
+        }else{
+          obj.id = doc._id;
+          obj.roleName = doc.roleName;
+          obj.status = false;
+          rolesList.push(obj);
+        }
       });
+      Session.set("RoleList", rolesList);
+      $('#editUserPopUp').modal();
+    }else{
+      $('#edictState').modal();
     }
   },
-  'click .cancelAu'() {
-    cancelUser(this._id);
+  'click .saveEditLive'() {
+    var userUpdated = getValuesFromFormForEdit();
+    var user = Session.get("userSelected");
+    if( document.getElementById("newPassword").value != ""){
+      if ( checkConfirmPassword() ){
+        if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
+          userUpdated._id = user._id;
+          userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
+          userUpdated.currentNumber = user.currentNumber + 1;
+          Users_Authorization.remove(user._id);
+          Users_Authorization.insert(userUpdated);
+          if(Session.get("UserLogged").language == "en"){
+            toastr.success('With success','Edict done !');
+          }else {
+            toastr.success('Avec succès','Modification fait !');
+          }
+        }else{
+          $('#rightOldPwd').modal();
+        }
+      }else{
+        $('#samePasswordTwice').modal();
+      }
+    }else{
+      userUpdated._id = user._id;
+      userUpdated.password = user.password;
+      userUpdated.currentNumber = user.currentNumber + 1;
+      Users_Authorization.insert(userUpdated);
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Edict done !');
+      }else {
+        toastr.success('Avec succès','Modification fait !');
+      }
+    }
   },
+  'click .validateEditLive'() {
+    var userUpdated = getValuesFromFormForEdit();
+    var user = Session.get("userSelected");
+    if( document.getElementById("newPassword").value != ""){
+      if ( checkConfirmPassword() ){
+        if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
+          userUpdated._id = user._id;
+          userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
+          userUpdated.currentNumber = user.currentNumber + 1;
+          userUpdated.status = "INAU";
+          Users_Authorization.remove(user._id);
+          Users_Authorization.insert(userUpdated);
+          if(Session.get("UserLogged").language == "en"){
+            toastr.success('With success','Edict done !');
+          }else {
+            toastr.success('Avec succès','Modification fait !');
+          }
+        }else{
+          $('#rightOldPwd').modal();
+        }
+      }else{
+        $('#samePasswordTwice').modal();
+      }
+    }else{
+      userUpdated._id = user._id;
+      userUpdated.password = user.password;
+      userUpdated.status = "INAU";
+      userUpdated.currentNumber = user.currentNumber + 1;
+      Users_Authorization.insert(userUpdated);
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Edict done !');
+      }else {
+        toastr.success('Avec succès','Modification fait !');
+      }
+    }
+  },
+  'click .btn-details'() {
+    var user = Users_Live.findOne({ "_id" : this._id });
+    Session.set("UserDetails",user);
+    var roles = user.roles.split("*");
+    Session.set("RoleList", roles);
+    $('#userDetailsPopUp').modal();
+  },
+  'click .btn-delete'() {
+    var user = Users_Live.findOne({ "_id" : this._id });
+    if (verifyDelete(user._id)){
+      $('#checkDeleting').modal();
+      Session.set("deleteUserLive",user);
+    }else{
+      $('#deletionState').modal();
+    }
+  },
+  'click .BtnDelete'() {
+    var user = Session.get("deleteUserLive");
+    user._id = user._id+"#D"
+    user.status = "RNAU";
+    user.inputter = "HEDI";
+    user.dateTime = new Date();
+    user.authorizer = null;
+    Users_Authorization.insert(user);
+  },
+  //        Authorization events        //
   'click .authorizeAu'() {
     var oldUser = Users_Live.findOne({ "_id" : this._id });
     var newUser = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("OldUser",oldUser);
-    Session.set("NewUser",newUser);
+    // test User have minimum one role
+    if(newUser.roles.length > 0 ){
+      Session.set("OldUser",oldUser);
+      Session.set("NewUser",newUser);
+      $('#checkAuthorising').modal();
+      var user = Users_Authorization.findOne({ "_id" : this._id });
+      Session.set("UserAuthorized",user);
+    }else{
+      $('#minOneRole').modal();
+    }
 
-    $('#checkAuthorising').modal();
-    var user = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("UserAuthorized",user);
   },
   'click .BtnAuthorize'() {
     var user = Session.get("UserAuthorized");
@@ -1233,41 +1122,117 @@ Template.allAccounts.events({
       console.log("delete");
     }
     authorize(user);
-    /*if(testRoles(user.roles)){
-      authorize(user);
-    }*/
   },
   'click .validateAu'() {
     var user = Users_Authorization.findOne({ "_id" : this._id });
-    validate(user);
+    Users_Authorization.update({'_id' : user._id }, {'$set':{ 'status' : 'INAU', 'inputter' : 'Ali Tounsi' , 'dateTime' : new Date() }});
   },
-  'click .btn-delete'() {
-    var user = Users_Live.findOne({ "_id" : this._id });
-    if (verifyDelete(user._id)){
-      $('#checkDeleting').modal();
-      $("#BtnDelete").click(function(){
-        deleteUser(user);
-        location.reload();
-      });
-    }else{
-      swal({
-        title: "Access denied",
-        text: "Delete operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
-      });
-    }
-  },
-  'click .btn-details'() {
-    var user = Users_Live.findOne({ "_id" : this._id });
-    Session.set("UserDetails",user);
-    var roles = user.roles.split("*");
-    Session.set("RoleList", roles);
-    $('#userDetailsPopUp').modal();
-  },
+
   'click .editAu'() {
     var user = Users_Authorization.findOne({ "_id" : this._id });
-    updateUser(user);
+    Session.set("userSelected", user);
+    var res = user.roles.split("*");
+    var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
+    var rolesList = [];
+    roles.forEach(function(doc){
+      var obj = {};
+      if( res.indexOf(doc._id) > -1 ){
+        obj.id = doc._id;
+        obj.roleName = doc.roleName;
+        obj.status = true;
+        rolesList.push(obj);
+      }else{
+        obj.id = doc._id;
+        obj.roleName = doc.roleName;
+        obj.status = false;
+        rolesList.push(obj);
+      }
+    });
+    Session.set("RoleList", rolesList);
+    $('#editUserPopUpAu').modal();
+  },
+  'click .saveEditAu'() {
+    var userUpdated = getValuesFromFormForEditAu();
+    var user = Session.get("userSelected");
+    if( document.getElementById("newPassword1").value != ""){
+      if ( checkConfirmPassword() ){
+        if ( checkOldPassword(user._id, document.getElementById("oldPassword1").value )) {
+          userUpdated._id = user._id;
+          userUpdated.password = encryptPassword(document.getElementById("newPassword1").value);
+          Users_Authorization.remove(user._id);
+          Users_Authorization.insert(userUpdated);
+          if(Session.get("UserLogged").language == "en"){
+            toastr.success('With success','Edict done !');
+          }else {
+            toastr.success('Avec succès','Modification fait !');
+          }
+        }else{
+          $('#rightOldPwd').modal();
+        }
+      }else{
+        $('#samePasswordTwice').modal();
+      }
+    }else{
+      userUpdated._id = user._id;
+      userUpdated.password = user.password;
+      Users_Authorization.remove(user._id);
+      Users_Authorization.insert(userUpdated);
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Edict done !');
+      }else {
+        toastr.success('Avec succès','Modification fait !');
+      }
+    }
+  },
+  'click .validateEditAu'() {
+    var userUpdated = getValuesFromFormForEditAu();
+    var user = Session.get("userSelected");
+    if( document.getElementById("newPassword1").value != ""){
+      if ( checkConfirmPassword() ){
+        if ( checkOldPassword(user._id, document.getElementById("oldPassword1").value )) {
+          userUpdated._id = user._id;
+          userUpdated.password = encryptPassword(document.getElementById("newPassword1").value);
+          userUpdated.status = "INAU";
+          Users_Authorization.remove(user._id);
+          Users_Authorization.insert(userUpdated);
+          if(Session.get("UserLogged").language == "en"){
+            toastr.success('With success','Edict done !');
+          }else {
+            toastr.success('Avec succès','Modification fait !');
+          }
+        }else{
+          $('#rightOldPwd').modal();
+        }
+      }else{
+        $('#samePasswordTwice').modal();
+      }
+    }else{
+      userUpdated._id = user._id;
+      userUpdated.password = user.password;
+      userUpdated.status = "INAU";
+      Users_Authorization.remove(user._id);
+      Users_Authorization.insert(userUpdated);
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Edict done !');
+      }else {
+        toastr.success('Avec succès','Modification fait !');
+      }
+    }
+  },
+  'click .cancelAu'() {
+    var user = Users_Authorization.findOne({ "_id" : this._id });
+    Session.set("deleteUserAu",user);
+    $('#checkCancel').modal();
+  },
+  'click .BtnCancel'() {
+    var user = Session.get("deleteUserAu");
+    Users_Authorization.remove(user._id);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Deletion operation done ');
+    }else {
+      toastr.success('Avec succès','Suppression fait !');
+    }
+
   },
   'click .detailsAu'() {
     var user = Users_Authorization.findOne({ "_id" : this._id });
@@ -1276,13 +1241,17 @@ Template.allAccounts.events({
     Session.set("RoleList", roles);
     $('#userDetailsPopUp').modal();
   },
+
 });
 Template.allAccounts.helpers({
+  role(){
+    return Session.get("USER_ROLE_XX");
+  },
   userLive: function() {
-    return Users_Live.find({ "code": administrationCode });
+    return Users_Live.find({ "code": Session.get("UserLogged").code });
   },
   userAuthorization(){
-    var users = Users_Authorization.find({ "code": administrationCode });
+    var users = Users_Authorization.find({ "code": Session.get("UserLogged").code });
     var usersAuthorization = [];
     users.forEach(function(doc){
       var buttonDetails = true;
@@ -1328,7 +1297,7 @@ Template.allAccounts.helpers({
     return user;
   },
   roles(){
-    return Roles_Live.find();
+    return Roles_Live.find({ "code": Session.get("UserLogged").code });
   },
   userDetail() {
     return Session.get("UserDetails");

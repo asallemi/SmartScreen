@@ -1,5 +1,5 @@
 <template name="home">
-  <div class="row">
+  <!--<div class="row">
       <div class="col-md-6 col-md-offset-3">
         <div class="search-form">
             <form action="" method="get">
@@ -12,41 +12,40 @@
                     </div>
                 </div>
             </form>
+
         </div>
     </div>
-  </div>
+  </div>-->
   <div class="wrapper wrapper-content">
         <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox ">
-                    <div class="ibox-title">
-                        <h5>Screens location</h5>
-                        <div class="row">
-                          <div class="col-md-4 col-md-offset-6">
-                            <form class="searchByDate">
-                                <div class="form-group" id="data_1">
-                                    <div class="input-group date">
-                                        <span class="input-group-addon">
-                                          <i class="fa fa-calendar"></i>
-                                        </span>
-                                          <input type="text" name="search" placeholder="Choose date" class="form-control">
-                                          <div class="input-group-btn">
-                                              <button class="btn btn-primary" type="submit">Search</button>
-                                          </div>
-                                    </div>
+            <div class="col-md-12">
+              <h3><span data-i18n="home.screen_location"></span></h3>
+              <div class="row">
+                <div class="col-md-4 col-md-offset-6">
+                      <div class="form-group" id="data_1">
+                          <div class="input-group date">
+                              <span class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                              </span>
+                                <input type="text" name="search" id="searchByDateInput" data-i18n="[placeholder]home.placeholder" class="form-control">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary searchByDate" type="submit"><span data-i18n="home.btn-search"></span></button>
                                 </div>
-                            </form>
+
                           </div>
                       </div>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="google-map" id="map1" style="height: 400px"></div>
-                    </div>
                 </div>
+                <div id="dispalyDate" class="col-md-8" style="display:none">
+                  <div class="alert alert-success alert-dismissable" style="width:250px;">
+                      <button aria-hidden="true" class="closeDiv" type="button">×</button>
+                      <a class="alert-link" href="#">Date choosed {{date}}</a>.
+                  </div>
+                </div>
+            </div>
+            <div class="google-map" id="map1" style="height: 500px"></div>
             </div>
         </div>
   </div>
-
   <div class="modal inmodal" id="screenDetailsPopup" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content animated flipInY">
@@ -55,43 +54,56 @@
                   <span aria-hidden="true">&times;</span>
                   <span class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title">About this screen..</h4>
+                <i class="fa fa-desktop modal-icon"></i>
+                <h4 class="modal-title"><span data-i18n="home.about_screen"></span></h4>
             </div>
             <div class="modal-body">
               <div class="dd" id="nestable2">
                 <ol class="dd-list">
                     <li class="dd-item" data-id="1">
                         <div class="dd-handle">
-                            <span class="label label-info"><i class="fa fa-map-marker"></i></span> Address
+                            <span class="label label-info"><i class="fa fa-map-marker"></i></span> {{Screen.screenAddress}}
                         </div>
                         <div class="dd-handle">
-                            <span class="label label-info"><i class="fa fa-desktop"></i></span> Screen size
+                            <span class="label label-info"><i class="fa fa-desktop"></i></span> {{Screen.screenDimension}}
                         </div>
                         <div class="dd-handle">
-                            <span class="label label-info"><i class="fa fa-level-up"></i></span> 200$
+                            <span class="label label-info"><i class="fa fa-level-up"></i></span> {{Screen.highPrice}}
                         </div>
                         <div class="dd-handle">
-                            <span class="label label-info"><i class="fa fa-level-down"></i></span> 100$
+                            <span class="label label-info"><i class="fa fa-level-down"></i></span> {{Screen.lowPrice}}
                         </div>
                     </li>
                 </ol>
             </div>
             </div>
             <div class="modal-footer center">
-                <button type="button" class="btn btn-block btn-outline btn-info btn-bookingAgenda"><i class="fa fa-shopping-cart"></i> Go to booking</button>
+              <button type="button" data-dismiss="modal" class="btn btn-block btn-outline btn-info btn-bookingAgenda"><i class="fa fa-shopping-cart"></i> <span data-i18n="home.go_booking"></span></button>
             </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="loadingBooking" tabindex="-1" role="dialog" aria-hidden="true" style="top:250px">
+    <div class="spiner-example">
+        <div class="sk-spinner sk-spinner-three-bounce">
+            <div class="sk-bounce1"></div>
+            <div class="sk-bounce2"></div>
+            <div class="sk-bounce3"></div>
         </div>
     </div>
   </div>
   <div class="modal inmodal" id="agendaPopUp" tabindex="-1" role="dialog" aria-hidden="false">
     <div class="modal-dialog" style="height: 400px;">
-        <div class="modal-content animated bounceInRight" style="width:1070px; left: -245px;">
+        <div class="modal-content animated bounceInRight" style="width:1070px; left: -245px;top:-55px">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
                   <span class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title">Agenda of the screen</h4>
+                <h4 class="modal-title"><span data-i18n="home.screen_agenda"></span></h4>
+                <span class="pull-right label label-primary" data-i18n="home.label1"></span>
+                <span class="label label-warning pull-right" data-i18n="home.label2"></span>
+                <span class="label label-danger pull-right" data-i18n="home.label3"></span>
             </div>
             <div class="modal-body" >
               <div class="row animated fadeInDown" >
@@ -107,10 +119,66 @@
               </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="validateBooking" class="btn btn-w-m btn-primary"><i class="fa fa-angellist"></i> Validate your booking please </button>
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="home.btn-cancel"></span></button>
+              {{#if equals role.bookingAdd true}}
+                <button type="button" data-dismiss="modal" class="btn btn-w-m btn-primary validateBooking"><i class="fa fa-angellist"></i> <span data-i18n="home.btn-validate"></span></button>
+              {{/if}}
             </div>
         </div>
     </div>
   </div>
-
+  <div class="modal inmodal" id="chooseDate" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="account.warning"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="account.chooseDate"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="slotHasBeenBooked" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="common.notification"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="home.slotHasBeenBooked"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="minimumOneSlot" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="common.notification"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="home.minimumOneSlot"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
 </template>

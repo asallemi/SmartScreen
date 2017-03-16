@@ -1,430 +1,150 @@
 <template name="allBookings">
-
-    <!-- Page heading -->
-    {{> pageHeading title='Bookings' category='List' }}
-    <div class="wrapper wrapper-content animated fadeInRight">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Assign a content to your slots reserved</h5>
-                    </div>
-                    <div class="ibox-content">
-                      <div class="clients-list">
-                          <ul class="nav nav-tabs">
-                              <span class="pull-right small text-muted">{{bookingCount}} reservations</span>
-                              <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> All bookings</a></li>
-                              <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> Not assigned</a></li>
-                              <li class=""><a data-toggle="tab" href="#tab-3"><i class="fa fa-sliders"></i> Specific assigning</a></li>
-                          </ul>
-                          <div class="tab-content">
-                              <div id="tab-1" class="tab-pane active">
-                                  <div class="full-height-scroll">
-                                      <div class="table-responsive">
-                                        <input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search..">
-                                            <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
-                                                <thead>
-                                                <tr>
-                                                  <th>Screen address</th>
-                                                  <th>Slot date</th>
-                                                  <th>Slot booked</th>
-                                                  <th>Content</th>
-                                                  <th>Action</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                  {{#each bookings}}
-                                                    <tr class="gradeX">
-                                                      <td>{{address}} </td>
-                                                      <td>{{segmentDate}}</td>
-                                                      <td>{{segmentStartTime}}-{{segmentEndTime}}</td>
-                                                      <td class="center">
-                                                        pub.mp4
-                                                      </td>
-                                                      <td class="center">
-                                                          <button type="button" class="btn btn-outline btn-success"><i class="fa fa-edit"></i> Edit</button>
-                                                      </td>
-                                                    </tr>
-                                                  {{/each}}
-                                                </tbody>
-                                                <tfoot>
-                                                <tr>
-                                                    <td colspan="5">
-                                                        <ul class="pagination pull-right"></ul>
-                                                    </td>
-                                                </tr>
-                                                </tfoot>
-                                          </table>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div id="tab-2" class="tab-pane">
-                                  <div class="full-height-scroll">
-                                      <div class="table-responsive">
-                                        <table border="0" style="align=center">
-                                          <tr>
-                                              <td class="col-xs-12 .col-md-8"><input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search.."></td>
-                                              <td class="col-xs-6 .col-md-4"><button type="button" id="assignPopup" class="btn btn-outline btn-primary"><i class="fa fa-file"></i>    Assign content</button></td>
-                                          </tr>
-                                        </table>
-                                        <table class="footable table table-hover table-stripped" data-page-size="15" data-filter=#filter>
-                                            <thead>
-                                            <tr>
-                                              <th>Select</th>
-                                              <th>Screen address</th>
-                                              <th>Slot date</th>
-                                              <th>Slot booked</th>
-                                              <th>Content</th>
-                                              <th>Action</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                              {{#each bookings}}
-                                                <tr class="gradeX">
-                                                  <td><div><input type="checkbox" class="i-checks check" value="{{segmentDate}}*{{segmentStartTime}}*{{segmentEndTime}}"> </div></td>
-                                                  <td>{{address}} </td>
-                                                  <td>{{segmentDate}}</td>
-                                                  <td>{{segmentStartTime}}-{{segmentEndTime}}</td>
-                                                  <td class="center">
-                                                    <select class="select2_demo_3 form-control">
-                                                        <option>Select content</option>
-                                                      {{#each content}}
-                                                        <option>{{contentName}}</option>
-                                                      {{/each}}
-                                                    </select>
-                                                  </td>
-                                                  <td class="center">
-                                                    <form>
-                                                      <button type="submit" class="btn btn-outline btn-success validateAssign"><i class="fa fa-check"></i> Validated</button>
-                                                    </form>
-                                                  </td>
-                                                </tr>
-                                              {{/each}}
-                                            </tbody>
-                                            <tfoot>
-                                            <tr>
-                                                <td colspan="5">
-                                                    <ul class="pagination pull-right"></ul>
-                                                </td>
-                                            </tr>
-                                            </tfoot>
-                                      </table>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div id="tab-3" class="tab-pane">
-                                <div class="full-height-scroll">
-                                  <div class="row">
-                                      <div class="col-lg-12">
-                                          <div class="ibox float-e-margins">
-                                              <div class="ibox-title">
-                                                  <h5>Specific assigning</h5>
-                                                  {{>iboxTools}}
-                                              </div>
-                                              <div class="ibox-content">
-                                                  <div class="row">
-                                                      <div class="col-sm-5 m-b-xs">
-                                                        <select class="input-sm form-control input-s-sm inline">
-
-                                                              <option>Select content</option>
-                                                            {{#each content}}
-                                                              <option>{{contentName}}</option>
-                                                            {{/each}}
-
-                                                      </select>
-                                                      </div>
-                                                  </div>
-                                                  <div class="table-responsive">
-                                                    <table class="table table-stripped">
-                                                        <thead>
-                                                            <tr>
-                                                              <th>Months</th>
-                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Weeks</div></th>
-                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Days</div></th>
-                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Hours</div></th>
-                                                              <th><div><input type="checkbox" class="i-checks check" value="">  Slots</div></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                          {{#each allBookings}}
-                                                            <tr>
-                                                                <td>
-                                                                  <button type="button" id="validateContent" class="btn btn-w-m btn-success">{{month}}</button>
-                                                                </td>
-                                                                <td>
-                                                                    <table class="table table-stripped">
-                                                                      {{#each allWeeks}}
-                                                                        <tr>
-                                                                          <td>
-                                                                            <button type="button" id="validateContent" class="btn btn-w-m btn-success">{{week1}}</button>
-                                                                          </td>
-                                                                        </tr>
-                                                                      {{/each}}
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                          {{/each}}
-                                                        </tbody>
-
-                                                  </table>
-                                                  <table border="0" style="align=center">
-                                                    <tr class="col-xs-12">
-                                                        <td style="width=100%"><div><button type="button" id="assignPopup" class="btn btn-outline btn-primary"><i class="fa fa-database"></i>    Save</button></div></td>
-                                                    </tr>
-                                                  </table>
-                                                  </div>
-
-                                              </div>
-                                          </div>
-                                      </div>
-                                </div>
-                              </div>
-                          </div>
-                     </div>
-                  </div>
-                </div>
-            </div>
-        </div>
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+        <h3 data-i18n="booking.title"></h3>
+      </div>
+  </div>
+    <div class="wrapper wrapper-content">
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="google-map" id="map" style="height: 500px"></div>
+              </div>
+          </div>
     </div>
-    <div class="modal inmodal" id="assign" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content animated bounceInRight">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <i class="fa fa-file modal-icon"></i>
-                    <h4 class="modal-title">Assign content</h4>
-                </div>
-                <div class="tab-content">
-                    <div id="tab-1" class="tab-pane active">
-                        <div class="full-height-scroll">
-                            <div class="table-responsive">
-                                  <table class="footable table" data-page-size="10" data-filter=#filter>
-                                      <thead>
-                                        <tr>
-                                            <td>
-                                              <div class="form-group"><label class="col-sm-2 control-label">Choose content</label>
-                                                  <div class="col-sm-10"><select class="form-control m-b" name="account">
-                                                    <option>Select content</option>
-                                                      {{#each content}}
-                                                        <option>{{contentName}}</option>
-                                                      {{/each}}
-                                                  </select>
-                                                  </div>
-                                              </div>
-                                            </td>
-                                            <td><button type="button" class="btn btn-outline btn-success"><i class="fa fa-check"></i>Validate</button></td>
-                                        </tr>
-                                      <tr>
-                                        <th>Slot date</th>
-                                        <th>Slot booked</th>
-                                      </tr>
-                                      </thead>
-                                      <tbody>
-                                        {{#each selectedBookings}}
-                                          <tr class="gradeX">
-                                            <td>{{date}}</td>
-                                            <td>{{startSlot}}-{{endSlot}}</td>
-
-                                          </tr>
-                                        {{/each}}
-                                      </tbody>
-                                      <tfoot>
-                                      <tr>
-                                          <td colspan="5">
-                                              <ul class="pagination pull-right"></ul>
-                                          </td>
-                                      </tr>
-
-                                      </tfoot>
-                                </table>
-
+    <div class="modal inmodal" id="agendaPopUp" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog" style="height: 400px;">
+          <div class="modal-content animated bounceInRight" style="width:1265px; left: -340px;top:-45px">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                  </button>
+                  <h4 class="modal-title" data-i18n="booking.screen_agenda"></h4>
+                  {{Screen.screenAddress}} <br>
+                  {{bookingCount}} <span data-i18n="booking.slotBooked"></span><br>
+                  <span class="pull-right label label-primary" data-i18n="booking.label1"></span>
+                  <span class="label label-warning pull-right" data-i18n="booking.label2"></span>
+                  <span class="label label-danger pull-right" data-i18n="booking.label3"></span>
+              </div>
+              <div class="modal-body" style="height: 700px">
+                <div class="col-lg-3">
+                        <div style="width: 430px">
+                            <div class="widget yellow-bg" style="height: 205px"><strong data-i18n="booking.slotDetails"></strong><br>
+                              <i class="fa fa-calendar"></i>   {{segmentDate}} <br>
+                              <i class="fa fa-level-up"></i>    {{segmentStartTime}}<br>
+                              <i class="fa fa-level-down"></i>   {{segmentEndTime}}<br>
+                              <i class="fa fa-calendar-o"></i>   {{bookedDate}}<br>
+                              <i class="fa fa-file-video-o"></i>   {{video}}<br>
+                              <i class="fa fa-file-photo-o"></i>   {{image}}<br>
+                              <i class="fa fa-pencil"></i>   {{inputter}}<br>
+                              <i class="fa fa-gavel"></i>   {{authorizer}}<br>
+                              {{#if equals role.bookingValidate true}}
+                                <button id="authorize" type="button" class="btn btn-danger btn-xs pull-right authorize"><span data-i18n="common.btn-auth"></span></button>&nbsp;
+                              {{/if}}
+                              {{#if equals role.bookingDelete true}}
+                                <button id="cancel" type="button" class="btn btn-primary btn-xs pull-right cancel"><span data-i18n="common.btn-cancel"></span></button>&nbsp;
+                              {{/if}}
+                              {{#if equals role.bookingUpdate true}}
+                                <button id="editContent" type="button" class="btn btn-danger btn-xs pull-right editContent"><span data-i18n="booking.btn-editContent"></span></button>&nbsp;
+                              {{/if}}
                             </div>
                         </div>
+                    <table>
+                    <tr>
+                      <td>
+                            <div class='external-event navy-bg' style="width: 230px;"><span data-i18n="booking.selectVideo"></span></div>
+                      </td>
+                      <td>&nbsp;</td>
+                      <td>
+                            <div class='external-event navy-bg' style="width: 230px;"><span data-i18n="booking.selectImage"></span></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="users-list">
+                          <div class="form-group">
+                            {{#if equals videos null}}
+                              <strong data-i18n="booking.noVideo"></strong>
+                            {{else}}
+                              {{#each videos}}
+                                <div class="radio"><input type="radio" value="{{_id}}" name="video"> <label for="radio"> <strong> {{videoName}} </strong></label></div>
+                              {{/each}}
+                                <div class="radio"><input type="radio" id="NoVideo" checked="" value="null" name="video"> <label for="radio"><strong data-i18n="booking.noVideo"></strong></label></div>
+                            {{/if}}
+                          </div>
+                        </div>
+                      </td>
+                      <td>&nbsp;</td>
+                      <td>
+                        <div class="users-list">
+                            <div class="form-group">
+                              {{#if equals images null}}
+                                <strong data-i18n="booking.noImage"></strong>
+                              {{else}}
+                                {{#each images}}
+                                  <div class="radio"><input type="radio" value="{{_id}}" name="image"> <label for="radio"> <strong> {{imageName}} </strong></label></div>
+                                {{/each}}
+                                <div class="radio"><input type="radio" id="NoImage" checked="" value="null" name="image"> <label for="radio"> <strong data-i18n="booking.noVideo"></strong></label></div>
+                              {{/if}}
+                            </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <div>
+                        {{#if equals role.bookingUpdate true}}
+                          <button type="submit" id="validate" class="ladda-button btn btn-primary validate" data-style="expand-right"><i class="fa fa-gavel"></i>   <span data-i18n="booking.btn-assign"></span></button>
+                        {{/if}}
+                      </div>
+                    </tr>
+                  </table>
+                </div>
+                  <div class="col-lg-9" style="width: 765px; left:168px">
+                      <div class="ibox float-e-margins">
+                          <div class="ibox-content">
+                            <div class='external-event navy-bg'><span data-i18n="booking.info"></span></div>
+                            <div>
+                              <div id="calendar"></div>
+                          </div>
+                      </div>
                     </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="warning" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="booking.validateReservation"><strong data-i18n="booking.validate"></strong></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white cancelWarning"><span data-i18n="common.btn-cancel"></span></button>
                 </div>
             </div>
         </div>
-      </div>
     </div>
-</template>
-<!--
-<div class="row">
-    <div class="col-lg-12">
-        <div class="ibox float-e-margins">
-            <div class="ibox-content">
-                <form method="get" >
-                    <div class="form-group">
-
-                        <div class="col-xs-6">
-                          <div class="i-checks">
-                            <label> <input type="checkbox" name="c1" value="" onclick="showMe('data_5')">  To assign to range of days </label>
-                          </div>
-                          <div class="form-group div1" id="data_1">
-                              <label class="font-noraml">Enter the date</label>
-                              <div class="input-group date">
-                                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control">
-                              </div>
-                          </div>
-                          <div style="" class="form-group" id="data_5">
-                              <label class="font-noraml">Range select</label>
-                              <div class="input-daterange input-group" id="datepicker">
-                                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                  <input type="text" class="input-sm form-control" name="start"/>
-                                  <span class="input-group-addon">to</span>
-                                  <input type="text" class="input-sm form-control" name="end"/>
-                              </div>
-                          </div>
-                          <div class="form-group">
-                              <label class="font-noraml">Start time</label>
-                              <div class="input-group clockpicker" data-autoclose="true">
-                                <span class="input-group-addon">
-                                    <span class="fa fa-clock-o"></span>
-                                </span>
-                                <input type="text" class="form-control">
-                              </div>
-                          </div>
-                          <div class="form-group">
-                              <label class="font-noraml">End time</label>
-                              <div class="input-group clockpicker" data-autoclose="true">
-                                <span class="input-group-addon">
-                                    <span class="fa fa-clock-o"></span>
-                                </span>
-                                <input type="text" class="form-control">
-                              </div>
-                          </div>
-                          <div class="form-group">
-                              <label class="font-noraml">Choose your content </label>
-                              <div class="input-group date">
-                                <select class="select2_demo_3">
-                                    <option>Select content</option>
-                                    {{#each content}}
-                                    <option>{{contentName}}</option>
-                                    {{/each}}
-                                </select>
-                              </div>
-                          </div>
-                          <div class="form-group">
-                              <div class="col-sm-4 col-sm-offset-2">
-                                 <button type="submit" class="btn btn-block btn-outline btn-success">Save</button>
-                              </div>
-                          </div>
-                        </div>
-
-
-                    </div>
-                </form>
+    <div class="modal inmodal" id="warningSelection" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="booking.selectSlot"><strong data-i18n="booking.validate"></strong></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-white cancelWarning"><span data-i18n="common.btn-cancel"></span></button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-*****************************************************
-<div class="table-responsive">
-
-  <table class="table table-stripped">
-      <thead>
-          <tr>
-            <th>Contents</th>
-            <th>Months</th>
-            <th><div><input type="checkbox" class="i-checks check" value="">Weeks</div></th>
-            <th><div><input type="checkbox" class="i-checks check" value="">Days</div></th>
-            <th><div><input type="checkbox" class="i-checks check" value="">Hours</div></th>
-            <th><div><input type="checkbox" class="i-checks check" value="">Slots</div></th>
-          </tr>
-      </thead>
-      <tbody>
-        <tr>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">xxxx.mp4</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">January</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week1</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">01/01/2017</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">12h-13h</button></td>
-            <td><div><input type="checkbox" class="i-checks check" value=""> <button type="button" id="validateContent" class="btn btn-outline btn-success">12:00-12:10</button></div></td>
-        </tr>
-        <tr>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">aaa.png</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">February</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week2</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">03/01/2017</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">16h-17h</button></td>
-            <td><div><input type="checkbox" class="i-checks check" value=""><button type="button" id="validateContent" class="btn btn-outline btn-success">16:00-16:10</button></div></td>
-        </tr>
-        <tr>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">xxxxxx.gif</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">March</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week3</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">05/01/2017</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">18h-19h</button></td>
-            <td><div><input type="checkbox" class="i-checks check" value=""><button type="button" id="validateContent" class="btn btn-outline btn-success">18:00-18:10</button></div></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">April</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week4</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">06/01/2017</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">May</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week5</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">June</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week1</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-w-m btn-success">July</button></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week2</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week3</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week4</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week5</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week1</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week2</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week3</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week4</button></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><button type="button" id="validateContent" class="btn btn-outline btn-success">Week5</button></td>
-        </tr>
-      </tbody>
-
-</table>
-<table border="0" style="align=center">
-  <tr class="col-xs-12">
-      <td style="width=100%"><div><button type="button" id="assignPopup" class="btn btn-outline btn-primary"><i class="fa fa-database"></i>    Save</button></div></td>
-  </tr>
-</table>
-</div>
--->
+</template>

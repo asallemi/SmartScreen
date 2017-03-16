@@ -1,20 +1,25 @@
 <template name="allClients">
-    {{> pageHeading title='All clients' category='Clients' }}
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+        <h3 data-i18n="client.title"></h3>
+      </div>
+  </div>
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Clients list</h5>
-                        <div class="ibox-tools">
-                            <button type="button" id="newClient" class="btn btn-primary btn-xs"><i class="fa fa-male"></i>   New client</button>
-                        </div>
+                    <div class="ibox-tools">
+                      {{#if equals role.clientAdd true}}
+                        <button type="button" class="btn btn-primary btn-xs newClient"><i class="fa fa-male"></i>   <span data-i18n="client.btn-newClient"></span></button>
+                      {{/if}}
                     </div>
+                    <br>
                     <div class="ibox-content">
                       <div class="clients-list">
                           <ul class="nav nav-tabs">
-                            <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> All clients</a></li>
-                            <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> Not authorized</a></li>
+                            <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="client.onglet1"></span></a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="client.onglet2"></span></a></li>
                           </ul>
                           <div class="tab-content">
                               <div id="tab-1" class="tab-pane active">
@@ -23,45 +28,51 @@
                                       <div class="col-lg-12">
                                           <div class="ibox float-e-margins">
                                             <br>
-                                                <div class="table-responsive">
-                                                  <table class="table table-striped table-bordered table-hover dataTables-example" >
-                                                      <thead>
-                                                      <tr>
-                                                          <th>ShortName</th>
-                                                          <th>Name</th>
-                                                          <th>Code</th>
-                                                          <th>Balance</th>
-                                                          <th style="width: 350px;">Action</th>
-                                                      </tr>
-                                                      </thead>
-                                                      <tbody>
-                                                        {{#each clientsLive}}
-                                                          <tr class="gradeX">
-                                                              <td>{{shortName}}</td>
-                                                              <td>{{name}}</td>
-                                                              <td>{{code}}</td>
-                                                              <td>{{balance}}</td>
-                                                              <td>
-                                                                <a class="btn btn-outline btn-warning btn-sm btnRoles" href="{{pathFor route='allClientsRoles'}}"><i class="fa fa-key"></i> Roles</a>
-                                                                <a class="btn btn-outline btn-success btn-sm btnUsers" href="{{pathFor route='allClientsUsers'}}"><i class="fa fa-user"></i> Users</a>
-                                                                <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i> Details </button>
-                                                                <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i> Edit </button>
-                                                                <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i> Delete </button>
-                                                              </td>
-                                                          </tr>
-                                                        {{/each}}
-                                                      </tbody>
-                                                      <tfoot>
-                                                      <tr>
-                                                        <th>ShortName</th>
-                                                        <th>Name</th>
-                                                        <th>Code</th>
-                                                        <th>Balance</th>
-                                                        <th>Action</th>
-                                                      </tr>
-                                                      </tfoot>
-                                                  </table>
-                                                </div>
+                                            <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                                            <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                                              <thead>
+                                                <tr>
+                                                  <th data-i18n="client.name"></th>
+                                                  <th data-i18n="client.code"></th>
+                                                  <th data-i18n="client.shortName"></th>
+                                                  <th data-i18n="client.balance"></th>
+                                                  <th data-i18n="common.action" style="width: 200px;"></th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                <!--{{#if Template.subscriptionsReady}}-->
+                                                  {{#each clientsLive}}
+                                                    <tr class="gradeX">
+                                                        <td>{{name}}</td>
+                                                        <td>{{code}}</td>
+                                                        <td>{{shortName}}</td>
+                                                        <td>{{balance}}</td>
+                                                        <td>
+                                                          {{#if equals role.clientAccountManagement true}}
+                                                            <a class="btn btn-outline btn-warning btn-sm btnRoles" href="{{pathFor route='allClientsRoles'}}"><i class="fa fa-key"></i></a>
+                                                            <a class="btn btn-outline btn-success btn-sm btnUsers" href="{{pathFor route='allClientsUsers'}}"><i class="fa fa-user"></i></a>
+                                                          {{/if}}
+                                                          <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                          {{#if equals role.clientUpdate true}}
+                                                            <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></button>
+                                                          {{/if}}
+                                                          {{#if equals role.clientDelete true}}
+                                                            <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                          {{/if}}
+                                                        </td>
+                                                    </tr>
+                                                  {{/each}}
+
+                                                <!--{{/if}}-->
+                                              </tbody>
+                                              <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                      <ul class="pagination pull-right"></ul>
+                                                    </td>
+                                                </tr>
+                                              </tfoot>
+                                            </table>
                                           </div>
                                       </div>
                                   </div>
@@ -73,52 +84,53 @@
                                     <div class="col-lg-12">
                                         <div class="ibox float-e-margins">
                                           <br>
-                                                <table class="table table-striped table-bordered table-hover dataTables-example2" >
-                                                    <thead>
-                                                    <tr>
-                                                        <th>ShortName</th>
-                                                        <th>Name</th>
-                                                        <th>Code</th>
-                                                        <th>Balance</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                      {{#each clientAuthorization}}
-                                                        <tr>
-                                                            <td>{{shortName}}</td>
-                                                            <td>{{name}}</td>
-                                                            <td>{{code}}</td>
-                                                            <td>{{balance}}</td>
-                                                            <td>
-                                                              {{#if equals buttonDetail true}}
-                                                                <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i> Details </button>
-                                                              {{/if}}
-                                                              {{#if equals buttonValidate true}}
-                                                                <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i> Validate </button>
-                                                              {{/if}}
-                                                              {{#if equals buttonAuthorize true}}
-                                                                <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i> Authorize </button>
-                                                              {{/if}}
-                                                              {{#if equals buttonEdit true}}
-                                                                <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i> Edit </button>
-                                                              {{/if}}
-                                                              <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i> Cancel </button>
-                                                            </td>
-                                                        </tr>
-                                                      {{/each}}
-                                                    </tbody>
-                                                    <tfoot>
-                                                    <tr>
-                                                      <th>ShortName</th>
-                                                      <th>Name</th>
-                                                      <th>Code</th>
-                                                      <th>Balance</th>
-                                                      <th>Action</th>
-                                                    </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
+                                          <input type="text" class="form-control input-sm m-b-xs" id="filter1" data-i18n="[placeholder]common.placeholder_search">
+                                          <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
+                                            <thead>
+                                              <tr>
+                                                <th data-i18n="client.name"></th>
+                                                <th data-i18n="client.code"></th>
+                                                <th data-i18n="client.shortName"></th>
+                                                <th data-i18n="client.balance"></th>
+                                                <th data-i18n="common.action" style="width: 200px;"></th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {{#each clientAuthorization}}
+                                                <tr>
+                                                    <td>{{name}}</td>
+                                                    <td>{{code}}</td>
+                                                    <td>{{shortName}}</td>
+                                                    <td>{{balance}}</td>
+                                                    <td>
+                                                      {{#if equals buttonDetail true}}
+                                                        <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                      {{/if}}
+                                                      {{#if equals buttonValidate true}}
+                                                        <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                      {{/if}}
+                                                      {{#if equals role.clientValidate true}}
+                                                          {{#if equals buttonAuthorize true}}
+                                                            <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                          {{/if}}
+                                                      {{/if}}
+                                                      {{#if equals buttonEdit true}}
+                                                        <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                      {{/if}}
+                                                      <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                    </td>
+                                                </tr>
+                                              {{/each}}
+                                            </tbody>
+                                            <tfoot>
+                                              <tr>
+                                                  <td colspan="5">
+                                                    <ul class="pagination pull-right"></ul>
+                                                  </td>
+                                              </tr>
+                                            </tfoot>
+                                          </table>
+                                      </div>
                                     </div>
                                 </div>
                               </div>
@@ -130,6 +142,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal inmodal" id="newClientPopUp" tabindex="-1" role="dialog" aria-hidden="false">
       <div class="modal-dialog" style="height: 200px;">
           <div class="modal-content animated bounceInRight" style="width:1000px; left: -215px; top:-48px;">
@@ -138,43 +151,43 @@
                     <span aria-hidden="true">&times;</span>
                     <span class="sr-only">Close</span>
                   </button>
-                  <h4 class="modal-title">New client</h4>
+                  <h4 class="modal-title" data-i18n="client.newClient"></h4>
               </div>
               <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-6 b-r">
-                      <div class="form-group"><label>Name</label> <input type="text" id="name" placeholder="Enter entreprise name" class="form-control"></div>
-                      <div class="form-group"><label>Short name</label> <input type="text" id="shortName" placeholder="Enter entreprise short name" class="form-control"></div>
-                      <div class="form-group"><label>Sector</label> <input type="text" id="sector" placeholder="Enter entreprise sector" class="form-control"></div>
-                      <div class="form-group"><label>Code</label> <input type="text" id="code" placeholder="Enter entreprise code" class="form-control"></div>
-                      <div class="form-group"><label>Email</label> <input type="email" id="email" placeholder="Enter entreprise email" class="form-control"></div>
-                      <div class="form-group"><label>Phone</label> <input type="text" id="phone" placeholder="Enter phone" class="form-control"></div>
-                      <div><button id="upload" class="btn btn-sm btn-success pull-right m-t-n-xs" type="submit"><i class="fa fa-cloud-upload"></i><strong>    Upload Logo</strong></button></div>
+                      <div class="form-group"><label data-i18n="client.name"></label> <input type="text" id="name" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.shortName"></label> <input type="text" id="shortName" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.sector"></label> <input type="text" id="sector" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.code"></label> <input type="text" id="code" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.email"></label> <input type="email" id="email" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.phone"></label> <input type="text" id="phone" class="form-control"></div>
+                      <div><button id="upload" class="btn btn-sm btn-success pull-right m-t-n-xs" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="client.uploadLogo"></strong></button></div>
                     </div>
                     <div class="col-sm-6">
-                      <div class="form-group"><label>Fax</label> <input type="text" id="fax" placeholder="Enter fax" class="form-control"></div>
-                      <div class="form-group"><label>Street</label> <input type="text" id="street" placeholder="Street name" class="form-control"></div>
-                      <div class="form-group"><label>Postal code</label> <input type="text" id="codePostal" placeholder="Postal code" class="form-control"></div>
-                      <div class="col-md-4"><label>Province</label> <input type="text" id="province" placeholder="Province" class="form-control"></div>
-                      <div class="col-md-4"><label>City</label> <input type="text" id="city" placeholder="City" class="form-control"></div>
-                      <div class="col-md-4"><label>Country</label> <input type="text" id="country" placeholder="Country" class="form-control"></div>
-                      <label>Type </label>
+                      <div class="form-group"><label data-i18n="client.fax"></label> <input type="text" id="fax" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.street"></label> <input type="text" id="street" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.postalCode"></label> <input type="text" id="codePostal" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.province"></label> <input type="text" id="province" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.city"></label> <input type="text" id="city" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.country"></label> <input type="text" id="country" class="form-control"></div>
+                      <label data-i18n="client.type"></label>
                       <div class="radio">
                           <input id="radioX" type="radio" name="radioOption">
-                          <label for="radio"> <strong>Corporatif </strong></label>
+                          <label for="radio"> <strong data-i18n="client.corporatif"></strong></label>
                       </div>
                       <div class="radio">
                           <input type="radio" id="radio" checked name="radioOption">
-                          <label for="radio"> <strong> Not corporatif </strong></label>
+                          <label for="radio"> <strong data-i18n="client.notCorporatif"></strong></label>
                       </div>
-                      <div id="show-me" style="display:none"> <input type="text" id="accountNumber" placeholder="Enter users account number" class="form-control"></div>
+                      <div id="show-me" style="display:none"> <input type="text" id="accountNumber" value="1" data-i18n="[placeholder]common.placeholder" class="form-control"></div>
                     </div>
                 </div>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
-                  <button type="submit" class="ladda-button btn btn-primary" id="validate" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    Validate</button>
-                  <button type="submit" class="ladda-button btn btn-danger" id="save" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="ladda-button btn btn-primary validate" id="validate" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger save" id="save" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
               </div>
           </div>
       </div>
@@ -192,30 +205,30 @@
               <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-6 b-r">
-                      <div class="form-group"><label>Name</label> <input type="text" id="name1" value="{{clientSelected.name}}" class="form-control"></div>
-                      <div class="form-group"><label>Short name</label> <input type="text" id="shortName1" value="{{clientSelected.shortName}}" class="form-control"></div>
-                      <div class="form-group"><label>Sector</label> <input type="text" id="sector1" value="{{clientSelected.sector}}" class="form-control"></div>
-                      <div class="form-group"><label>Code</label> <input type="text" id="code1" value="{{clientSelected.code}}" class="form-control"></div>
-                      <div class="form-group"><label>Email</label> <input type="email" id="email1" value="{{clientSelected.email}}" class="form-control"></div>
-                      <div class="form-group"><label>Balance</label> <input type="text" id="balance" value="{{clientSelected.balance}}" class="form-control"></div>
-                      <div><button id="upload" class="btn btn-sm btn-success pull-right m-t-n-xs" type="submit"><i class="fa fa-cloud-upload"></i><strong>    Upload Logo</strong></button></div>
+                      <div class="form-group"><label data-i18n="client.name"></label> <input type="text" id="name1" value="{{clientSelectedLive.name}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.shortName"></label><input type="text" id="shortName1" value="{{clientSelectedLive.shortName}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.sector"></label> <input type="text" id="sector1" value="{{clientSelectedLive.sector}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.code"></label> <input type="text" id="code1" value="{{clientSelectedLive.code}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.email"></label> <input type="email" id="email1" value="{{clientSelectedLive.email}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.balance"></label> <input type="text" id="balance" value="{{clientSelectedLive.balance}}" class="form-control"></div>
+                      <div><button class="btn btn-sm btn-success pull-right m-t-n-xs upload" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="client.uploadLogo"></strong></button></div>
                     </div>
                     <div class="col-sm-6">
-                      <div class="form-group"><label>Phone</label> <input type="text" id="phone1" value="{{clientSelected.phone}}" class="form-control"></div>
-                      <div class="form-group"><label>Fax</label> <input type="text" id="fax1" value="{{clientSelected.fax}}" class="form-control"></div>
-                      <div class="form-group"><label>Street</label> <input type="text" id="street1" value="{{clientSelected.street}}" class="form-control"></div>
-                      <div class="form-group"><label>Postal code</label> <input type="text" id="codePostal1" value="{{clientSelected.codePostal}}" class="form-control"></div>
-                      <div class="col-md-4"><label>Province</label> <input type="text" id="province1" value="{{clientSelected.province}}" class="form-control"></div>
-                      <div class="col-md-4"><label>City</label> <input type="text" id="city1" value="{{clientSelected.city}}" class="form-control"></div>
-                      <div class="col-md-4"><label>Country</label> <input type="text" id="country1" value="{{clientSelected.country}}" class="form-control"></div>
-                      <div class="form-group"><label>User accounts number</label> <input type="text" id="accountNumber1" value="{{clientSelected.accountNumber}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.phone"></label> <input type="text" id="phone1" value="{{clientSelectedLive.phone}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.fax"></label> <input type="text" id="fax1" value="{{clientSelectedLive.fax}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.street"></label> <input type="text" id="street1" value="{{clientSelectedLive.street}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.postalCode"></label> <input type="text" id="codePostal1" value="{{clientSelectedLive.codePostal}}" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.province"></label> <input type="text" id="province1" value="{{clientSelectedLive.province}}" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.city"></label> <input type="text" id="city1" value="{{clientSelectedLive.city}}" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.country"></label> <input type="text" id="country1" value="{{clientSelectedLive.country}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.accountNumber"></label> <input type="text" id="accountNumber1" value="{{clientSelectedLive.accountNumber}}" class="form-control"></div>
                     </div>
                 </div>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
-                  <button type="submit" class="ladda-button btn btn-primary" id="validateUpadte" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    Validate</button>
-                  <button type="submit" class="ladda-button btn btn-danger" id="saveUpdate" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="ladda-button btn btn-primary validateUpdate" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger saveUpdate" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
               </div>
           </div>
       </div>
@@ -233,30 +246,30 @@
               <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-6 b-r">
-                      <div class="form-group"><label>Name</label> <input type="text" id="name2" value="{{clientSelectedAu.name}}" class="form-control"></div>
-                      <div class="form-group"><label>Short name</label> <input type="text" id="shortName2" value="{{clientSelectedAu.shortName}}" class="form-control"></div>
-                      <div class="form-group"><label>Sector</label> <input type="text" id="sector2" value="{{clientSelectedAu.sector}}" class="form-control"></div>
-                      <div class="form-group"><label>Code</label> <input type="text" id="code2" value="{{clientSelectedAu.code}}" class="form-control"></div>
-                      <div class="form-group"><label>Email</label> <input type="email" id="email2" value="{{clientSelectedAu.email}}" class="form-control"></div>
-                      <div class="form-group"><label>Balance</label> <input type="text" id="balance1" value="{{clientSelectedAu.balance}}" class="form-control"></div>
-                      <div><button id="upload" class="btn btn-sm btn-success pull-right m-t-n-xs" type="submit"><i class="fa fa-cloud-upload"></i><strong>    Upload Logo</strong></button></div>
+                      <div class="form-group"><label data-i18n="client.name"></label> <input type="text" id="name2" value="{{clientSelectedAu.name}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.shortName"></label> <input type="text" id="shortName2" value="{{clientSelectedAu.shortName}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.sector"></label> <input type="text" id="sector2" value="{{clientSelectedAu.sector}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.code"></label> <input type="text" id="code2" value="{{clientSelectedAu.code}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.email"></label> <input type="email" id="email2" value="{{clientSelectedAu.email}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.balance"></label> <input type="text" id="balance1" value="{{clientSelectedAu.balance}}" class="form-control"></div>
+                      <div><button id="upload" class="btn btn-sm btn-success pull-right m-t-n-xs" type="submit"><i class="fa fa-cloud-upload"></i>      <strong data-i18n="client.uploadLogo"></strong></button></div>
                     </div>
                     <div class="col-sm-6">
-                      <div class="form-group"><label>Phone</label> <input type="text" id="phone2" value="{{clientSelectedAu.phone}}" class="form-control"></div>
-                      <div class="form-group"><label>Fax</label> <input type="text" id="fax2" value="{{clientSelectedAu.fax}}" class="form-control"></div>
-                      <div class="form-group"><label>Street</label> <input type="text" id="street2" value="{{clientSelectedAu.street}}" class="form-control"></div>
-                      <div class="form-group"><label>Postal code</label> <input type="text" id="codePostal2" value="{{clientSelectedAu.codePostal}}" class="form-control"></div>
-                      <div class="col-md-4"><label>Province</label> <input type="text" id="province2" value="{{clientSelectedAu.province}}" class="form-control"></div>
-                      <div class="col-md-4"><label>City</label> <input type="text" id="city2" value="{{clientSelectedAu.city}}" class="form-control"></div>
-                      <div class="col-md-4"><label>Country</label> <input type="text" id="country2" value="{{clientSelectedAu.country}}" class="form-control"></div>
-                      <div class="form-group"><label>User accounts number</label> <input type="text" id="accountNumber2" value="{{clientSelectedAu.accountNumber}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.phone"></label> <input type="text" id="phone2" value="{{clientSelectedAu.phone}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.fax"></label> <input type="text" id="fax2" value="{{clientSelectedAu.fax}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.street"></label> <input type="text" id="street2" value="{{clientSelectedAu.street}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.postalCode"></label> <input type="text" id="codePostal2" value="{{clientSelectedAu.codePostal}}" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.province"></label> <input type="text" id="province2" value="{{clientSelectedAu.province}}" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.city"></label> <input type="text" id="city2" value="{{clientSelectedAu.city}}" class="form-control"></div>
+                      <div class="col-md-4"><label data-i18n="client.country"></label> <input type="text" id="country2" value="{{clientSelectedAu.country}}" class="form-control"></div>
+                      <div class="form-group"><label data-i18n="client.accountNumber"></label> <input type="text" id="accountNumber2" value="{{clientSelectedAu.accountNumber}}" class="form-control"></div>
                     </div>
                 </div>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
-                  <button type="submit" class="ladda-button btn btn-primary" id="validateUpadteAuthorization" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    Validate</button>
-                  <button type="submit" class="ladda-button btn btn-danger" id="saveUpdateAuthorization" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    Save</button>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="ladda-button btn btn-primary validateUpdateAuthorization" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger saveUpdateAuthorization" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
               </div>
           </div>
       </div>
@@ -266,77 +279,77 @@
             <div class="modal-content animated flipInY" style="width:1000px; left: -211px;">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Authorization !</h4>
+                    <h4 class="modal-title" data-i18n="common.authorization"></h4>
                 </div>
                 <div class="modal-body">
                   <table>
                     <tr>
-                      <td><h3>Inputter : </h3></td>
+                      <td><h3 data-i18n="client.inputter"></h3></td>
                       <td><h4>{{newClient.inputter}}</h4></td>
                     </tr>
                     <tr>
-                      <td><h3>Date of modification : </h3></td>
+                      <td><h3 data-i18n="client.date"></h3></td>
                       <td><h4>{{newClient.dateTime}}</h4></td>
                     </tr>
                   </table>
                   <table style="width:900px;">
                     <tr>
-                      <td><h2> New client</h2></td>
-                      <td><h2> Old client</h2></td>
+                      <td><h2 data-i18n="client.new_client"></h2></td>
+                      <td><h2 data-i18n="client.old_client"></h2></td>
                     </tr>
                     <tr>
                       <td>
                         <table>
                           <tr>
-                            <td><label>Name :  </label></td>
+                            <td><label data-i18n="client.name"></label></td>
                             <td>{{newClient.name}}</td>
                           </tr>
                           <tr>
-                            <td><label>Short name :  </label></td>
+                            <td><label data-i18n="client.shortName"></label></td>
                             <td>{{newClient.shortName}}</td>
                           </tr>
                           <tr>
-                             <td><label>Sector :  </label></td>
+                             <td><label data-i18n="client.sector"></label></td>
                              <td>{{newClient.sector}}</td>
                           </tr>
                           <tr>
-                            <td><label>Code :  </label></td>
+                            <td><label data-i18n="client.code"></label></td>
                             <td>{{newClient.code}}</td>
                           </tr>
                           <tr>
-                            <td><label>Email :  </label></td>
+                            <td><label data-i18n="client.email"></label></td>
                             <td>{{newClient.email}}</td>
                           </tr>
                           <tr>
-                            <td><label>Phone :  </label></td>
+                            <td><label data-i18n="client.phone"></label></td>
                             <td>{{newClient.phone}}</td>
                           </tr>
                           <tr>
-                            <td><label>Fax :  </label></td>
+                            <td><label data-i18n="client.fax"></label></td>
                             <td>{{newClient.fax}}</td>
                           </tr>
                           <tr>
-                            <td><label>Street :  </label></td>
+                            <td><label data-i18n="client.street"></label></td>
                             <td>{{newClient.street}}</td>
                           </tr>
                           <tr>
-                            <td><label>Code postal :  </label></td>
+                            <td><label data-i18n="client.postalCode"></label></td>
                             <td>{{newClient.codePostal}}</td>
                           </tr>
                           <tr>
-                            <td><label>Province :  </label></td>
+                            <td><label data-i18n="client.province"></label></td>
                             <td>{{newClient.province}}</td>
                           </tr>
                           <tr>
-                            <td><label>City :  </label></td>
+                            <td><label data-i18n="client.city"></label></td>
                             <td>{{newClient.city}}</td>
                           </tr>
                           <tr>
-                            <td><label>Country :  </label></td>
+                            <td><label data-i18n="client.country"></label></td>
                             <td>{{newClient.country}}</td>
                           </tr>
                           <tr>
-                            <td><label>Accounts number :  </label></td>
+                            <td><label data-i18n="client.accountNumber"></label></td>
                             <td>{{newClient.accountNumber}}</td>
                           </tr>
                         </table>
@@ -344,55 +357,55 @@
                       <td>
                         <table>
                           <tr>
-                            <td><label>Name :  </label></td>
+                            <td><label data-i18n="client.name"></label></td>
                             <td>{{oldClient.name}}</td>
                           </tr>
                           <tr>
-                            <td><label>Short name :  </label></td>
+                            <td><label data-i18n="client.shortName"></label></td>
                             <td>{{oldClient.shortName}}</td>
                           </tr>
                           <tr>
-                             <td><label>Sector :  </label></td>
+                             <td><label data-i18n="client.sector"></label></td>
                              <td>{{oldClient.sector}}</td>
                           </tr>
                           <tr>
-                            <td><label>Code :  </label></td>
+                            <td><label data-i18n="client.code"></label></td>
                             <td>{{oldClient.code}}</td>
                           </tr>
                           <tr>
-                            <td><label>Email :  </label></td>
+                            <td><label data-i18n="client.email"></label></td>
                             <td>{{oldClient.email}}</td>
                           </tr>
                           <tr>
-                            <td><label>Phone :  </label></td>
+                            <td><label data-i18n="client.phone"></label></td>
                             <td>{{oldClient.phone}}</td>
                           </tr>
                           <tr>
-                            <td><label>Fax :  </label></td>
+                            <td><label data-i18n="client.fax"></label></td>
                             <td>{{oldClient.fax}}</td>
                           </tr>
                           <tr>
-                            <td><label>Street :  </label></td>
+                            <td><label data-i18n="client.street"></label></td>
                             <td>{{oldClient.street}}</td>
                           </tr>
                           <tr>
-                            <td><label>Code postal :  </label></td>
+                            <td><label data-i18n="client.postalCode"></label></td>
                             <td>{{oldClient.codePostal}}</td>
                           </tr>
                           <tr>
-                            <td><label>Province :  </label></td>
+                            <td><label data-i18n="client.province"></label></td>
                             <td>{{oldClient.province}}</td>
                           </tr>
                           <tr>
-                            <td><label>City :  </label></td>
+                            <td><label data-i18n="client.city"></label></td>
                             <td>{{oldClient.city}}</td>
                           </tr>
                           <tr>
-                            <td><label>Country :  </label></td>
+                            <td><label data-i18n="client.country"></label></td>
                             <td>{{oldClient.country}}</td>
                           </tr>
                           <tr>
-                            <td><label>Accounts number :  </label></td>
+                            <td><label data-i18n="client.accountNumber"></label></td>
                             <td>{{oldClient.accountNumber}}</td>
                           </tr>
                         </table>
@@ -402,9 +415,9 @@
 
                 </div>
                 <div class="modal-footer">
-                  <p><strong><h3>Are you sure you want to authorise this operation?</h3></strong></p>
-                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
-                    <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> Authorize </button>
+                  <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
                 </div>
             </div>
         </div>
@@ -424,59 +437,59 @@
                           <div class="ibox-content">
                             <table>
                               <tr>
-                                <td><label>Name :  </label></td>
+                                <td><label data-i18n="client.name"></label></td>
                                 <td>{{clientDetails.name}}</td>
                               </tr>
                               <tr>
-                                <td><label>Short name :  </label></td>
+                                <td><label data-i18n="client.shortName"></label></td>
                                 <td>{{clientDetails.shortName}}</td>
                               </tr>
                               <tr>
-                                 <td><label>Sector :  </label></td>
+                                 <td><label data-i18n="client.sector"></label></td>
                                  <td>{{clientDetails.sector}}</td>
                               </tr>
                               <tr>
-                                <td><label>Code :  </label></td>
+                                <td><label data-i18n="client.code"></label></td>
                                 <td>{{clientDetails.code}}</td>
                               </tr>
                               <tr>
-                                <td><label>Email :  </label></td>
+                                <td><label data-i18n="client.email"></label></td>
                                 <td>{{clientDetails.email}}</td>
                               </tr>
                               <tr>
-                                <td><label>Balance :  </label></td>
+                                <td><label data-i18n="client.balance"></label></td>
                                 <td>{{clientDetails.balance}}</td>
                               </tr>
                               <tr>
-                                <td><label>Phone :  </label></td>
+                                <td><label data-i18n="client.phone"></label></td>
                                 <td>{{clientDetails.phone}}</td>
                               </tr>
                               <tr>
-                                <td><label>Fax :  </label></td>
+                                <td><label data-i18n="client.fax"></label></td>
                                 <td>{{clientDetails.fax}}</td>
                               </tr>
                               <tr>
-                                <td><label>Street :  </label></td>
+                                <td><label data-i18n="client.street"></label></td>
                                 <td>{{clientDetails.street}}</td>
                               </tr>
                               <tr>
-                                <td><label>Code postal :  </label></td>
+                                <td><label data-i18n="client.postalCode"></label></td>
                                 <td>{{clientDetails.codePostal}}</td>
                               </tr>
                               <tr>
-                                <td><label>Province :  </label></td>
+                                <td><label data-i18n="client.province"></label></td>
                                 <td>{{clientDetails.province}}</td>
                               </tr>
                               <tr>
-                                <td><label>City :  </label></td>
+                                <td><label data-i18n="client.city"></label></td>
                                 <td>{{clientDetails.city}}</td>
                               </tr>
                               <tr>
-                                <td><label>Country :  </label></td>
+                                <td><label data-i18n="client.country"></label></td>
                                 <td>{{clientDetails.country}}</td>
                               </tr>
                               <tr>
-                                <td><label>Accounts number :  </label></td>
+                                <td><label data-i18n="client.accountNumber"></label></td>
                                 <td>{{clientDetails.accountNumber}}</td>
                               </tr>
                             </table>
@@ -486,7 +499,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
               </div>
           </div>
       </div>
@@ -497,15 +510,50 @@
             <div class="modal-content animated flipInY" style="top: 100px;">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Alert !</h4>
+                    <h4 class="modal-title" data-i18n="common.alert"></h4>
                 </div>
                 <div class="modal-body">
-                    <p><strong><h3>Are you sure you want to permanently delete it?</h3></strong>
-                      If you delete an item, it will be permanently lost.</p>
+                    <p><strong><h3 data-i18n="common.delete_msg"></h3></strong></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
-                    <button type="submit" id="BtnDelete" class="btn btn-danger" data-dismiss="modal">Delete</button>
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" class="btn btn-danger BtnDelete" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="edictState" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="common.edictState"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="deletionState" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="common.deletionState"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
                 </div>
             </div>
         </div>
@@ -516,7 +564,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">New logo</h4>
+                    <h4 class="modal-title" data-i18n="client.uploadLogo"></h4>
                 </div>
                 <div class="ibox-content">
                     <!-- For more info about dropzone plugin see this: https://github.com/devonbarrett/meteor-dropzone/ -->
@@ -526,5 +574,23 @@
         </div>
 
     </div>
-
 </template>
+<!--
+{{#if Template.subscriptionsReady}}
+{{else}}
+  <div class="ibox-content">
+      <div class="spiner-example">
+          <div class="sk-spinner sk-spinner-cube-grid">
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+          </div>
+      </div>
+  </div>
+{{/if}}-->

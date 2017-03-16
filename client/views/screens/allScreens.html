@@ -1,0 +1,277 @@
+<template name="allScreens">
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+        <h3 data-i18n="screen.title"></h3>
+      </div>
+  </div>
+  <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="google-map" id="map" style="height: 470px"></div>
+            </div>
+        </div>
+  </div>
+  <div class="modal inmodal" id="listOfConfigurations" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="left: -40px;top: 60px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="segment.authorization"></h4>
+              </div>
+              <div class="modal-body">
+                
+              </div>
+              <div class="modal-footer">
+                <p><strong><h3 data-i18n="segment.auth_msg"></h3></strong></p>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="addSegmentPopUp" tabindex="-1" role="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight" style="width:900px; left: -175px;top: -40px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span>
+                  <span class="sr-only">Close</span>
+                </button>
+                <i class="fa fa-calendar modal-icon"></i>
+                <h4 data-i18n="segment.screen_planning"></h4><h4> {{screenAdr}} </h4>
+            </div>
+            <div class="modal-body" >
+              <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                          <div class="ibox-tools">
+                              <button type="button" class="btn btn-primary btn-xs newPlan"><i class="fa fa-calendar"></i>   <span data-i18n="segment.btn-newPlanning"></span></button>
+                          </div>
+                          <br>
+                      <div class="ibox-content" style="height: 375px;">
+                          <div class="clients-list">
+                            <ul class="nav nav-tabs">
+                              <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="segment.onglet1"></span></a></li>
+                              <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="segment.onglet2"></span></a></li>
+                            </ul>
+                              <div class="tab-content">
+                                  <div id="tab-1" class="tab-pane active">
+                                    <div class="full-height-scroll">
+                                      <div class="row">
+                                          <div class="col-lg-12">
+                                              <div class="ibox float-e-margins">
+                                                <br>
+                                                  <table class="footable table table-stripped" data-page-size="5">
+                                                        <thead>
+                                                          <tr>
+                                                              <th data-i18n="segment.startDate"></th>
+                                                              <th data-i18n="segment.endDate"></th>
+                                                              <th data-i18n="segment.duration"></th>
+                                                          </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                          {{#each plansLive}}
+                                                            <tr class="gradeX">
+                                                                <td>{{startDate}}</td>
+                                                                <td>{{endDate}}</td>
+                                                                <td>{{slot}}</td>
+                                                            </tr>
+                                                          {{/each}}
+                                                        </tbody>
+                                                        <tfoot>
+                                                          <tr>
+                                                              <td colspan="5">
+                                                                  <ul class="pagination pull-right"></ul>
+                                                              </td>
+                                                          </tr>
+                                                        </tfoot>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                    </div>
+                                </div>
+                                  <div id="tab-2" class="tab-pane">
+                                    <div class="full-height-scroll">
+                                      <div class="row">
+                                          <div class="col-lg-12">
+                                              <div class="ibox float-e-margins">
+                                                  <br>
+                                                  <table class="footable2 table table-stripped toggle-arrow-tiny" data-page-size="5">
+                                                        <thead>
+                                                          <tr>
+                                                            <th data-i18n="segment.startDate"></th>
+                                                            <th data-i18n="segment.endDate"></th>
+                                                            <th data-i18n="segment.duration"></th>
+                                                            <th data-i18n="common.action"></th>
+                                                          </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                          {{#each plansAuthorization}}
+                                                            <tr class="gradeX">
+                                                                <td>{{startDate}}</td>
+                                                                <td>{{endDate}}</td>
+                                                                <td>{{slot}}</td>
+                                                                <td class="center">
+                                                                  {{#if equals buttonDetail true}}
+                                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                                  {{/if}}
+                                                                  {{#if equals buttonValidate true}}
+                                                                    <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                                  {{/if}}
+                                                                  {{#if equals buttonAuthorize true}}
+                                                                    <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                                  {{/if}}
+                                                                  {{#if equals buttonEdit true}}
+                                                                    <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                                  {{/if}}
+                                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                                </td>
+                                                            </tr>
+                                                          {{/each}}
+                                                        </tbody>
+                                                        <tfoot>
+                                                          <tr>
+                                                              <td colspan="5">
+                                                                  <ul class="pagination pull-right"></ul>
+                                                              </td>
+                                                          </tr>
+                                                        </tfoot>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="newPlan" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="left: -40px;top: 60px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="segment.newPlanning"></h4>
+              </div>
+              <div class="modal-body">
+                  <label data-i18n="segment.startDate"></label>
+                  <div class="form-group" id="data_1">
+                      <div class="input-group date">
+                          <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" id="startDate" class="form-control">
+                      </div>
+                  </div>
+                  <label data-i18n="segment.endDate"></label>
+                  <div class="form-group" id="data_1">
+                      <div class="input-group date">
+                          <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" id="endDate" class="form-control">
+                      </div>
+                  </div>
+                  <label data-i18n="segment.slot"></label>
+                  <div class="input-group">
+                      <input type="text" value="10" id="slot" class="form-control">
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="ladda-button btn btn-primary validateAdd" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                <button type="submit" class="ladda-button btn btn-danger saveAdd" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="left: -40px;top: 60px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="segment.authorization"></h4>
+              </div>
+              <div class="modal-body">
+                <table>
+                  <tr>
+                    <td><label data-i18n="segment.startDate"></label></td>
+                    <td>{{newPlan.startDate}}</td>
+                  </tr>
+                  <tr>
+                    <td><label data-i18n="segment.endDate"></label></td>
+                    <td>{{newPlan.endDate}}</td>
+                  </tr>
+                  <tr>
+                     <td><label data-i18n="segment.slot"></label></td>
+                     <td>{{newPlan.slot}} minutes</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <p><strong><h3 data-i18n="segment.auth_msg"></h3></strong></p>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="checkCancel" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top: 100px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="segment.alert"></h4>
+              </div>
+              <div class="modal-body">
+                  <p><strong><h3 data-i18n="segment.alert"></h3></strong></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="btn btn-primary BtnCancel" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="verifyPlan" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="segment.warning"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="segment.verifyPlan"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="slotInvalide" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="segment.warning"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="segment.slotInvalide"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+</template>

@@ -1,0 +1,339 @@
+<template name="allFirmwares">
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+        <h3 data-i18n="firmware.title"></h3>
+      </div>
+  </div>
+  <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="ibox float-e-margins">
+                <div class="ibox-tools">
+                  {{#if equals role.firmwareAdd true}}
+                    <button type="button" class="btn btn-primary btn-xs newPackage"><i class="fa fa-cloud-upload"></i>       <span data-i18n="firmware.btn-newPackage"></span></button>
+                  {{/if}}
+                </div>
+                <br>
+                  <div class="ibox-content">
+                    <div class="clients-list">
+                      <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="firmware.onglet1"></span></a></li>
+                        <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="firmware.onglet2"></span></a></li>
+                      </ul>
+                        <div class="tab-content">
+                            <div id="tab-1" class="tab-pane active">
+                              <div class="full-height-scroll">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="ibox float-e-margins">
+                                          <br>
+                                                <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                                                <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                                                  <thead>
+                                                  <tr>
+                                                    <th data-i18n="firmware.packageName"></th>
+                                                    <th data-i18n="common.action" style="width: 130px;"></th>
+                                                  </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    {{#each firmwaresLive}}
+                                                      <tr class="gradeX">
+                                                          <td>{{name}}</td>
+                                                          <td class="center">
+                                                            <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                            {{#if equals role.firmwareUpdate true}}
+                                                              <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></button>
+                                                            {{/if}}
+                                                            {{#if equals role.firmwareDelete true}}
+                                                              <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                            {{/if}}
+                                                          </td>
+                                                      </tr>
+                                                    {{/each}}
+                                                  </tbody>
+                                                  <tfoot>
+                                                  <tr>
+                                                      <td colspan="5">
+                                                        <ul class="pagination pull-right"></ul>
+                                                      </td>
+                                                  </tr>
+                                                  </tfoot>
+                                                </table>
+                                            </div>
+                                    </div>
+                                </div>
+                              </div>
+                          </div>
+                            <div id="tab-2" class="tab-pane">
+                              <div class="full-height-scroll">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="ibox float-e-margins">
+                                            <br>
+                                                <input type="text" class="form-control input-sm m-b-xs" id="filter1" data-i18n="[placeholder]common.placeholder_search">
+                                                <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
+                                                  <thead>
+                                                  <tr>
+                                                    <th data-i18n="firmware.packageName"></th>
+                                                    <th data-i18n="common.action" style="width: 130px;"></th>
+                                                  </tr>
+                                                  </thead>
+                                                  <tfoot>
+                                                  <tr>
+                                                      <td colspan="5">
+                                                        <ul class="pagination pull-right"></ul>
+                                                      </td>
+                                                  </tr>
+                                                  </tfoot>
+                                                  <tbody>
+                                                    {{#each firmwaresAuthorization}}
+                                                      <tr>
+                                                        <td>{{name}}</td>
+                                                          <td class="center">
+                                                            {{#if equals buttonDetail true}}
+                                                              <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                            {{/if}}
+                                                            {{#if equals buttonValidate true}}
+                                                              <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                            {{/if}}
+                                                            {{#if equals role.firmwareValidate true}}
+                                                              {{#if equals buttonAuthorize true}}
+                                                                <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                              {{/if}}
+                                                            {{/if}}
+                                                            {{#if equals buttonEdit true}}
+                                                              <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                            {{/if}}
+                                                            <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                          </td>
+                                                      </tr>
+                                                    {{/each}}
+                                                  </tbody>
+
+                                                </table>
+                                        </div>
+                                    </div>
+                                </div>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="newPackagePopup" tabindex="-1" user="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+      <form class="wizard-big form">
+        <div class="modal-content animated bounceInRight" style="width:940px; left: -175px;">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="fa fa-archive modal-icon"></i>
+              <h2 class="modal-title" data-i18n="firmware.newFirmware"></h2>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                      <label for="title" data-i18n="firmware.packageName"></label>
+                      <input style="width: 480px;" id="packageName" type="text" class="form-control"/>
+                  </div>
+                  <div class="form-group">
+                      <label for="message" data-i18n="firmware.packageDescription"></label>
+                      <textarea class="form-control" id="packageDescription" rows="5" data-i18n="[placeholder]firmware.placeholder_description"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+              <button type="submit" class="ladda-button btn btn-primary validateAdd" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+              <button type="submit" class="ladda-button btn btn-danger saveAdd" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+            </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal inmodal" id="editFirmwarePopUp" tabindex="-1" user="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight" style="width:550px;">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="fa fa-pencil modal-icon"></i>
+            </div>
+            <div class="modal-body" >
+              <div class="row">
+                <div class="col-lg-12">
+
+                  <div class="form-group">
+                      <label for="title" data-i18n="firmware.packageName"></label>
+                      <input style="width: 480px;" id="packageNameEdict" value="{{firmwareDetails.name}}" type="text" class="form-control"/>
+
+                  </div>
+                  <div class="form-group">
+                      <label for="message" data-i18n="firmware.packageDescription"></label>
+                      <textarea class="form-control" id="packageDescriptionEdict" value="{{firmwareDetails.description}}" rows="5"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+              <button type="submit" class="ladda-button btn btn-primary validateUpdate" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+              <button type="submit" class="ladda-button btn btn-danger saveUpdate" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="edictState" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="common.warning"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="common.edictState"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="firmwareDetailsPopUp" tabindex="-1" user="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight" style="width:550px;">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="fa fa-list-alt modal-icon"></i>
+              <h2 class="modal-title" data-i18n="common.details"></h2>
+            </div>
+            <div class="modal-body" >
+              <div class="row">
+                <div class="col-lg-12">
+
+                  <div class="form-group">
+                      <label for="title" data-i18n="firmware.packageName"></label>
+                      {{firmwareDetails.name}}
+                  </div>
+                  <div class="form-group">
+                      <label for="message" data-i18n="firmware.packageDescription"></label><br>
+                      {{firmwareDetails.description}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="width:1000px; left: -211px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.authorization"></h4>
+              </div>
+              <div class="modal-body" style="height: 300px;">
+                <div class="col-lg-6">
+                    <div class="ibox">
+                        <div class="ibox-content text-left">
+                            <h3 class="m-b-xxs"><h2 data-i18n="firmware.newFirmware"></h2></h3>
+                            <div>
+                              <label for="title" data-i18n="firmware.packageName"></label>
+                                {{newFirmware.name}}
+                            </div>
+                            <label for="message" data-i18n="firmware.packageDescription"></label><br>
+                            <div>
+                                {{newFirmware.description}}
+                            </div>
+                        </div>
+                      </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ibox">
+                        <div class="ibox-content text-left">
+                            <h3 class="m-b-xxs"><h2 data-i18n="firmware.oldFirmware"></h2></h3>
+                            <div>
+                                <label for="title" data-i18n="firmware.packageName"></label>
+                                {{oldFirmware.name}}
+                            </div>
+                            <label for="message" data-i18n="firmware.packageDescription"></label><br>
+                            <div>
+                                {{oldFirmware.description}}
+                            </div>
+                        </div>
+                      </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="checkCancel" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top: 100px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.alert"></h4>
+              </div>
+              <div class="modal-body">
+                  <strong><h3 data-i18n="common.delete_msg"></h3></strong>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="btn btn-danger BtnCancel" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="checkDeleting" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top: 100px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.alert"></h4>
+              </div>
+              <div class="modal-body">
+                  <strong><h3 data-i18n="common.delete_msg"></h3></strong>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="btn btn-danger BtnDelete" data-dismiss="modal"><span data-i18n="common.btn-auth"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="deletionState" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="common.warning"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="common.deletionState"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+</template>

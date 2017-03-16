@@ -1,70 +1,232 @@
 <template name="allContents">
 
     <!-- Page heading -->
-    {{> pageHeading title='Content' category='List' }}
-
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-12">
+          <br>
+          <h3 data-i18n="content.title"></h3>
+        </div>
+    </div>
+    <!--{{#if Template.subscriptionsReady}}-->
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox float-e-margins">
+                  <div class="ibox-tools">
+                    {{#if equals role.contentAdd true}}
+                      <button type="button" class="btn btn-primary btn-xs newContent"><i class="fa fa-cloud-upload"></i>       <span data-i18n="content.btn-newContent"></span></button>
+                    {{/if}}
+                  </div>
+                  <br>
                     <div class="ibox-content">
-                      <table border="0" style="width:130%">
-                        <tr>
-                          <td><input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search.."></td>
-                          <td><button type="button" id="uploadFile" class="btn btn-w-m btn-default">New content</button></td>
-                        </tr>
-                      </table>
-                        <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
-                          <thead>
-                          <tr>
-                              <th>File name</th>
-                              <th>Type</th>
-                              <th>Size</th>
-                              <th>Duration</th>
-                              <th>Action</th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                            {{#each contents}}
-                              <tr class="gradeX">
-                                  <td>{{contentName}}</td>
-                                  <td>{{contentType}}</td>
-                                  <td>{{contentSize}}</td>
-                                  <td class="center">{{contentDuration}}</td>
-                                  <td class="center"><button class="btn btn-danger btn-rounded btn-delete" >Delete</button></td>
-                              </tr>
-                            {{/each}}
-                          </tbody>
-                          <tfoot>
-                          <tr>
-                              <td colspan="5">
-                                <ul class="pagination pull-right"></ul>
-                              </td>
-                          </tr>
-                          </tfoot>
-                        </table>
-                    </div>
+                      <div class="clients-list">
+                        <ul class="nav nav-tabs">
+                          <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="content.onglet1"></span></a></li>
+                          <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="content.onglet2"></span></a></li>
+                        </ul>
+                          <div class="tab-content">
+                              <div id="tab-1" class="tab-pane active">
+                                <div class="full-height-scroll">
+                                  <div class="row">
+                                      <div class="col-lg-12">
+                                          <div class="ibox float-e-margins">
+                                            <br>
+                                                  <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                                                  <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                                                    <thead>
+                                                    <tr>
+                                                      <th data-i18n="content.fileName"></th>
+                                                      <th data-i18n="content.type"></th>
+                                                      <th data-i18n="content.size"></th>
+                                                      <th data-i18n="content.duration"></th>
+                                                      <th data-i18n="common.action"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      {{#each contentsLive}}
+                                                        <tr class="gradeX">
+                                                          <td>{{contentName}}</td>
+                                                          <td>{{contentType}}</td>
+                                                          <td>{{contentSize}}</td>
+                                                          <td>{{contentDuration}}</td>
+                                                            <td class="center">
+                                                              <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i> </button>
+                                                              {{#if equals role.contentDelete true}}
+                                                                <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i> </button>
+                                                              {{/if}}
+                                                            </td>
+                                                        </tr>
+                                                      {{/each}}
+                                                    </tbody>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <td colspan="5">
+                                                          <ul class="pagination pull-right"></ul>
+                                                        </td>
+                                                    </tr>
+                                                    </tfoot>
+                                                  </table>
+                                              </div>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+                              <div id="tab-2" class="tab-pane">
+                                <div class="full-height-scroll">
+                                  <div class="row">
+                                      <div class="col-lg-12">
+                                          <div class="ibox float-e-margins">
+                                              <br>
+                                                  <input type="text" class="form-control input-sm m-b-xs" id="filter1" data-i18n="[placeholder]common.placeholder_search">
+                                                  <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
+                                                    <thead>
+                                                    <tr>
+                                                      <th data-i18n="content.fileName"></th>
+                                                      <th data-i18n="content.type"></th>
+                                                      <th data-i18n="content.size"></th>
+                                                      <th data-i18n="content.duration"></th>
+                                                      <th data-i18n="common.action"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      {{#each contentsAuthorization}}
+                                                        <tr class="gradeX">
+                                                          <td>{{contentName}}</td>
+                                                          <td>{{contentType}}</td>
+                                                          <td>{{contentSize}}</td>
+                                                          <td>{{contentDuration}}</td>
+                                                            <td>
+                                                              {{#if equals buttonDetail true}}
+                                                                <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                              {{/if}}
+                                                              {{#if equals buttonValidate true}}
+                                                                <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                              {{/if}}
+                                                              {{#if equals role.accountValidate true}}
+                                                                {{#if equals buttonAuthorize true}}
+                                                                  <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                                {{/if}}
+                                                              {{/if}}
+                                                              <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                            </td>
+                                                        </tr>
+                                                      {{/each}}
+                                                    </tbody>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <td colspan="5">
+                                                          <ul class="pagination pull-right"></ul>
+                                                        </td>
+                                                    </tr>
+                                                    </tfoot>
+                                                  </table>
+                                          </div>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <!--{{else}}
+    <div class="sk-spinner sk-spinner-three-bounce">
+        <div class="sk-bounce1"></div>
+        <div class="sk-bounce2"></div>
+        <div class="sk-bounce3"></div>
+    </div>
+    {{/if}} -->
+    <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="common.authorization"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
                 </div>
             </div>
         </div>
     </div>
-
+    <div class="modal inmodal" id="checkDeleting" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="common.alert"></h4>
+                </div>
+                <div class="modal-body">
+                    <strong><h3 data-i18n="common.delete_msg"></h3></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" class="btn btn-danger BtnDelete" data-dismiss="modal"><span data-i18n="common.btn-auth"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <div class="modal inmodal" id="deletionState" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="common.deletionState"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal inmodal" id="upload" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content animated bounceInRight">
+            <div class="modal-content animated bounceInRight" style="width:950px; left: -200px;top:-48px">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <i class="fa fa-file-movie-o modal-icon"></i>
-                    <h4 class="modal-title">New content</h4>
+                    <h4 class="modal-title" data-i18n="content.newContent"></h4>
                 </div>
                 <div class="ibox-content">
                     <!-- For more info about dropzone plugin see this: https://github.com/devonbarrett/meteor-dropzone/ -->
-                    {{> dropzone url='/upload' id='dropzoneDiv'}}
+                    {{> dropzone url='/home/akrem/sshfs/tmp' id='dropzoneDiv'}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-white cancelWarning"><span data-i18n="common.btn-cancel"></span></button>
                 </div>
             </div>
         </div>
-
     </div>
-
+    <div class="modal inmodal" id="warning" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="content.contentAssigned"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-white cancelWarning"><span data-i18n="common.btn-cancel"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>

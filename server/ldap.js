@@ -1,23 +1,22 @@
+// Read from configuration file
+var fs = Npm.require('fs');
+var obj;
+Future = Npm.require('fibers/future');
+var myFuture = new Future();
+fs.readFile('/home/akrem/Akrem/Projects/SmartScreen/server/configuration.json', 'utf8', function (err, data) {
+  if (err) throw err;
+  obj = JSON.parse(data);
+  myFuture.return(obj);
+});
+var json = myFuture.wait();
+
+
 function change(x){
-  if(x === "TRUE"){
+  if(x == "TRUE"){
     return 1;
   }
-  else{
-    return 0;
-  }
-};
-/*Meteor.startup(function () {
-  // Run mini broker
-
-  const child_process = Npm.require('child_process');
-  const exec = child_process.exec;
-  console.log("Start up done");
-  exec('export PYTHONPATH=/home/akrem/Akrem/Projects/ChanelProject;cd /home/akrem/Akrem/Projects/ChanelProject/org/swallow_labs/test; python3.5 T00.5.1-RunClientTest.py', function (error, stdout, stderr) {
-    console.log("STDOUT"+stdout);
-    console.log("ERROR"+error);
-  });
-
-});*/
+  return 0;
+}
 Meteor.methods({
     'sendLoginInfo': function(login, password, code){
       var name   = login.substring(0, login.lastIndexOf("@"));
@@ -34,7 +33,7 @@ Meteor.methods({
       var myFuture = new Future();
       var result = 0 ;
       var client = ldap.createClient({
-        url: 'ldap://10.10.10.2:389'
+        url: 'ldap://'+json.ldap.address+':'+json.ldap.port
       });
       client.bind('cn=directory manager', 'salmenF03', function(err) {
         var opts = {
@@ -114,7 +113,7 @@ Meteor.methods({
       var secondFuture = new Future();
 
       var client = ldap.createClient({
-        url: 'ldap://10.10.10.2:389'
+        url: 'ldap://'+json.ldap.address+':'+json.ldap.port
       });
 
       client.bind('cn=directory manager', 'salmenF03', function(err) {

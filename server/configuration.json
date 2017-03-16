@@ -2,10 +2,21 @@
   "otp_conf":
   {
     "username": "asallemi%40swallow-labs.com",
-    "password": "K@roum@1991",
+    "password": "",
     "server": "smtp.1and1.com",
     "port": "587",
     "mail_subject": "Smart Screen OTP",
     "mail_text": "You received this email because you want to login to Smart Sreen solution, this your code :"
+  },
+  "ldap":
+  {
+    "address": "10.10.10.2",
+    "port": "389"
+  },
+  "mini_broker":
+  {
+    "address": "127.0.1.1",
+    "port": "7000",
+    "run": "export PYTHONPATH=/home/akrem/Akrem/Projects/ChanelProject;cd /home/akrem/Akrem/Projects/ChanelProject/org/swallow_labs/test; python3.5 T00.5.1-RunClientTest.py"
   }
 }

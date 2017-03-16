@@ -1,63 +1,3 @@
-function nextState(status){
-  var matrix = Matrix.find({ "state" : status});
-  // Array contains all next state of "status"
-  var array = [];
-  matrix.forEach(function(doc){
-    for( var i = 0; i < doc.nextState.length; i++){
-      array.push(doc.nextState[i]);
-    }
-  });
-  return array;
-}
-function hideShowButtons(array){
-  if (array.indexOf("HLD") < 0 ){
-    $("#save").hide();
-  }
-  if (array.indexOf("INAU") < 0 ){
-    $("#validate").hide();
-  }
-  if (array.indexOf("LIVE") < 0 ){
-    $("#authorize").hide();
-  }
-  if (array.indexOf("RNAU") < 0 ){
-    $("#delete").hide();
-  }
-  if (array.indexOf("HLD") >=0 ){
-    $("#save").show();
-  }
-  if (array.indexOf("INAU") >=0 ){
-    $("#validate").show();
-  }
-  if (array.indexOf("LIVE") >=0 ){
-    $("#authorize").show();
-  }
-  if (array.indexOf("RNAU") >=0 ){
-    $("#delete").show();
-  }
-}
-function getButtonsAu(array){
-  var button = {
-    'editAu' :false,
-    'validateAu' :false,
-    'authorizeAu' :false
-  };
-  if (array.indexOf("HLD") >= 0 ){
-    button.editAu = true;
-  }
-  if (array.indexOf("INAU") >= 0 ){
-    button.validateAu = true;
-  }
-  if (array.indexOf("LIVE") >= 0 ){
-    button.authorizeAu = true;
-  }
-  if (array.indexOf("RNAU") >= 0 ){
-    button.authorizeAu = true;
-  }
-  if (array.indexOf("HIS") >= 0 ){
-    button.authorizeAu = true;
-  }
-  return button;
-}
 function verifyEdit(id){
   var role = Roles_Authorization.findOne({ "_id" : id });
   if(role == undefined){
@@ -72,109 +12,6 @@ function verifyDelete(id){
   }
   return false;
 }
-function input(role){
-  if ( role._id == null ){
-    role._id = Random.id([10]);
-    role.currentNumber = 0;
-  }
-  $('#rolePopup').modal();
-  Session.set("roleSelected", role);
-
-  role.currentNumber = role.currentNumber + 1 ;
-  role.status = 'HLD';
-  role.inputter = "Med Saleh";
-  role.authorizer = null;
-
-  var array = nextState(role.status);
-  hideShowButtons(array);
-
-  $("#save").click(function() {
-    var roleName = document.getElementById("roleName").value;
-    if(roleName.length > 0){
-      var roleAdded = getValuesFromForm();
-      roleAdded._id = role._id;
-      roleAdded.currentNumber = role.currentNumber;
-      roleAdded.status = role.status;
-      roleAdded.inputter = role.inputter;
-      roleAdded.authorizer = role.authorizer;
-      roleAdded.code = Session.get("CLIENT_CODE_X");
-      roleAdded.dateTime = new Date();
-      Roles_Authorization.insert(roleAdded);
-      location.reload();
-    }else{
-      swal({
-        title: "This field cannot be left blank",
-        text: "Please enter the role name !",
-        type: "warning",
-        closeOnConfirm: true
-      });
-    }
-
-  });
-  $("#validate").click(function() {
-    var roleName = document.getElementById("roleName").value;
-    if(roleName.length > 0){
-      var roleAdded = getValuesFromForm();
-      roleAdded._id = role._id;
-      roleAdded.currentNumber = role.currentNumber;
-      roleAdded.status = 'INAU';
-      roleAdded.inputter = role.inputter;
-      roleAdded.authorizer = role.authorizer;
-      roleAdded.dateTime = new Date();
-      roleAdded.code = Session.get("CLIENT_CODE_X");
-      Roles_Authorization.insert(roleAdded);
-      location.reload();
-    }else{
-      swal({
-        title: "This field cannot be left blank",
-        text: "Please enter the role name !",
-        type: "warning",
-        closeOnConfirm: true
-      });
-    }
-  });
-}
-function updateRole(role){
-  $('#rolePopup').modal();
-  Session.set("roleSelected", role);
-  role.inputter = "User X";
-  var array = nextState(role.status);
-  for(var i=0; i< array.length; i++){
-    console.log("Array :",array[i]);
-  }
-  hideShowButtons(array);
-  $("#save").click(function() {
-    var roleUpdated = getValuesFromForm();
-    roleUpdated._id = role._id;
-    roleUpdated.currentNumber = role.currentNumber;
-    roleUpdated.status = role.status;
-    roleUpdated.inputter = role.inputter;
-    roleUpdated.authorizer = role.authorizer;
-    roleUpdated.dateTime = new Date();
-    Roles_Authorization.remove(role._id)
-    Roles_Authorization.insert(roleUpdated);
-    location.reload();
-  });
-  $("#validate").click(function() {
-    var roleUpdated = getValuesFromForm();
-    roleUpdated._id = role._id;
-    roleUpdated.currentNumber = role.currentNumber;
-    roleUpdated.status = 'INAU';
-    roleUpdated.inputter = role.inputter;
-    roleUpdated.authorizer = role.authorizer;
-    roleUpdated.dateTime = new Date();
-    Roles_Authorization.remove(role._id)
-    Roles_Authorization.insert(roleUpdated);
-    location.reload();
-  });
-}
-function cancelRole(id){
-  //console.log("ID :",id);
-  Roles_Authorization.remove(id);
-}
-function validate(role){
-  Roles_Authorization.update({'_id' : role._id }, {'$set':{ 'status' : 'INAU', 'inputter' : 'Ali Tounsi' , 'dateTime' : new Date() }});
-}
 function authorize(role){
   if(role._id.indexOf("#") > 0){
     role._id = role._id.replace("#D", "");
@@ -183,7 +20,8 @@ function authorize(role){
   // entry validated and new entry
   if(roleX !== undefined && role.status == "INAU"){
     role.status = "LIVE";
-    role.authorizer = "Akrem Sallemi";
+    //role.authorizer = Session.get("UserLogged")._id;
+    role.authorizer = "Vvvv";
     role.dateTime = new Date();
     roleX.status = 'HIS';
     roleX.dateTime = new Date();
@@ -193,46 +31,34 @@ function authorize(role){
     Roles_Live.remove(role._id);
     Roles_Live.insert(role);
     Roles_Authorization.remove(role._id);
-    console.log("IF one");
+    //console.log("IF one");
   // edit a role in live
   }else if(roleX !== undefined && role.status == "RNAU"){
-    role.authorizer= "3am ali";
+    //role.authorizer= Session.get("UserLogged")._id;
+    role.authorizer = "Vvvv";
     role.status = 'DEL';
     role.dateTime = new Date();
     Roles_History.insert(role);
     Roles_Live.remove(roleX._id);
     Roles_Authorization.remove(role._id);
     Roles_Authorization.remove(role._id+"#D");
-    console.log("IF two");
+    //console.log("IF two");
   }else{
     role.status = "LIVE";
-    role.authorizer = "Akrem Sallemi";
+    //role.authorizer = Session.get("UserLogged")._id;
+    role.authorizer = "Vvvv";
     role.dateTime = new Date();
     Roles_Live.insert(role);
     Roles_Authorization.remove(role._id);
-    console.log("IF one");
+    //console.log("IF one");
   }
 }
-function deleteRole(role){
-  role._id = role._id+"#D"
-  role.status = "RNAU";
-  role.inputter = "HEDI";
-  role.dateTime = new Date();
-  role.authorizer = null;
-  Roles_Authorization.insert(role);
-}
-function getValuesFromForm(){
+function getValuesFromFormForAdd(){
   if (document.getElementById('roleName') != null) {
     var roleName = document.getElementById("roleName").value;
   }else {
     var roleName = null;
   }
-  var currentNumber = 0;
-  var status = "";
-  var inputter = "";
-  var authorizer = "";
-  var dateTime = "";
-  var code = "";
   var accountAdd = null;
   var accountUpdate = null;
   var accountDelete = null;
@@ -257,6 +83,7 @@ function getValuesFromForm(){
   var invoiceDelete = null;
   var invoiceDisplay = null;
   var invoicePrint = null;
+  var invoiceSign = null;
   var invoiceValidate = null;
   var clientAdd = null;
   var clientUpdate = null;
@@ -481,6 +308,13 @@ function getValuesFromForm(){
     invoicePrint = false;
   }else{
     invoicePrint = null;
+  }
+  if( $('input[name="invoiceSign"]:checked').val() == "YES"){
+    invoiceSign = true;
+  }else if ($('input[name="invoiceSign"]:checked').val() == "NO") {
+    invoiceSign = false;
+  }else{
+    invoiceSign = null;
   }
   if( $('input[name="invoiceValidate"]:checked').val() == "YES"){
     invoiceValidate = true;
@@ -877,11 +711,13 @@ function getValuesFromForm(){
   var role =
     {
       'roleName': roleName,
-      'currentNumber' : 0,
-      'status': "",
-      'inputter': "",
-      'authorizer': "",
-      'dateTime': "",
+      'currentNumber': 0,
+      'status': "HLD",
+      //'inputter': Session.get("UserLogged"),
+      //'authorizer': Session.get("UserLogged"),
+      'inputter': null,
+      'authorizer': null,
+      'dateTime': new Date(),
       'code': Session.get("CLIENT_CODE_X"),
       'accountAdd': accountAdd,
       'accountUpdate': accountUpdate,
@@ -907,6 +743,1509 @@ function getValuesFromForm(){
       'invoiceDelete': invoiceDelete,
       'invoiceDisplay': invoiceDisplay,
       'invoicePrint': invoicePrint,
+      'invoiceSign': invoiceSign,
+      'invoiceValidate': invoiceValidate,
+      'clientAdd': clientAdd,
+      'clientUpdate': clientUpdate,
+      'clientDelete': clientDelete,
+      'clientDisplay': clientDisplay,
+      'clientPrint': clientPrint,
+      'clientValidate': clientValidate,
+      'clientAccountManagement': clientAccountManagement,
+      'screenUpdate': screenUpdate,
+      'screenDelete': screenDelete,
+      'screenDisplay': screenDisplay,
+      'screenPrint': screenPrint,
+      'screenValidate': screenValidate,
+      'screenShow': screenShow,
+      'screenUpdateSystem': screenUpdateSystem,
+      'screenClear': screenClear,
+      'screenMonitor': screenMonitor,
+      'screenActivate': screenActivate,
+      'screenOnOff': screenOnOff,
+      'segmentUpdate': segmentUpdate,
+      'segmentDelete': segmentDelete,
+      'segmentDisplay': segmentDisplay,
+      'segmentPrint': segmentPrint,
+      'segmentAffect': segmentAffect,
+      'segmentValidate': segmentValidate,
+      'tariffAdd': tariffAdd,
+      'tariffUpdate': tariffUpdate,
+      'tariffDelete': tariffDelete,
+      'tariffDisplay': tariffDisplay,
+      'tariffPrint': tariffPrint,
+      'tariffAffect': tariffAffect,
+      'tariffValidate': tariffValidate,
+      'bookingAdd': bookingAdd,
+      'bookingUpdate': bookingUpdate,
+      'bookingDelete': bookingDelete,
+      'bookingDisplay': bookingDisplay,
+      'bookingPrint': bookingPrint,
+      'bookingValidate': bookingValidate,
+      'contentAdd': contentAdd,
+      'contentDelete': contentDelete,
+      'contentDisplay': contentDisplay,
+      'contentValidate': contentValidate,
+      'roleAdd': roleAdd,
+      'roleUpdate': roleUpdate,
+      'roleDelete': roleDelete,
+      'roleDisplay': roleDisplay,
+      'rolePrint': rolePrint,
+      'roleAffect': roleAffect,
+      'roleValidate': roleValidate,
+      'firmwareAdd': firmwareAdd,
+      'firmwareUpdate': firmwareUpdate,
+      'firmwareDelete': firmwareDelete,
+      'firmwareDisplay': firmwareDisplay,
+      'firmwarePrint': firmwarePrint,
+      'firmwareValidate': firmwareValidate,
+      'signatureAdd': signatureAdd,
+      'signatureValidate': signatureValidate
+    };
+  return role;
+}
+function getValuesFromFormForEdit(){
+  if (document.getElementById('roleName1') != null) {
+    var roleName = document.getElementById("roleName1").value;
+  }else {
+    var roleName = null;
+  }
+  var accountAdd = null;
+  var accountUpdate = null;
+  var accountDelete = null;
+  var accountDisplay = null;
+  var accountPrint = null;
+  var accountValidate = null;
+  var contractAdd = null;
+  var contractUpdate = null;
+  var contractDelete = null;
+  var contractDisplay = null;
+  var contractPrint = null;
+  var contractValidate = null;
+  var contractSign = null;
+  var articleAdd = null;
+  var articleUpdate = null;
+  var articleDelete = null;
+  var articleDisplay = null;
+  var articlePrint = null;
+  var articleValidate = null;
+  var invoiceAdd = null;
+  var invoiceUpdate = null;
+  var invoiceDelete = null;
+  var invoiceDisplay = null;
+  var invoicePrint = null;
+  var invoiceSign = null;
+  var invoiceValidate = null;
+  var clientAdd = null;
+  var clientUpdate = null;
+  var clientDelete = null;
+  var clientDisplay = null;
+  var clientPrint = null;
+  var clientValidate = null;
+  var clientAccountManagement = null;
+  var screenUpdate = null;
+  var screenDelete = null;
+  var screenDisplay = null;
+  var screenPrint = null;
+  var screenValidate = null;
+  var screenShow = null;
+  var screenUpdateSystem = null;
+  var screenClear = null;
+  var screenMonitor = null;
+  var screenActivate = null;
+  var screenOnOff = null;
+  var segmentUpdate = null;
+  var segmentDelete = null;
+  var segmentDisplay = null;
+  var segmentPrint = null;
+  var segmentAffect = null;
+  var segmentValidate = null;
+  var tariffAdd = null;
+  var tariffUpdate = null;
+  var tariffDelete = null;
+  var tariffDisplay = null;
+  var tariffPrint = null;
+  var tariffAffect = null;
+  var tariffValidate = null;
+  var bookingAdd = null;
+  var bookingUpdate = null;
+  var bookingDelete = null;
+  var bookingDisplay = null;
+  var bookingPrint = null;
+  var bookingValidate = null;
+  var contentAdd = null;
+  var contentDelete = null;
+  var contentDisplay = null;
+  var contentValidate = null;
+  var roleAdd = null;
+  var roleUpdate = null;
+  var roleDelete = null;
+  var roleDisplay = null;
+  var rolePrint = null;
+  var roleAffect = null;
+  var roleValidate = null;
+  var firmwareAdd = null;
+  var firmwareUpdate = null;
+  var firmwareDelete = null;
+  var firmwareDisplay = null;
+  var firmwarePrint = null;
+  var firmwareValidate = null;
+  var signatureAdd = null;
+  var signatureValidate = null;
+  if( $('input[name="accountAdd1"]:checked').val() == "YES"){
+    accountAdd = true;
+  }else if( $('input[name="accountAdd1"]:checked').val() == "YES"){
+    accountAdd = false;
+  }else {
+    accountAdd = null;
+  }
+  if( $('input[name="accountUpdate1"]:checked').val() == "YES"){
+    accountUpdate = true;
+  }else if( $('input[name="accountUpdate1"]:checked').val() == "NO"){
+    accountUpdate = false;
+  }else {
+    accountUpdate = null;
+  }
+  if( $('input[name="accountDelete1"]:checked').val() == "YES"){
+    accountDelete = true;
+  }else if( $('input[name="accountDelete1"]:checked').val() == "NO"){
+    accountDelete = false;
+  }else {
+    accountDelete = null;
+  }
+  if( $('input[name="accountDisplay1"]:checked').val() == "YES"){
+    accountDisplay = true;
+  }else if( $('input[name="accountDisplay1"]:checked').val() == "NO"){
+    accountDisplay = false;
+  }else {
+    accountDisplay = null;
+  }
+  if( $('input[name="accountPrint1"]:checked').val() == "YES"){
+    accountPrint = true;
+  }else if( $('input[name="accountPrint1"]:checked').val() == "NO"){
+    accountPrint = false;
+  }else {
+    accountPrint = null;
+  }
+  if( $('input[name="accountValidate1"]:checked').val() == "YES"){
+    accountValidate = true;
+  }else if( $('input[name="accountValidate1"]:checked').val() == "NO"){
+    accountValidate = false;
+  }else {
+    accountValidate = null;
+  }
+  if( $('input[name="contractAdd1"]:checked').val() == "YES"){
+    contractAdd = true;
+  }else if( $('input[name="contractAdd1"]:checked').val() == "NO"){
+    contractAdd = false;
+  }else {
+    contractAdd = null;
+  }
+  if( $('input[name="contractUpdate1"]:checked').val() == "YES"){
+    contractUpdate = true;
+  }else if( $('input[name="contractUpdate1"]:checked').val() == "NO"){
+    contractUpdate = false;
+  }else {
+    contractUpdate = null;
+  }
+  if( $('input[name="contractDelete1"]:checked').val() == "YES"){
+    contractDelete = true;
+  }else if( $('input[name="contractDelete1"]:checked').val() == "NO"){
+    contractDelete = false;
+  }else {
+    contractDelete = null;
+  }
+  if( $('input[name="contractDisplay1"]:checked').val() == "YES"){
+    contractDisplay = true;
+  }else if( $('input[name="contractDisplay1"]:checked').val() == "NO"){
+    contractDisplay = false;
+  }else {
+    contractDisplay = null;
+  }
+  if( $('input[name="contractPrint1"]:checked').val() == "YES"){
+    contractPrint = true;
+  }else if( $('input[name="contractPrint1"]:checked').val() == "NO"){
+    contractPrint = false;
+  }else {
+    contractPrint = null;
+  }
+  if( $('input[name="contractValidate1"]:checked').val() == "YES"){
+    contractValidate = true;
+  }else if( $('input[name="contractValidate1"]:checked').val() == "NO"){
+    contractValidate = false;
+  }else {
+    contractValidate = null;
+  }
+  if( $('input[name="contractSign1"]:checked').val() == "YES"){
+    contractSign = true;
+  }else if( $('input[name="contractSign1"]:checked').val() == "NO"){
+    contractSign = false;
+  }else{
+    contractSign = null;
+  }
+  if( $('input[name="articleAdd1"]:checked').val() == "YES"){
+    articleAdd = true;
+  }else if ($('input[name="articleAdd1"]:checked').val() == "NO") {
+    articleAdd = false;
+  }else{
+    articleAdd = null;
+  }
+  if( $('input[name="articleUpdate1"]:checked').val() == "YES"){
+    articleUpdate = true;
+  }else if ($('input[name="articleUpdate1"]:checked').val() == "NO") {
+    articleUpdate = false;
+  }else{
+    articleUpdate = null;
+  }
+  if( $('input[name="articleDelete1"]:checked').val() == "YES"){
+    articleDelete = true;
+  }else if ($('input[name="articleDelete1"]:checked').val() == "NO") {
+    articleDelete = false;
+  }else{
+    articleDelete = null;
+  }
+  if( $('input[name="articleDisplay1"]:checked').val() == "YES"){
+    articleDisplay = true;
+  }else if ($('input[name="articleDisplay1"]:checked').val() == "NO") {
+    articleDisplay = false;
+  }else{
+    articleDisplay = null;
+  }
+  if( $('input[name="articlePrint1"]:checked').val() == "YES"){
+    articlePrint = true;
+  }else if ($('input[name="articlePrint1"]:checked').val() == "NO") {
+    articlePrint = false;
+  }else{
+    articlePrint = null;
+  }
+  if( $('input[name="articleValidate1"]:checked').val() == "YES"){
+    articleValidate = true;
+  }else if ($('input[name="articleValidate1"]:checked').val() == "NO") {
+    articleValidate = false;
+  }else{
+    articleValidate = null;
+  }
+  if( $('input[name="invoiceAdd1"]:checked').val() == "YES"){
+    invoiceAdd = true;
+  }else if ($('input[name="invoiceAdd1"]:checked').val() == "NO") {
+    invoiceAdd = false;
+  }else{
+    invoiceAdd = null;
+  }
+  if( $('input[name="invoiceUpdate1"]:checked').val() == "YES"){
+    invoiceUpdate = true;
+  }else if ($('input[name="invoiceUpdate1"]:checked').val() == "NO") {
+    invoiceUpdate = false;
+  }else{
+    invoiceUpdate = null;
+  }
+  if( $('input[name="invoiceDelete1"]:checked').val() == "YES"){
+    invoiceDelete = true;
+  }else if ($('input[name="invoiceDelete1"]:checked').val() == "NO") {
+    invoiceDelete = false;
+  }else{
+    invoiceDelete = null;
+  }
+  if( $('input[name="invoiceDisplay1"]:checked').val() == "YES"){
+    invoiceDisplay = true;
+  }else if ($('input[name="invoiceDisplay1"]:checked').val() == "NO") {
+    invoiceDisplay = false;
+  }else{
+    invoiceDisplay = null;
+  }
+  if( $('input[name="invoicePrint1"]:checked').val() == "YES"){
+    invoicePrint = true;
+  }else if ($('input[name="invoicePrint1"]:checked').val() == "NO") {
+    invoicePrint = false;
+  }else{
+    invoicePrint = null;
+  }
+  if( $('input[name="invoiceSign1"]:checked').val() == "YES"){
+    invoiceSign = true;
+  }else if ($('input[name="invoiceSign1"]:checked').val() == "NO") {
+    invoiceSign = false;
+  }else{
+    invoiceSign = null;
+  }
+  if( $('input[name="invoiceValidate1"]:checked').val() == "YES"){
+    invoiceValidate = true;
+  }else if ($('input[name="invoiceValidate1"]:checked').val() == "NO") {
+    invoiceValidate = false;
+  }else{
+    invoiceValidate = null;
+  }
+  if( $('input[name="clientAdd1"]:checked').val() == "YES"){
+    clientAdd = true;
+  }else if ($('input[name="clientAdd1"]:checked').val() == "NO") {
+    clientAdd = false;
+  }else{
+    clientAdd = null;
+  }
+  if( $('input[name="clientUpdate1"]:checked').val() == "YES"){
+    clientUpdate = true;
+  }else if ($('input[name="clientUpdate1"]:checked').val() == "NO") {
+    clientUpdate = false;
+  }else{
+    clientUpdate = null;
+  }
+  if( $('input[name="clientDelete1"]:checked').val() == "YES"){
+    clientDelete = true;
+  }else if ($('input[name="clientDelete1"]:checked').val() == "NO") {
+    clientDelete = false;
+  }else{
+    clientDelete = null;
+  }
+  if( $('input[name="clientDisplay1"]:checked').val() == "YES"){
+    clientDisplay = true;
+  }else if ($('input[name="clientDisplay1"]:checked').val() == "NO") {
+    clientDisplay = false;
+  }else{
+    clientDisplay = null;
+  }
+  if( $('input[name="clientPrint1"]:checked').val() == "YES"){
+    clientPrint = true;
+  }else if ($('input[name="clientPrint1"]:checked').val() == "NO") {
+    clientPrint = false;
+  }else{
+    clientPrint = null;
+  }
+  if( $('input[name="clientValidate1"]:checked').val() == "YES"){
+    clientValidate = true;
+  }else if ($('input[name="clientValidate1"]:checked').val() == "NO") {
+    clientValidate = false;
+  }else{
+    clientValidate = null;
+  }
+  if( $('input[name="clientAccountManagement1"]:checked').val() == "YES"){
+    clientAccountManagement = true;
+  }else if ($('input[name="clientAccountManagement1"]:checked').val() == "NO") {
+    clientAccountManagement = false;
+  }else{
+    clientAccountManagement = null;
+  }
+  if( $('input[name="screenUpdate1"]:checked').val() == "YES"){
+    screenUpdate = true;
+  }else if ($('input[name="screenUpdate1"]:checked').val() == "NO") {
+    screenUpdate = false;
+  }else{
+    screenUpdate = null;
+  }
+  if( $('input[name="screenDelete1"]:checked').val() == "YES"){
+    screenDelete = true;
+  }else if ($('input[name="screenDelete1"]:checked').val() == "NO") {
+    screenDelete = false;
+  }else{
+    screenDelete = null;
+  }
+  if( $('input[name="screenDisplay1"]:checked').val() == "YES"){
+    screenDisplay = true;
+  }else if ($('input[name="screenDisplay1"]:checked').val() == "NO") {
+    screenDisplay = false;
+  }else{
+    screenDisplay = null;
+  }
+  if( $('input[name="screenPrint1"]:checked').val() == "YES"){
+    screenPrint = true;
+  }else if ($('input[name="screenPrint1"]:checked').val() == "NO") {
+    screenPrint = false;
+  }else{
+    screenPrint = null;
+  }
+  if( $('input[name="screenValidate1"]:checked').val() == "YES"){
+    screenValidate = true;
+  }else if ($('input[name="screenValidate1"]:checked').val() == "NO") {
+    screenValidate = false;
+  }else{
+    screenValidate = null;
+  }
+  if( $('input[name="screenShow1"]:checked').val() == "YES"){
+    screenShow = true;
+  }else if ($('input[name="screenShow1"]:checked').val() == "NO") {
+    screenShow = false;
+  }else{
+    screenShow = null;
+  }
+  if( $('input[name="screenUpdateSystem1"]:checked').val() == "YES"){
+    screenUpdateSystem = true;
+  }else if ($('input[name="screenUpdateSystem1"]:checked').val() == "NO") {
+    screenUpdateSystem = false;
+  }else{
+    screenUpdateSystem = null;
+  }
+  if( $('input[name="screenClear1"]:checked').val() == "YES"){
+    screenClear = true;
+  }else if ($('input[name="screenClear1"]:checked').val() == "NO") {
+    screenClear = false;
+  }else{
+    screenClear = null;
+  }
+  if( $('input[name="screenMonitor1"]:checked').val() == "YES"){
+    screenMonitor = true;
+  }else if ($('input[name="screenMonitor1"]:checked').val() == "NO") {
+    screenMonitor = false;
+  }else{
+    screenMonitor = null;
+  }
+  if( $('input[name="screenActivate1"]:checked').val() == "YES"){
+    screenActivate = true;
+  }else if ($('input[name="screenActivate1"]:checked').val() == "NO") {
+    screenActivate = false;
+  }else{
+    screenActivate = null;
+  }
+  if( $('input[name="screenOnOff1"]:checked').val() == "YES"){
+    screenOnOff = true;
+  }else if ($('input[name="screenOnOff1"]:checked').val() == "NO") {
+    screenOnOff = false;
+  }else{
+    screenOnOff = null;
+  }
+  if( $('input[name="segmentUpdate1"]:checked').val() == "YES"){
+    segmentUpdate = true;
+  }else if ($('input[name="segmentUpdate1"]:checked').val() == "NO") {
+    segmentUpdate = false;
+  }else{
+    segmentUpdate = null;
+  }
+  if( $('input[name="segmentDelete1"]:checked').val() == "YES"){
+    segmentDelete = true;
+  }else if ($('input[name="segmentDelete1"]:checked').val() == "NO") {
+    segmentDelete = false;
+  }else{
+    segmentDelete = null;
+  }
+  if( $('input[name="segmentDisplay1"]:checked').val() == "YES"){
+    segmentDisplay = true;
+  }else if ($('input[name="segmentDisplay1"]:checked').val() == "NO") {
+    segmentDisplay = false;
+  }else{
+    segmentDisplay = null;
+  }
+  if( $('input[name="segmentPrint1"]:checked').val() == "YES"){
+    segmentPrint = true;
+  }else if ($('input[name="segmentPrint1"]:checked').val() == "NO") {
+    segmentPrint = false;
+  }else{
+    segmentPrint = null;
+  }
+  if( $('input[name="segmentAffect1"]:checked').val() == "YES"){
+    segmentAffect = true;
+  }else if ($('input[name="segmentAffect1"]:checked').val() == "NO") {
+    segmentAffect = false;
+  }else{
+    segmentAffect = null;
+  }
+  if( $('input[name="segmentValidate1"]:checked').val() == "YES"){
+    segmentValidate = true;
+  }else if ($('input[name="segmentValidate1"]:checked').val() == "NO") {
+    segmentValidate = false;
+  }else{
+    segmentValidate = null;
+  }
+  if( $('input[name="tariffAdd1"]:checked').val() == "YES"){
+    tariffAdd = true;
+  }else if ($('input[name="tariffAdd1"]:checked').val() == "NO") {
+    tariffAdd = false;
+  }else{
+    tariffAdd = null;
+  }
+  if( $('input[name="tariffUpdate1"]:checked').val() == "YES"){
+    tariffUpdate = true;
+  }else if ($('input[name="tariffUpdate1"]:checked').val() == "NO") {
+    tariffUpdate = false;
+  }else{
+    tariffUpdate = null;
+  }
+  if( $('input[name="tariffDelete1"]:checked').val() == "YES"){
+    tariffDelete = true;
+  }else if ($('input[name="tariffDelete1"]:checked').val() == "NO") {
+    tariffDelete = false;
+  }else{
+    tariffDelete = null;
+  }
+  if( $('input[name="tariffDisplay1"]:checked').val() == "YES"){
+    tariffDisplay = true;
+  }else if ($('input[name="tariffDisplay1"]:checked').val() == "NO") {
+    tariffDisplay = false;
+  }else{
+    tariffDisplay = null;
+  }
+  if( $('input[name="tariffPrint1"]:checked').val() == "YES"){
+    tariffPrint = true;
+  }else if ($('input[name="tariffPrint1"]:checked').val() == "NO") {
+    tariffPrint = false;
+  }else{
+    tariffPrint = null;
+  }
+  if( $('input[name="tariffAffect1"]:checked').val() == "YES"){
+    tariffAffect = true;
+  }else if ($('input[name="tariffAffect1"]:checked').val() == "NO") {
+    tariffAffect = false;
+  }else{
+    tariffAffect = null;
+  }
+  if( $('input[name="tariffValidate1"]:checked').val() == "YES"){
+    tariffValidate = true;
+  }else if ($('input[name="tariffValidate1"]:checked').val() == "NO") {
+    tariffValidate = false;
+  }else{
+    tariffValidate = null;
+  }
+  if( $('input[name="bookingAdd1"]:checked').val() == "YES"){
+    bookingAdd = true;
+  }else if ($('input[name="bookingAdd1"]:checked').val() == "NO") {
+    bookingAdd = false;
+  }else{
+    bookingAdd = null;
+  }
+  if( $('input[name="bookingUpdate1"]:checked').val() == "YES"){
+    bookingUpdate = true;
+  }else if ($('input[name="bookingUpdate1"]:checked').val() == "NO") {
+    bookingUpdate = false;
+  }else{
+    bookingUpdate = null;
+  }
+  if( $('input[name="bookingDisplay1"]:checked').val() == "YES"){
+    bookingDisplay = true;
+  }else if ($('input[name="bookingDisplay1"]:checked').val() == "NO") {
+    bookingDisplay = false;
+  }else{
+    bookingDisplay = null;
+  }
+  if( $('input[name="bookingPrint1"]:checked').val() == "YES"){
+    bookingPrint = true;
+  }else if ($('input[name="bookingPrint1"]:checked').val() == "NO") {
+    bookingPrint = false;
+  }else{
+    bookingPrint = null;
+  }
+  if( $('input[name="bookingValidate1"]:checked').val() == "YES"){
+    bookingValidate = true;
+  }else if ($('input[name="bookingValidate1"]:checked').val() == "NO") {
+    bookingValidate = false;
+  }else{
+    bookingValidate = null;
+  }
+  if( $('input[name="contentAdd1"]:checked').val() == "YES"){
+    contentAdd = true;
+  }else if ($('input[name="contentAdd1"]:checked').val() == "NO") {
+    contentAdd = false;
+  }else{
+    contentAdd = null;
+  }
+  if( $('input[name="contentDelete1"]:checked').val() == "YES"){
+    contentDelete = true;
+  }else if ($('input[name="contentDelete1"]:checked').val() == "NO") {
+    contentDelete = false;
+  }else{
+    contentDelete = null;
+  }
+  if( $('input[name="contentDisplay1"]:checked').val() == "YES"){
+    contentDisplay = true;
+  }else if ($('input[name="contentDisplay1"]:checked').val() == "NO") {
+    contentDisplay = false;
+  }else{
+    contentDisplay = null;
+  }
+  if( $('input[name="contentValidate1"]:checked').val() == "YES"){
+    contentValidate = true;
+  }else if ($('input[name="contentValidate1"]:checked').val() == "NO") {
+    contentValidate = false;
+  }else{
+    contentValidate = null;
+  }
+  if( $('input[name="roleAdd1"]:checked').val() == "YES"){
+    roleAdd = true;
+  }else if ($('input[name="roleAdd1"]:checked').val() == "NO") {
+    roleAdd = false;
+  }else{
+    roleAdd = null;
+  }
+  if( $('input[name="roleUpdate1"]:checked').val() == "YES"){
+    roleUpdate = true;
+  }else if ($('input[name="roleUpdate1"]:checked').val() == "NO") {
+    roleUpdate = false;
+  }else{
+    roleUpdate = null;
+  }
+  if( $('input[name="roleDelete1"]:checked').val() == "YES"){
+    roleDelete = true;
+  }else if ($('input[name="roleDelete1"]:checked').val() == "NO") {
+    roleDelete = false;
+  }else{
+    roleDelete = null;
+  }
+  if( $('input[name="roleDisplay1"]:checked').val() == "YES"){
+    roleDisplay = true;
+  }else if ($('input[name="roleDisplay1"]:checked').val() == "NO") {
+    roleDisplay = false;
+  }else{
+    roleDisplay = null;
+  }
+  if( $('input[name="rolePrint1"]:checked').val() == "YES"){
+    rolePrint = true;
+  }else if ($('input[name="rolePrint1"]:checked').val() == "NO") {
+    rolePrint = false;
+  }else{
+    rolePrint = null;
+  }
+  if( $('input[name="roleAffect1"]:checked').val() == "YES"){
+    roleAffect = true;
+  }else if ($('input[name="roleAffect1"]:checked').val() == "NO") {
+    roleAffect = false;
+  }else{
+    roleAffect = null;
+  }
+  if( $('input[name="roleValidate1"]:checked').val() == "YES"){
+    roleValidate = true;
+  }else if ($('input[name="roleValidate1"]:checked').val() == "NO") {
+    roleValidate = false;
+  }else{
+    roleValidate = null;
+  }
+  if( $('input[name="firmwareAdd1"]:checked').val() == "YES"){
+    firmwareAdd = true;
+  }else if ($('input[name="firmwareAdd1"]:checked').val() == "NO") {
+    firmwareAdd = false;
+  }else{
+    firmwareAdd = null;
+  }
+  if( $('input[name="firmwareUpdate1"]:checked').val() == "YES"){
+    firmwareUpdate = true;
+  }else if ($('input[name="firmwareUpdate1"]:checked').val() == "NO") {
+    firmwareUpdate = false;
+  }else{
+    firmwareUpdate = null;
+  }
+  if( $('input[name="firmwareDelete1"]:checked').val() == "YES"){
+    firmwareDelete = true;
+  }else if ($('input[name="firmwareDelete1"]:checked').val() == "NO") {
+    firmwareDelete = false;
+  }else{
+    firmwareDelete = null;
+  }
+  if( $('input[name="firmwareDisplay1"]:checked').val() == "YES"){
+    firmwareDisplay = true;
+  }else if ($('input[name="firmwareDisplay1"]:checked').val() == "NO") {
+    firmwareDisplay = false;
+  }else{
+    firmwareDisplay = null;
+  }
+  if( $('input[name="firmwarePrint1"]:checked').val() == "YES"){
+    firmwarePrint = true;
+  }else if ($('input[name="firmwarePrint1"]:checked').val() == "NO") {
+    firmwarePrint = false;
+  }else{
+    firmwarePrint = null;
+  }
+  if( $('input[name="firmwareValidate1"]:checked').val() == "YES"){
+    firmwareValidate = true;
+  }else if ($('input[name="firmwareValidate11"]:checked').val() == "NO") {
+    firmwareValidate = false;
+  }else{
+    firmwareValidate = null;
+  }
+  if( $('input[name="signatureAdd1"]:checked').val() == "YES"){
+    signatureAdd = true;
+  }else if ($('input[name="signatureAdd1"]:checked').val() == "NO") {
+    signatureAdd = false;
+  }else{
+    signatureAdd = null;
+  }
+  if( $('input[name="signatureValidate1"]:checked').val() == "YES"){
+    signatureValidate = true;
+  }else if ($('input[name="signatureValidate1"]:checked').val() == "NO") {
+    signatureValidate = false;
+  }else{
+    signatureValidate = null;
+  }
+  var role =
+    {
+      'roleName': roleName,
+      'currentNumber': 0,
+      'status': "HLD",
+      //'inputter': Session.get("UserLogged"),
+      //'authorizer': Session.get("UserLogged"),
+      'inputter': null,
+      'authorizer': null,
+      'dateTime': new Date(),
+      'code': Session.get("CLIENT_CODE_X"),
+      'accountAdd': accountAdd,
+      'accountUpdate': accountUpdate,
+      'accountDelete': accountDelete,
+      'accountDisplay': accountDisplay,
+      'accountPrint': accountPrint,
+      'accountValidate': accountValidate,
+      'contractAdd': contractAdd,
+      'contractUpdate': contractUpdate,
+      'contractDelete': contractDelete,
+      'contractDisplay': contractDisplay,
+      'contractPrint': contractPrint,
+      'contractValidate': contractValidate,
+      'contractSign': contractSign,
+      'articleAdd': articleAdd,
+      'articleUpdate': articleUpdate,
+      'articleDelete': articleDelete,
+      'articleDisplay': articleDisplay,
+      'articlePrint': articlePrint,
+      'articleValidate': articleValidate,
+      'invoiceAdd': invoiceAdd,
+      'invoiceUpdate': invoiceUpdate,
+      'invoiceDelete': invoiceDelete,
+      'invoiceDisplay': invoiceDisplay,
+      'invoicePrint': invoicePrint,
+      'invoiceSign': invoiceSign,
+      'invoiceValidate': invoiceValidate,
+      'clientAdd': clientAdd,
+      'clientUpdate': clientUpdate,
+      'clientDelete': clientDelete,
+      'clientDisplay': clientDisplay,
+      'clientPrint': clientPrint,
+      'clientValidate': clientValidate,
+      'clientAccountManagement': clientAccountManagement,
+      'screenUpdate': screenUpdate,
+      'screenDelete': screenDelete,
+      'screenDisplay': screenDisplay,
+      'screenPrint': screenPrint,
+      'screenValidate': screenValidate,
+      'screenShow': screenShow,
+      'screenUpdateSystem': screenUpdateSystem,
+      'screenClear': screenClear,
+      'screenMonitor': screenMonitor,
+      'screenActivate': screenActivate,
+      'screenOnOff': screenOnOff,
+      'segmentUpdate': segmentUpdate,
+      'segmentDelete': segmentDelete,
+      'segmentDisplay': segmentDisplay,
+      'segmentPrint': segmentPrint,
+      'segmentAffect': segmentAffect,
+      'segmentValidate': segmentValidate,
+      'tariffAdd': tariffAdd,
+      'tariffUpdate': tariffUpdate,
+      'tariffDelete': tariffDelete,
+      'tariffDisplay': tariffDisplay,
+      'tariffPrint': tariffPrint,
+      'tariffAffect': tariffAffect,
+      'tariffValidate': tariffValidate,
+      'bookingAdd': bookingAdd,
+      'bookingUpdate': bookingUpdate,
+      'bookingDelete': bookingDelete,
+      'bookingDisplay': bookingDisplay,
+      'bookingPrint': bookingPrint,
+      'bookingValidate': bookingValidate,
+      'contentAdd': contentAdd,
+      'contentDelete': contentDelete,
+      'contentDisplay': contentDisplay,
+      'contentValidate': contentValidate,
+      'roleAdd': roleAdd,
+      'roleUpdate': roleUpdate,
+      'roleDelete': roleDelete,
+      'roleDisplay': roleDisplay,
+      'rolePrint': rolePrint,
+      'roleAffect': roleAffect,
+      'roleValidate': roleValidate,
+      'firmwareAdd': firmwareAdd,
+      'firmwareUpdate': firmwareUpdate,
+      'firmwareDelete': firmwareDelete,
+      'firmwareDisplay': firmwareDisplay,
+      'firmwarePrint': firmwarePrint,
+      'firmwareValidate': firmwareValidate,
+      'signatureAdd': signatureAdd,
+      'signatureValidate': signatureValidate
+    };
+  return role;
+}
+function getValuesFromFormForEditAu(){
+  if (document.getElementById('roleName2') != null) {
+    var roleName = document.getElementById("roleName2").value;
+  }else {
+    var roleName = null;
+  }
+  var accountAdd = null;
+  var accountUpdate = null;
+  var accountDelete = null;
+  var accountDisplay = null;
+  var accountPrint = null;
+  var accountValidate = null;
+  var contractAdd = null;
+  var contractUpdate = null;
+  var contractDelete = null;
+  var contractDisplay = null;
+  var contractPrint = null;
+  var contractValidate = null;
+  var contractSign = null;
+  var articleAdd = null;
+  var articleUpdate = null;
+  var articleDelete = null;
+  var articleDisplay = null;
+  var articlePrint = null;
+  var articleValidate = null;
+  var invoiceAdd = null;
+  var invoiceUpdate = null;
+  var invoiceDelete = null;
+  var invoiceDisplay = null;
+  var invoicePrint = null;
+  var invoiceSign = null;
+  var invoiceValidate = null;
+  var clientAdd = null;
+  var clientUpdate = null;
+  var clientDelete = null;
+  var clientDisplay = null;
+  var clientPrint = null;
+  var clientValidate = null;
+  var clientAccountManagement = null;
+  var screenUpdate = null;
+  var screenDelete = null;
+  var screenDisplay = null;
+  var screenPrint = null;
+  var screenValidate = null;
+  var screenShow = null;
+  var screenUpdateSystem = null;
+  var screenClear = null;
+  var screenMonitor = null;
+  var screenActivate = null;
+  var screenOnOff = null;
+  var segmentUpdate = null;
+  var segmentDelete = null;
+  var segmentDisplay = null;
+  var segmentPrint = null;
+  var segmentAffect = null;
+  var segmentValidate = null;
+  var tariffAdd = null;
+  var tariffUpdate = null;
+  var tariffDelete = null;
+  var tariffDisplay = null;
+  var tariffPrint = null;
+  var tariffAffect = null;
+  var tariffValidate = null;
+  var bookingAdd = null;
+  var bookingUpdate = null;
+  var bookingDelete = null;
+  var bookingDisplay = null;
+  var bookingPrint = null;
+  var bookingValidate = null;
+  var contentAdd = null;
+  var contentDelete = null;
+  var contentDisplay = null;
+  var contentValidate = null;
+  var roleAdd = null;
+  var roleUpdate = null;
+  var roleDelete = null;
+  var roleDisplay = null;
+  var rolePrint = null;
+  var roleAffect = null;
+  var roleValidate = null;
+  var firmwareAdd = null;
+  var firmwareUpdate = null;
+  var firmwareDelete = null;
+  var firmwareDisplay = null;
+  var firmwarePrint = null;
+  var firmwareValidate = null;
+  var signatureAdd = null;
+  var signatureValidate = null;
+  if( $('input[name="accountAdd2"]:checked').val() == "YES"){
+    accountAdd = true;
+  }else if( $('input[name="accountAdd2"]:checked').val() == "YES"){
+    accountAdd = false;
+  }else {
+    accountAdd = null;
+  }
+  if( $('input[name="accountUpdate2"]:checked').val() == "YES"){
+    accountUpdate = true;
+  }else if( $('input[name="accountUpdate2"]:checked').val() == "NO"){
+    accountUpdate = false;
+  }else {
+    accountUpdate = null;
+  }
+  if( $('input[name="accountDelete2"]:checked').val() == "YES"){
+    accountDelete = true;
+  }else if( $('input[name="accountDelete2"]:checked').val() == "NO"){
+    accountDelete = false;
+  }else {
+    accountDelete = null;
+  }
+  if( $('input[name="accountDisplay2"]:checked').val() == "YES"){
+    accountDisplay = true;
+  }else if( $('input[name="accountDisplay2"]:checked').val() == "NO"){
+    accountDisplay = false;
+  }else {
+    accountDisplay = null;
+  }
+  if( $('input[name="accountPrint2"]:checked').val() == "YES"){
+    accountPrint = true;
+  }else if( $('input[name="accountPrint2"]:checked').val() == "NO"){
+    accountPrint = false;
+  }else {
+    accountPrint = null;
+  }
+  if( $('input[name="accountValidate2"]:checked').val() == "YES"){
+    accountValidate = true;
+  }else if( $('input[name="accountValidate2"]:checked').val() == "NO"){
+    accountValidate = false;
+  }else {
+    accountValidate = null;
+  }
+  if( $('input[name="contractAdd2"]:checked').val() == "YES"){
+    contractAdd = true;
+  }else if( $('input[name="contractAdd2"]:checked').val() == "NO"){
+    contractAdd = false;
+  }else {
+    contractAdd = null;
+  }
+  if( $('input[name="contractUpdate2"]:checked').val() == "YES"){
+    contractUpdate = true;
+  }else if( $('input[name="contractUpdate2"]:checked').val() == "NO"){
+    contractUpdate = false;
+  }else {
+    contractUpdate = null;
+  }
+  if( $('input[name="contractDelete2"]:checked').val() == "YES"){
+    contractDelete = true;
+  }else if( $('input[name="contractDelete2"]:checked').val() == "NO"){
+    contractDelete = false;
+  }else {
+    contractDelete = null;
+  }
+  if( $('input[name="contractDisplay2"]:checked').val() == "YES"){
+    contractDisplay = true;
+  }else if( $('input[name="contractDisplay2"]:checked').val() == "NO"){
+    contractDisplay = false;
+  }else {
+    contractDisplay = null;
+  }
+  if( $('input[name="contractPrint2"]:checked').val() == "YES"){
+    contractPrint = true;
+  }else if( $('input[name="contractPrint2"]:checked').val() == "NO"){
+    contractPrint = false;
+  }else {
+    contractPrint = null;
+  }
+  if( $('input[name="contractValidate2"]:checked').val() == "YES"){
+    contractValidate = true;
+  }else if( $('input[name="contractValidate2"]:checked').val() == "NO"){
+    contractValidate = false;
+  }else {
+    contractValidate = null;
+  }
+  if( $('input[name="contractSign2"]:checked').val() == "YES"){
+    contractSign = true;
+  }else if( $('input[name="contractSign2"]:checked').val() == "NO"){
+    contractSign = false;
+  }else{
+    contractSign = null;
+  }
+  if( $('input[name="articleAdd2"]:checked').val() == "YES"){
+    articleAdd = true;
+  }else if ($('input[name="articleAdd2"]:checked').val() == "NO") {
+    articleAdd = false;
+  }else{
+    articleAdd = null;
+  }
+  if( $('input[name="articleUpdate2"]:checked').val() == "YES"){
+    articleUpdate = true;
+  }else if ($('input[name="articleUpdate2"]:checked').val() == "NO") {
+    articleUpdate = false;
+  }else{
+    articleUpdate = null;
+  }
+  if( $('input[name="articleDelete2"]:checked').val() == "YES"){
+    articleDelete = true;
+  }else if ($('input[name="articleDelete2"]:checked').val() == "NO") {
+    articleDelete = false;
+  }else{
+    articleDelete = null;
+  }
+  if( $('input[name="articleDisplay2"]:checked').val() == "YES"){
+    articleDisplay = true;
+  }else if ($('input[name="articleDisplay2"]:checked').val() == "NO") {
+    articleDisplay = false;
+  }else{
+    articleDisplay = null;
+  }
+  if( $('input[name="articlePrint2"]:checked').val() == "YES"){
+    articlePrint = true;
+  }else if ($('input[name="articlePrint2"]:checked').val() == "NO") {
+    articlePrint = false;
+  }else{
+    articlePrint = null;
+  }
+  if( $('input[name="articleValidate2"]:checked').val() == "YES"){
+    articleValidate = true;
+  }else if ($('input[name="articleValidate2"]:checked').val() == "NO") {
+    articleValidate = false;
+  }else{
+    articleValidate = null;
+  }
+  if( $('input[name="invoiceAdd2"]:checked').val() == "YES"){
+    invoiceAdd = true;
+  }else if ($('input[name="invoiceAdd2"]:checked').val() == "NO") {
+    invoiceAdd = false;
+  }else{
+    invoiceAdd = null;
+  }
+  if( $('input[name="invoiceUpdate2"]:checked').val() == "YES"){
+    invoiceUpdate = true;
+  }else if ($('input[name="invoiceUpdate2"]:checked').val() == "NO") {
+    invoiceUpdate = false;
+  }else{
+    invoiceUpdate = null;
+  }
+  if( $('input[name="invoiceDelete2"]:checked').val() == "YES"){
+    invoiceDelete = true;
+  }else if ($('input[name="invoiceDelete2"]:checked').val() == "NO") {
+    invoiceDelete = false;
+  }else{
+    invoiceDelete = null;
+  }
+  if( $('input[name="invoiceDisplay2"]:checked').val() == "YES"){
+    invoiceDisplay = true;
+  }else if ($('input[name="invoiceDisplay2"]:checked').val() == "NO") {
+    invoiceDisplay = false;
+  }else{
+    invoiceDisplay = null;
+  }
+  if( $('input[name="invoicePrint2"]:checked').val() == "YES"){
+    invoicePrint = true;
+  }else if ($('input[name="invoicePrint2"]:checked').val() == "NO") {
+    invoicePrint = false;
+  }else{
+    invoicePrint = null;
+  }
+  if( $('input[name="invoiceSign2"]:checked').val() == "YES"){
+    invoiceSign = true;
+  }else if ($('input[name="invoiceSign2"]:checked').val() == "NO") {
+    invoiceSign = false;
+  }else{
+    invoiceSign = null;
+  }
+  if( $('input[name="invoiceValidate2"]:checked').val() == "YES"){
+    invoiceValidate = true;
+  }else if ($('input[name="invoiceValidate2"]:checked').val() == "NO") {
+    invoiceValidate = false;
+  }else{
+    invoiceValidate = null;
+  }
+  if( $('input[name="clientAdd2"]:checked').val() == "YES"){
+    clientAdd = true;
+  }else if ($('input[name="clientAdd2"]:checked').val() == "NO") {
+    clientAdd = false;
+  }else{
+    clientAdd = null;
+  }
+  if( $('input[name="clientUpdate2"]:checked').val() == "YES"){
+    clientUpdate = true;
+  }else if ($('input[name="clientUpdate2"]:checked').val() == "NO") {
+    clientUpdate = false;
+  }else{
+    clientUpdate = null;
+  }
+  if( $('input[name="clientDelete2"]:checked').val() == "YES"){
+    clientDelete = true;
+  }else if ($('input[name="clientDelete2"]:checked').val() == "NO") {
+    clientDelete = false;
+  }else{
+    clientDelete = null;
+  }
+  if( $('input[name="clientDisplay2"]:checked').val() == "YES"){
+    clientDisplay = true;
+  }else if ($('input[name="clientDisplay2"]:checked').val() == "NO") {
+    clientDisplay = false;
+  }else{
+    clientDisplay = null;
+  }
+  if( $('input[name="clientPrint2"]:checked').val() == "YES"){
+    clientPrint = true;
+  }else if ($('input[name="clientPrint2"]:checked').val() == "NO") {
+    clientPrint = false;
+  }else{
+    clientPrint = null;
+  }
+  if( $('input[name="clientValidate2"]:checked').val() == "YES"){
+    clientValidate = true;
+  }else if ($('input[name="clientValidate2"]:checked').val() == "NO") {
+    clientValidate = false;
+  }else{
+    clientValidate = null;
+  }
+  if( $('input[name="clientAccountManagement2"]:checked').val() == "YES"){
+    clientAccountManagement = true;
+  }else if ($('input[name="clientAccountManagement2"]:checked').val() == "NO") {
+    clientAccountManagement = false;
+  }else{
+    clientAccountManagement = null;
+  }
+  if( $('input[name="screenUpdate2"]:checked').val() == "YES"){
+    screenUpdate = true;
+  }else if ($('input[name="screenUpdate2"]:checked').val() == "NO") {
+    screenUpdate = false;
+  }else{
+    screenUpdate = null;
+  }
+  if( $('input[name="screenDelete2"]:checked').val() == "YES"){
+    screenDelete = true;
+  }else if ($('input[name="screenDelete2"]:checked').val() == "NO") {
+    screenDelete = false;
+  }else{
+    screenDelete = null;
+  }
+  if( $('input[name="screenDisplay2"]:checked').val() == "YES"){
+    screenDisplay = true;
+  }else if ($('input[name="screenDisplay2"]:checked').val() == "NO") {
+    screenDisplay = false;
+  }else{
+    screenDisplay = null;
+  }
+  if( $('input[name="screenPrint2"]:checked').val() == "YES"){
+    screenPrint = true;
+  }else if ($('input[name="screenPrint2"]:checked').val() == "NO") {
+    screenPrint = false;
+  }else{
+    screenPrint = null;
+  }
+  if( $('input[name="screenValidate2"]:checked').val() == "YES"){
+    screenValidate = true;
+  }else if ($('input[name="screenValidate2"]:checked').val() == "NO") {
+    screenValidate = false;
+  }else{
+    screenValidate = null;
+  }
+  if( $('input[name="screenShow2"]:checked').val() == "YES"){
+    screenShow = true;
+  }else if ($('input[name="screenShow2"]:checked').val() == "NO") {
+    screenShow = false;
+  }else{
+    screenShow = null;
+  }
+  if( $('input[name="screenUpdateSystem2"]:checked').val() == "YES"){
+    screenUpdateSystem = true;
+  }else if ($('input[name="screenUpdateSystem2"]:checked').val() == "NO") {
+    screenUpdateSystem = false;
+  }else{
+    screenUpdateSystem = null;
+  }
+  if( $('input[name="screenClear2"]:checked').val() == "YES"){
+    screenClear = true;
+  }else if ($('input[name="screenClear2"]:checked').val() == "NO") {
+    screenClear = false;
+  }else{
+    screenClear = null;
+  }
+  if( $('input[name="screenMonitor2"]:checked').val() == "YES"){
+    screenMonitor = true;
+  }else if ($('input[name="screenMonitor2"]:checked').val() == "NO") {
+    screenMonitor = false;
+  }else{
+    screenMonitor = null;
+  }
+  if( $('input[name="screenActivate2"]:checked').val() == "YES"){
+    screenActivate = true;
+  }else if ($('input[name="screenActivate2"]:checked').val() == "NO") {
+    screenActivate = false;
+  }else{
+    screenActivate = null;
+  }
+  if( $('input[name="screenOnOff2"]:checked').val() == "YES"){
+    screenOnOff = true;
+  }else if ($('input[name="screenOnOff2"]:checked').val() == "NO") {
+    screenOnOff = false;
+  }else{
+    screenOnOff = null;
+  }
+  if( $('input[name="segmentUpdate2"]:checked').val() == "YES"){
+    segmentUpdate = true;
+  }else if ($('input[name="segmentUpdate2"]:checked').val() == "NO") {
+    segmentUpdate = false;
+  }else{
+    segmentUpdate = null;
+  }
+  if( $('input[name="segmentDelete2"]:checked').val() == "YES"){
+    segmentDelete = true;
+  }else if ($('input[name="segmentDelete2"]:checked').val() == "NO") {
+    segmentDelete = false;
+  }else{
+    segmentDelete = null;
+  }
+  if( $('input[name="segmentDisplay2"]:checked').val() == "YES"){
+    segmentDisplay = true;
+  }else if ($('input[name="segmentDisplay2"]:checked').val() == "NO") {
+    segmentDisplay = false;
+  }else{
+    segmentDisplay = null;
+  }
+  if( $('input[name="segmentPrint2"]:checked').val() == "YES"){
+    segmentPrint = true;
+  }else if ($('input[name="segmentPrint2"]:checked').val() == "NO") {
+    segmentPrint = false;
+  }else{
+    segmentPrint = null;
+  }
+  if( $('input[name="segmentAffect2"]:checked').val() == "YES"){
+    segmentAffect = true;
+  }else if ($('input[name="segmentAffect2"]:checked').val() == "NO") {
+    segmentAffect = false;
+  }else{
+    segmentAffect = null;
+  }
+  if( $('input[name="segmentValidate2"]:checked').val() == "YES"){
+    segmentValidate = true;
+  }else if ($('input[name="segmentValidate2"]:checked').val() == "NO") {
+    segmentValidate = false;
+  }else{
+    segmentValidate = null;
+  }
+  if( $('input[name="tariffAdd2"]:checked').val() == "YES"){
+    tariffAdd = true;
+  }else if ($('input[name="tariffAdd2"]:checked').val() == "NO") {
+    tariffAdd = false;
+  }else{
+    tariffAdd = null;
+  }
+  if( $('input[name="tariffUpdate2"]:checked').val() == "YES"){
+    tariffUpdate = true;
+  }else if ($('input[name="tariffUpdate2"]:checked').val() == "NO") {
+    tariffUpdate = false;
+  }else{
+    tariffUpdate = null;
+  }
+  if( $('input[name="tariffDelete2"]:checked').val() == "YES"){
+    tariffDelete = true;
+  }else if ($('input[name="tariffDelete2"]:checked').val() == "NO") {
+    tariffDelete = false;
+  }else{
+    tariffDelete = null;
+  }
+  if( $('input[name="tariffDisplay2"]:checked').val() == "YES"){
+    tariffDisplay = true;
+  }else if ($('input[name="tariffDisplay2"]:checked').val() == "NO") {
+    tariffDisplay = false;
+  }else{
+    tariffDisplay = null;
+  }
+  if( $('input[name="tariffPrint2"]:checked').val() == "YES"){
+    tariffPrint = true;
+  }else if ($('input[name="tariffPrint2"]:checked').val() == "NO") {
+    tariffPrint = false;
+  }else{
+    tariffPrint = null;
+  }
+  if( $('input[name="tariffAffect2"]:checked').val() == "YES"){
+    tariffAffect = true;
+  }else if ($('input[name="tariffAffect2"]:checked').val() == "NO") {
+    tariffAffect = false;
+  }else{
+    tariffAffect = null;
+  }
+  if( $('input[name="tariffValidate2"]:checked').val() == "YES"){
+    tariffValidate = true;
+  }else if ($('input[name="tariffValidate2"]:checked').val() == "NO") {
+    tariffValidate = false;
+  }else{
+    tariffValidate = null;
+  }
+  if( $('input[name="bookingAdd2"]:checked').val() == "YES"){
+    bookingAdd = true;
+  }else if ($('input[name="bookingAdd2"]:checked').val() == "NO") {
+    bookingAdd = false;
+  }else{
+    bookingAdd = null;
+  }
+  if( $('input[name="bookingUpdate2"]:checked').val() == "YES"){
+    bookingUpdate = true;
+  }else if ($('input[name="bookingUpdate2"]:checked').val() == "NO") {
+    bookingUpdate = false;
+  }else{
+    bookingUpdate = null;
+  }
+  if( $('input[name="bookingDisplay2"]:checked').val() == "YES"){
+    bookingDisplay = true;
+  }else if ($('input[name="bookingDisplay2"]:checked').val() == "NO") {
+    bookingDisplay = false;
+  }else{
+    bookingDisplay = null;
+  }
+  if( $('input[name="bookingPrint2"]:checked').val() == "YES"){
+    bookingPrint = true;
+  }else if ($('input[name="bookingPrint2"]:checked').val() == "NO") {
+    bookingPrint = false;
+  }else{
+    bookingPrint = null;
+  }
+  if( $('input[name="bookingValidate2"]:checked').val() == "YES"){
+    bookingValidate = true;
+  }else if ($('input[name="bookingValidate2"]:checked').val() == "NO") {
+    bookingValidate = false;
+  }else{
+    bookingValidate = null;
+  }
+  if( $('input[name="contentAdd2"]:checked').val() == "YES"){
+    contentAdd = true;
+  }else if ($('input[name="contentAdd2"]:checked').val() == "NO") {
+    contentAdd = false;
+  }else{
+    contentAdd = null;
+  }
+  if( $('input[name="contentDelete2"]:checked').val() == "YES"){
+    contentDelete = true;
+  }else if ($('input[name="contentDelete2"]:checked').val() == "NO") {
+    contentDelete = false;
+  }else{
+    contentDelete = null;
+  }
+  if( $('input[name="contentDisplay2"]:checked').val() == "YES"){
+    contentDisplay = true;
+  }else if ($('input[name="contentDisplay2"]:checked').val() == "NO") {
+    contentDisplay = false;
+  }else{
+    contentDisplay = null;
+  }
+  if( $('input[name="contentValidate2"]:checked').val() == "YES"){
+    contentValidate = true;
+  }else if ($('input[name="contentValidate2"]:checked').val() == "NO") {
+    contentValidate = false;
+  }else{
+    contentValidate = null;
+  }
+  if( $('input[name="roleAdd2"]:checked').val() == "YES"){
+    roleAdd = true;
+  }else if ($('input[name="roleAdd2"]:checked').val() == "NO") {
+    roleAdd = false;
+  }else{
+    roleAdd = null;
+  }
+  if( $('input[name="roleUpdate2"]:checked').val() == "YES"){
+    roleUpdate = true;
+  }else if ($('input[name="roleUpdate2"]:checked').val() == "NO") {
+    roleUpdate = false;
+  }else{
+    roleUpdate = null;
+  }
+  if( $('input[name="roleDelete2"]:checked').val() == "YES"){
+    roleDelete = true;
+  }else if ($('input[name="roleDelete2"]:checked').val() == "NO") {
+    roleDelete = false;
+  }else{
+    roleDelete = null;
+  }
+  if( $('input[name="roleDisplay2"]:checked').val() == "YES"){
+    roleDisplay = true;
+  }else if ($('input[name="roleDisplay2"]:checked').val() == "NO") {
+    roleDisplay = false;
+  }else{
+    roleDisplay = null;
+  }
+  if( $('input[name="rolePrint2"]:checked').val() == "YES"){
+    rolePrint = true;
+  }else if ($('input[name="rolePrint2"]:checked').val() == "NO") {
+    rolePrint = false;
+  }else{
+    rolePrint = null;
+  }
+  if( $('input[name="roleAffect2"]:checked').val() == "YES"){
+    roleAffect = true;
+  }else if ($('input[name="roleAffect2"]:checked').val() == "NO") {
+    roleAffect = false;
+  }else{
+    roleAffect = null;
+  }
+  if( $('input[name="roleValidate2"]:checked').val() == "YES"){
+    roleValidate = true;
+  }else if ($('input[name="roleValidate2"]:checked').val() == "NO") {
+    roleValidate = false;
+  }else{
+    roleValidate = null;
+  }
+  if( $('input[name="firmwareAdd2"]:checked').val() == "YES"){
+    firmwareAdd = true;
+  }else if ($('input[name="firmwareAdd2"]:checked').val() == "NO") {
+    firmwareAdd = false;
+  }else{
+    firmwareAdd = null;
+  }
+  if( $('input[name="firmwareUpdate2"]:checked').val() == "YES"){
+    firmwareUpdate = true;
+  }else if ($('input[name="firmwareUpdate2"]:checked').val() == "NO") {
+    firmwareUpdate = false;
+  }else{
+    firmwareUpdate = null;
+  }
+  if( $('input[name="firmwareDelete2"]:checked').val() == "YES"){
+    firmwareDelete = true;
+  }else if ($('input[name="firmwareDelete2"]:checked').val() == "NO") {
+    firmwareDelete = false;
+  }else{
+    firmwareDelete = null;
+  }
+  if( $('input[name="firmwareDisplay2"]:checked').val() == "YES"){
+    firmwareDisplay = true;
+  }else if ($('input[name="firmwareDisplay2"]:checked').val() == "NO") {
+    firmwareDisplay = false;
+  }else{
+    firmwareDisplay = null;
+  }
+  if( $('input[name="firmwarePrint2"]:checked').val() == "YES"){
+    firmwarePrint = true;
+  }else if ($('input[name="firmwarePrint2"]:checked').val() == "NO") {
+    firmwarePrint = false;
+  }else{
+    firmwarePrint = null;
+  }
+  if( $('input[name="firmwareValidate2"]:checked').val() == "YES"){
+    firmwareValidate = true;
+  }else if ($('input[name="firmwareValidate12"]:checked').val() == "NO") {
+    firmwareValidate = false;
+  }else{
+    firmwareValidate = null;
+  }
+  if( $('input[name="signatureAdd2"]:checked').val() == "YES"){
+    signatureAdd = true;
+  }else if ($('input[name="signatureAdd2"]:checked').val() == "NO") {
+    signatureAdd = false;
+  }else{
+    signatureAdd = null;
+  }
+  if( $('input[name="signatureValidate2"]:checked').val() == "YES"){
+    signatureValidate = true;
+  }else if ($('input[name="signatureValidate2"]:checked').val() == "NO") {
+    signatureValidate = false;
+  }else{
+    signatureValidate = null;
+  }
+  var role =
+    {
+      'roleName': roleName,
+      'currentNumber': 0,
+      'status': "HLD",
+      //'inputter': Session.get("UserLogged"),
+      //'authorizer': Session.get("UserLogged"),
+      'inputter': null,
+      'authorizer': null,
+      'dateTime': new Date(),
+      'code': Session.get("CLIENT_CODE_X"),
+      'accountAdd': accountAdd,
+      'accountUpdate': accountUpdate,
+      'accountDelete': accountDelete,
+      'accountDisplay': accountDisplay,
+      'accountPrint': accountPrint,
+      'accountValidate': accountValidate,
+      'contractAdd': contractAdd,
+      'contractUpdate': contractUpdate,
+      'contractDelete': contractDelete,
+      'contractDisplay': contractDisplay,
+      'contractPrint': contractPrint,
+      'contractValidate': contractValidate,
+      'contractSign': contractSign,
+      'articleAdd': articleAdd,
+      'articleUpdate': articleUpdate,
+      'articleDelete': articleDelete,
+      'articleDisplay': articleDisplay,
+      'articlePrint': articlePrint,
+      'articleValidate': articleValidate,
+      'invoiceAdd': invoiceAdd,
+      'invoiceUpdate': invoiceUpdate,
+      'invoiceDelete': invoiceDelete,
+      'invoiceDisplay': invoiceDisplay,
+      'invoicePrint': invoicePrint,
+      'invoiceSign': invoiceSign,
       'invoiceValidate': invoiceValidate,
       'clientAdd': clientAdd,
       'clientUpdate': clientUpdate,
@@ -1853,108 +3192,10 @@ function getItemSelected(){
   return array;
 }
 Template.allClientsRoles.rendered = function(){
-  $('#rolePopup').on('shown.bs.modal', function () {
-    $('.select2_demo_2', this).chosen();
-  });
-
+    //var userLogged = Session.get("UserLogged");
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
-    $(newRole).click(function(){
-      var role =
-        {
-          '_id': null,
-          'roleName': '',
-          'currentNumber': 0,
-          'status': '',
-          'inputter': '',
-          'authorizer': '',
-          'dateTime': '',
-          'code': Session.get("CLIENT_CODE_X"),
-          'accountAdd': null,
-          'accountUpdate': null,
-          'accountDelete': null,
-          'accountDisplay': null,
-          'accountPrint': null,
-          'accountValidate': null,
-          'contractAdd': null,
-          'contractUpdate': null,
-          'contractDelete': null,
-          'contractDisplay': null,
-          'contractPrint': null,
-          'contractValidate': null,
-          'contractSign': null,
-          'articleAdd': null,
-          'articleUpdate': null,
-          'articleDelete': null,
-          'articleDisplay': null,
-          'articlePrint': null,
-          'articleValidate': null,
-          'invoiceAdd': null,
-          'invoiceUpdate': null,
-          'invoiceDelete': null,
-          'invoiceDisplay': null,
-          'invoicePrint': null,
-          'invoiceValidate': null,
-          'clientAdd': null,
-          'clientUpdate': null,
-          'clientDelete': null,
-          'clientDisplay': null,
-          'clientPrint': null,
-          'clientValidate': null,
-          'clientAccountManagement': null,
-          'screenUpdate': null,
-          'screenDelete': null,
-          'screenDisplay': null,
-          'screenPrint': null,
-          'screenValidate': null,
-          'screenShow': null,
-          'screenUpdateSystem': null,
-          'screenClear': null,
-          'screenMonitor': null,
-          'screenActivate': null,
-          'screenOnOff': null,
-          'segmentUpdate': null,
-          'segmentDelete': null,
-          'segmentDisplay': null,
-          'segmentPrint': null,
-          'segmentAffect': null,
-          'segmentValidate': null,
-          'tariffAdd': null,
-          'tariffUpdate': null,
-          'tariffDelete': null,
-          'tariffDisplay': null,
-          'tariffPrint': null,
-          'tariffAffect': null,
-          'tariffValidate': null,
-          'bookingAdd': null,
-          'bookingUpdate': null,
-          'bookingDelete': null,
-          'bookingDisplay': null,
-          'bookingPrint': null,
-          'bookingValidate': null,
-          'contentAdd': null,
-          'contentDelete': null,
-          'contentDisplay': null,
-          'contentValidate': null,
-          'roleAdd': null,
-          'roleUpdate': null,
-          'roleDelete': null,
-          'roleDisplay': null,
-          'rolePrint': null,
-          'roleAffect': null,
-          'roleValidate': null,
-          'firmwareAdd': null,
-          'firmwareUpdate': null,
-          'firmwareDelete': null,
-          'firmwareDisplay': null,
-          'firmwarePrint': null,
-          'firmwareValidate': null,
-          'signatureAdd': null,
-          'signatureValidate': null
-        };
-       input(role);
-    });
     // Initialize i-check plugin
     $('.i-checks').iCheck({
         checkboxClass: 'icheckbox_square-green',
@@ -1963,10 +3204,36 @@ Template.allClientsRoles.rendered = function(){
 
 };
 Template.allClientsRoles.events({
+  'click .newRole'() {
+    $('#addRolePopup').modal();
+  },
+  //            Live events          //
+  'click .saveAdd'() {
+    var roleAdded = getValuesFromFormForAdd();
+    if(roleAdded.roleName == null){
+      swal({ title: "Alert !",text: "Please enter role name !",type: "warning",closeOnConfirm: true });
+    }else {
+      roleAdded.currentNumber = roleAdded.currentNumber + 1 ;
+      Roles_Authorization.insert(roleAdded);
+      toastr.success('With success','Addition done !');
+    }
+  },
+  'click .validateAdd'() {
+    var roleAdded = getValuesFromFormForAdd();
+    if(roleAdded.roleName == null){
+      swal({ title: "Alert !",text: "Please enter role name !",type: "warning",closeOnConfirm: true });
+    }else {
+      roleAdded.currentNumber = roleAdded.currentNumber + 1 ;
+      roleAdded.status = 'INAU';
+      Roles_Authorization.insert(roleAdded);
+      toastr.success('With success','Addition done !');
+    }
+  },
   'click .btn-edit'() {
     var role = Roles_Live.findOne({ "_id" : this._id });
     if (verifyEdit(role._id)){
-      input(role);
+      Session.set("roleSelected", role);
+      $('#updateRolePopup').modal();
     }else{
       swal({
         title: "Access denied",
@@ -1976,22 +3243,34 @@ Template.allClientsRoles.events({
       });
     }
   },
-  'click .editAu'() {
-    var role = Roles_Authorization.findOne({ "_id" : this._id });
-    updateRole(role);
+  'click .saveUpdate'() {
+    var roleUpdated = getValuesFromFormForEdit();
+    var role = Session.get("roleSelected");
+    var array = nextState(role.status);
+    hideShowButtons(array);
+    roleUpdated.inputter = "Saver LIVE ";
+    roleUpdated.currentNumber = role.currentNumber + 1;
+    roleUpdated._id = role._id;
+    Roles_Authorization.insert(roleUpdated);
+    toastr.success('With success','Edict done !');
   },
-  'click .validateAu'() {
-    var role = Roles_Authorization.findOne({ "_id" : this._id });
-    validate(role);
+  'click .validateUpdate'() {
+    var roleUpdated = getValuesFromFormForEdit();
+    var role = Session.get("roleSelected");
+    var array = nextState(role.status);
+    hideShowButtons(array);
+    roleUpdated.inputter = "Saver LIVE ";
+    roleUpdated.currentNumber = role.currentNumber + 1
+    roleUpdated._id = role._id;
+    roleUpdated.status = "INAU";
+    Roles_Authorization.insert(roleUpdated);
+    toastr.success('With success','Edict done !');
   },
   'click .btn-delete'() {
     var role = Roles_Live.findOne({ "_id" : this._id });
     if (verifyDelete(role._id)){
       $('#checkDeleting').modal();
-      $("#BtnDelete").click(function(){
-        deleteRole(role);
-        location.reload();
-      });
+      Session.set("deleteRoleLive",role);
     }else{
       swal({
         title: "Access denied",
@@ -2001,17 +3280,55 @@ Template.allClientsRoles.events({
       });
     }
   },
-  'click .authorizeAu'() {
-    $('#checkAuthorising').modal();
+  //          Authorization events        //
+  'click .editAu'() {
     var role = Roles_Authorization.findOne({ "_id" : this._id });
-    role.code = Session.get("CLIENT_CODE_X");
-    Session.set("RoleAuthorized",role);
+    Session.set("roleSelectedAu", role);
+    $('#updateAuRolePopup').modal();
   },
-  'click .BtnAuthorize'() {
-    authorize(Session.get("RoleAuthorized"));
+  'click .saveUpdateAu'() {
+    var roleUpdated = getValuesFromFormForEditAu();
+    console.log("New role : ", roleUpdated.roleName);
+    var role = Session.get("roleSelectedAu");
+    console.log("OLD role : ", role.roleName);
+    roleUpdated.inputter = "Saver AUTH";
+    roleUpdated._id = role._id;
+    Roles_Authorization.remove(role._id);
+    Roles_Authorization.insert(roleUpdated);
+    toastr.success('With success','Edict done !');
+  },
+  'click .validateUpdateAu'() {
+    var roleUpdated = getValuesFromFormForEditAu();
+    var role = Session.get("roleSelectedAu");
+    roleUpdated.status = "INAU";
+    roleUpdated.inputter = "Saver AUTH";
+    roleUpdated._id = role._id;
+    Roles_Authorization.remove(role._id);
+    Roles_Authorization.insert(roleUpdated);
+    toastr.success('With success','Edict done !');
+  },
+  'click .validateAu'() {
+    console.log("ID :", this._id);
+    Roles_Authorization.update({ "_id" : this._id }, {'$set':{ 'status' : 'INAU', 'inputter' : "xxx" , 'dateTime' : new Date() }});
+  },
+  'click .BtnDelete'() {
+    var role = Session.get("deleteRoleLive");
+    role._id = role._id+"#D"
+    role.status = "RNAU";
+    role.inputter = "Deleter";
+    role.dateTime = new Date();
+    role.authorizer = null;
+    Roles_Authorization.insert(role);
   },
   'click .cancelAu'() {
-    cancelRole(this._id);
+    var role = Roles_Authorization.findOne({ "_id" : this._id });
+    Session.set("deleteRoleAu",role);
+    $('#checkCancel').modal();
+  },
+  'click .BtnCancel'() {
+    var role = Session.get("deleteRoleAu");
+    Roles_Authorization.remove(role._id);
+    toastr.success('With success','Deleting operation done ');
   },
   'click .btn-details'() {
     var role = Roles_Live.findOne({ "_id" : this._id });
@@ -2023,12 +3340,17 @@ Template.allClientsRoles.events({
     Session.set("RoleDetails",role);
     $('#roleDetails').modal();
   },
-  'click .compare'() {
-    var role = Roles_Live.findOne({ "_id" : this._id });
-    var role1 = Roles_Authorization.findOne({ "_id" : this._id });
-    Session.set("RoleDetails",role);
-    Session.set("RoleCompare",role1);
-    $('#rolesCompare').modal();
+  'click .authorizeAu'() {
+    var oldRole = Roles_Live.findOne({ "_id" : this._id });
+    var newRole = Roles_Authorization.findOne({ "_id" : this._id });
+    console.log("New role name :", newRole.roleName);
+    Session.set("OLD_ROLE",oldRole);
+    Session.set("NEW_ROLE",newRole);
+    $('#checkAuthorising').modal();
+  },
+  'click .BtnAuthorize'() {
+    var role = Session.get("NEW_ROLE");
+    authorize(role);
   },
   'click .recap'() {
     $('#recapitulative').modal();
@@ -2160,6 +3482,15 @@ Template.allClientsRoles.helpers({
   },
   roleSelected() {
     return Session.get("roleSelected");
+  },
+  newRole() {
+    return Session.get("NEW_ROLE");
+  },
+  oldRole() {
+    return Session.get("OLD_ROLE");
+  },
+  roleSelectedAu() {
+    return Session.get("roleSelectedAu");
   },
   roleDetail() {
     return Session.get("RoleDetails");

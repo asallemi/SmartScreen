@@ -7,6 +7,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  */
+ .activeClass{
+   	background: #A9A9A9;
+  }
 .datepicker {
   padding: 4px;
   border-radius: 4px;

@@ -34,16 +34,17 @@ Router.route('/roles', {
   layoutTemplate: 'mainLayout',
   name: 'allRoles'
 });
+// Screens
+Router.route('/Screens',{
+  layoutTemplate: 'mainLayout',
+  name: 'allScreens'
+});
 // Segment
 Router.route('/Segment',{
   layoutTemplate: 'mainLayout',
   name: 'segment'
 });
-// Booking
-Router.route('/newBooking',{
-  layoutTemplate: 'mainLayout',
-  name: 'newBooking'
-});
+
 Router.route('/allBookings',{
   layoutTemplate: 'mainLayout',
   name: 'allBookings'
@@ -70,6 +71,11 @@ Router.route('/clients',{
    layoutTemplate: 'mainLayout',
    name: 'allClientsRoles'
  });
+// Firmware
+ Router.route('/firmwares',{
+   layoutTemplate: 'mainLayout',
+   name: 'allFirmwares'
+  });
 // Landing page
 Router.route('/landing',{
   layoutTemplate: 'mainLayout',

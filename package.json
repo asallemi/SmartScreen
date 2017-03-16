@@ -15,7 +15,10 @@
     "ldapjs": "^1.0.0",
     "meteor-node-stubs": "^0.2.3",
     "nodemailer": "^2.6.0",
+    "rsync": "^0.6.1",
+    "rsyncwrapper": "^2.0.1",
     "ssha": "^1.0.1",
+    "sshfs-mount": "^1.0.1",
     "zeromq": "^4.1.0"
   }
 }
