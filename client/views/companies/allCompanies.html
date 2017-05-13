@@ -1,0 +1,901 @@
+<template name="allCompanies">
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+        <h3 data-i18n="company.title"></h3>
+      </div>
+  </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-tools">
+                      <button type="button" class="btn btn-primary btn-xs newCompany"><i class="fa fa-bank"></i>   <span data-i18n="company.btn-newCompany"></span></button>
+                    </div>
+                    <br>
+                    <div class="ibox-content">
+                      <div class="clients-list">
+                          <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="company.onglet1"></span></a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="company.onglet2"></span></a></li>
+                          </ul>
+                          <div class="tab-content">
+                              <div id="tab-1" class="tab-pane active">
+                                <div class="full-height-scroll">
+                                  <div class="row">
+                                      <div class="col-lg-12">
+                                          <div class="ibox float-e-margins">
+                                            <br>
+                                            <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                                            <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                                              <thead>
+                                                <tr>
+                                                  <th data-i18n="company.name"></th>
+                                                  <th data-i18n="company.code"></th>
+                                                  <th data-i18n="company.country"></th>
+                                                  <th data-i18n="common.action" style="width: 365px;"></th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                {{#each companiesLive}}
+                                                  <tr class="gradeX">
+                                                    <td>{{name}}</td>
+                                                    <td>{{code}}</td>
+                                                    <td>{{country}}</td>
+                                                    <td>
+                                                      <a class="btn btn-outline btn-success btn-sm btnRoles" href="{{pathFor route='companyRoles'}}"><i class="fa fa-key"></i></a>
+                                                      <a class="btn btn-outline btn-success btn-sm btnUsers" href="{{pathFor route='companyAccounts'}}"><i class="fa fa-male"></i></a>
+                                                      <a class="btn btn-outline btn-success btn-sm btnContrats" href="{{pathFor route='allContracts'}}"><i class="fa fa-clipboard"></i></a>
+                                                      <a class="btn btn-outline btn-success btn-sm btnScreens" href="{{pathFor route='allScreens'}}"><i class="fa fa-desktop"></i></a>
+                                                      <a class="btn btn-outline btn-success btn-sm btnCurrencies" href="{{pathFor route='currencies'}}"><i class="fa fa-money"></i></a>
+                                                      <a class="btn btn-outline btn-success btn-sm btnClients" href="{{pathFor route='allClients'}}"><i class="fa fa-users"></i></a>
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                      {{#if equals role.clientUpdate true}}
+                                                        <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></button>
+                                                      {{/if}}
+                                                      {{#if equals role.clientDelete true}}
+                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                      {{/if}}
+                                                    </td>
+                                                  </tr>
+                                                {{/each}}
+                                              </tbody>
+                                              <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                      <ul class="pagination pull-right"></ul>
+                                                    </td>
+                                                </tr>
+                                              </tfoot>
+                                            </table>
+                                          </div>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+                            <div id="tab-2" class="tab-pane">
+                              <div class="full-height-scroll">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="ibox float-e-margins">
+                                          <br>
+                                          <input type="text" class="form-control input-sm m-b-xs" id="filter1" data-i18n="[placeholder]common.placeholder_search">
+                                          <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
+                                            <thead>
+                                              <tr>
+                                                <th data-i18n="company.name"></th>
+                                                <th data-i18n="company.code"></th>
+                                                <th data-i18n="company.country"></th>
+                                                <th data-i18n="common.action" style="width: 200px;"></th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {{#each companiesAuthorization}}
+                                                <tr>
+                                                  <td>{{name}}</td>
+                                                  <td>{{code}}</td>
+                                                  <td>{{country}}</td>
+                                                  <td>
+                                                    {{#if equals buttonDetail true}}
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                    {{/if}}
+                                                    {{#if equals buttonValidate true}}
+                                                      <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                    {{/if}}
+                                                    {{#if equals role.clientValidate true}}
+                                                        {{#if equals buttonAuthorize true}}
+                                                          <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                        {{/if}}
+                                                    {{/if}}
+                                                    {{#if equals buttonEdit true}}
+                                                      <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                    {{/if}}
+                                                    <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                  </td>
+                                                </tr>
+                                              {{/each}}
+                                            </tbody>
+                                            <tfoot>
+                                              <tr>
+                                                  <td colspan="5">
+                                                    <ul class="pagination pull-right"></ul>
+                                                  </td>
+                                              </tr>
+                                            </tfoot>
+                                          </table>
+                                      </div>
+                                    </div>
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="newCompany" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog" style="height: 200px;">
+          <div class="modal-content animated bounceInRight" style="width:1000px; left: -215px; top:-48px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                  </button>
+                  <i class="fa fa-bank modal-icon"></i>
+                  <h5 class="modal-title" data-i18n="company.newCompany"></h5>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div id="warning" class="alert alert-danger col-md-12" >
+                    <span data-i18n="company.requiredCompanyName"></span>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.name"></label> <input type="text" id="name" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.shortName"></label> <input type="text" id="shortName" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.sector"></label> <input type="text" id="sector" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.code"></label> <input type="text" id="code" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.email"></label> <input type="email" id="email" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.phone"></label> <input type="text" id="phone" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.fax"></label> <input type="text" id="fax" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.street"></label> <input type="text" id="street" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.postalCode"></label> <input type="text" id="codePostal" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.province"></label> <input type="text" id="province" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.city"></label> <input type="text" id="city" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.country"></label> <input type="text" id="country" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="message" data-i18n="company.pivotCurrency"></label>
+                      <select id="currency" class="select2_demo_1 form-control" style="width: 300px;">
+                        {{#each currencies}}
+                          {{#if equals isPivot true}}
+                            <option selected="" value="{{_id}}">{{currencyName}}</option>
+                          {{else}}
+                            <option value="{{_id}}">{{currencyName}}</option>
+                          {{/if}}
+                        {{/each}}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="message" data-i18n="company.logo"></label><br>
+                      <button id="upload" class="btn btn-sm btn-success" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="company.upload"></strong></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="ladda-button btn btn-primary validate" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger save" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="editCompanyLive" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog" style="height: 200px;">
+          <div class="modal-content animated bounceInRight" style="width:1000px; left: -215px; top:-48px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                  </button>
+                  <i class="fa fa-pencil modal-icon"></i>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.name"></label> <input type="text" id="name1" value="{{companySelectedLive.name}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.shortName"></label> <input type="text" id="shortName1" value="{{companySelectedLive.shortName}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.sector"></label> <input type="text" id="sector1" value="{{companySelectedLive.sector}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.code"></label> <input type="text" id="code1" value="{{companySelectedLive.code}}" class="form-control" disabled></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.email"></label> <input type="email" id="email1" value="{{companySelectedLive.email}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.phone"></label> <input type="text" id="phone1" value="{{companySelectedLive.phone}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.fax"></label> <input type="text" id="fax1" value="{{companySelectedLive.fax}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.street"></label> <input type="text" id="street1" value="{{companySelectedLive.street}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.postalCode"></label> <input type="text" id="codePostal1" value="{{companySelectedLive.codePostal}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.province"></label> <input type="text" id="province1" value="{{companySelectedLive.province}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.city"></label> <input type="text" id="city1" value="{{companySelectedLive.city}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.country"></label> <input type="text" id="country1" value="{{companySelectedLive.country}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="message" data-i18n="company.pivotCurrency"></label>
+                      <select id="currency1" class="select2_demo_1 form-control" style="width: 300px;">
+                        {{#each currenciesSelected}}
+                          {{#if equals status true}}
+                            <option value="{{_id}}" selected>{{currencyName}}</option>
+                          {{else}}
+                            <option value="{{_id}}">{{currencyName}}</option>
+                          {{/if}}
+                        {{/each}}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="message" data-i18n="company.logo"></label><br>
+                      <button class="btn btn-sm btn-success" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="company.upload"></strong></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="ladda-button btn btn-primary validateUpdateLive" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger saveUpdateLive" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="editCompanyAuthorization" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog" style="height: 200px;">
+          <div class="modal-content animated bounceInRight" style="width:1000px; left: -215px; top:-48px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                  </button>
+                  <i class="fa fa-pencil modal-icon"></i>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div id="warning_" class="alert alert-danger col-md-12" >
+                    <span data-i18n="company.requiredCompanyName"></span>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.name"></label> <input type="text" id="name2" value="{{companySelectedAu.name}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.shortName"></label> <input type="text" id="shortName2" value="{{companySelectedAu.shortName}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.sector"></label> <input type="text" id="sector2" value="{{companySelectedAu.sector}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.code"></label> <input type="text" id="code2" value="{{companySelectedAu.code}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.email"></label> <input type="email" id="email2" value="{{companySelectedAu.email}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.phone"></label> <input type="text" id="phone2" value="{{companySelectedAu.phone}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.fax"></label> <input type="text" id="fax2" value="{{companySelectedAu.fax}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.street"></label> <input type="text" id="street2" value="{{companySelectedAu.street}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.postalCode"></label> <input type="text" id="codePostal2" value="{{companySelectedAu.codePostal}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.province"></label> <input type="text" id="province2" value="{{companySelectedAu.province}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.city"></label> <input type="text" id="city2" value="{{companySelectedAu.city}}" class="form-control"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group"><label data-i18n="company.country"></label> <input type="text" id="country2" value="{{companySelectedAu.country}}" class="form-control"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="message" data-i18n="company.pivotCurrency"></label>
+                      <select id="currency2" class="select2_demo_1 form-control" style="width: 300px;">
+                        {{#each currenciesSelected}}
+                          {{#if equals status true}}
+                            <option value="{{_id}}" selected>{{currencyName}}</option>
+                          {{else}}
+                            <option value="{{_id}}">{{currencyName}}</option>
+                          {{/if}}
+                        {{/each}}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="message" data-i18n="company.logo"></label><br>
+                      <button class="btn btn-sm btn-success" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="company.upload"></strong></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="ladda-button btn btn-primary validateUpdateAuthorization" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger saveUpdateAuthorization" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          {{#if equals oldCompany null}}
+          <div class="modal-content animated flipInY" style="width: 600px;top:-45px;left: -25px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.authorization"></h4>
+              </div>
+              <div class="modal-body" style="height: 450px;">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                        <div class="row">
+                          <div class="col-md-8">
+                            <h2 data-i18n="common.newInfo"></h2>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.name"></label>  {{newCompany.name}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.shortName"></label>  {{newCompany.shortName}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.sector"></label>  {{newCompany.sector}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.code"></label>  {{newCompany.code}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.pivotCurrency"></label>  {{newCompany.pivotCurrency}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.email"></label>  {{newCompany.email}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.phone"></label>  {{newCompany.phone}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.fax"></label>  {{newCompany.fax}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.street"></label>  {{newCompany.street}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.postalCode"></label>  {{newCompany.codePostal}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.province"></label>  {{newCompany.province}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.city"></label>  {{newCompany.city}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="company.country"></label>  {{newCompany.country}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="common.inputter"></label>  {{newCompany.inputter}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="common.date"></label>  {{newCompany.dateTime}}
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
+                </div>
+            </div>
+          {{else}}
+            <div class="modal-content animated flipInY" style="width: 930px;top:-50px;left: -185px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="common.authorization"></h4>
+                </div>
+                <div class="modal-body" style="height: 445px;">
+                  <div class="col-lg-6">
+                    <div class="ibox">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <h2 data-i18n="common.newInfo"></h2>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.name"></label>  {{newCompany.name}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.shortName"></label>  {{newCompany.shortName}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.sector"></label>  {{newCompany.sector}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.code"></label>  {{newCompany.code}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{newCompany.pivotCurrency}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.email"></label>  {{newCompany.email}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.phone"></label>  {{newCompany.phone}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.fax"></label>  {{newCompany.fax}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.street"></label>  {{newCompany.street}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.postalCode"></label>  {{newCompany.codePostal}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.province"></label>  {{newCompany.province}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.city"></label>  {{newCompany.city}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.country"></label>  {{newCompany.country}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{newCompany.inputter}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.date"></label>  {{newCompany.dateTime}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="ibox">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <h2 data-i18n="common.oldInfo"></h2>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.name"></label>  {{oldCompany.name}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.shortName"></label>  {{oldCompany.shortName}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.sector"></label>  {{oldCompany.sector}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.code"></label>  {{oldCompany.code}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{oldCompany.pivotCurrency}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.email"></label>  {{oldCompany.email}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.phone"></label>  {{oldCompany.phone}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.fax"></label>  {{oldCompany.fax}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.street"></label>  {{oldCompany.street}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.postalCode"></label>  {{oldCompany.codePostal}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.province"></label>  {{oldCompany.province}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.city"></label>  {{oldCompany.city}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.country"></label>  {{oldCompany.country}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.authorizer"></label>  {{oldCompany.authorizer}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{oldCompany.inputter}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.date"></label>  {{oldCompany.dateTime}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                  <div class="modal-footer">
+                    <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                      <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                      <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
+                  </div>
+              </div>
+          {{/if}}
+        </div>
+    </div>
+    <div class="modal inmodal" id="CompanyDetails" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width: 600px;top:-35px;left: -25px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h2 class="modal-title" data-i18n="common.details"></h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.name"></label>  {{companyDetails.name}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.shortName"></label>  {{companyDetails.shortName}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.sector"></label>  {{companyDetails.sector}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.code"></label>  {{companyDetails.code}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{companyDetails.pivotCurrency}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.email"></label>  {{companyDetails.email}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.phone"></label>  {{companyDetails.phone}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.fax"></label>  {{companyDetails.fax}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.street"></label>  {{companyDetails.street}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.postalCode"></label>  {{companyDetails.codePostal}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.province"></label>  {{companyDetails.province}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.city"></label>  {{companyDetails.city}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.country"></label>  {{companyDetails.country}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{companyDetails.inputter}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.authorizer"></label>  {{companyDetails.authorizer}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.date"></label>  {{companyDetails.dateTime}}
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-close"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="modal inmodal" id="checkDeleting" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="common.alert"></h4>
+                </div>
+                <div class="modal-body">
+                    <p><strong><h3 data-i18n="common.delete_msg"></h3></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" class="btn btn-danger BtnDelete" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="edictState" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="common.edictState"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="deletionState" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="common.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="common.deletionState"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="uploadPopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="client.uploadLogo"></h4>
+                </div>
+                <div class="ibox-content">
+                    <!-- For more info about dropzone plugin see this: https://github.com/devonbarrett/meteor-dropzone/ -->
+                    {{> dropzone url='/upload' id='dropzoneDiv'}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="checkCancel" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="common.alert"></h4>
+                </div>
+                <div class="modal-body">
+                    <strong><h3 data-i18n="common.delete_msg"></h3></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" class="btn btn-danger BtnCancel" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<!--
+{{#if Template.subscriptionsReady}}
+{{else}}
+  <div class="ibox-content">
+      <div class="spiner-example">
+          <div class="sk-spinner sk-spinner-cube-grid">
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+              <div class="sk-cube"></div>
+          </div>
+      </div>
+  </div>
+{{/if}}-->

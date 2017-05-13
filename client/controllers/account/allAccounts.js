@@ -1248,10 +1248,10 @@ Template.allAccounts.helpers({
     return Session.get("USER_ROLE_XX");
   },
   userLive: function() {
-    return Users_Live.find({ "code": Session.get("UserLogged").code });
+    return Users_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   },
   userAuthorization(){
-    var users = Users_Authorization.find({ "code": Session.get("UserLogged").code });
+    var users = Users_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany });
     var usersAuthorization = [];
     users.forEach(function(doc){
       var buttonDetails = true;

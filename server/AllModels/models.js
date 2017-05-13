@@ -1,3 +1,7 @@
+Companies_Live = new Mongo.Collection('companies_live');
+Companies_Authorization = new Mongo.Collection('companies_authorization');
+Companies_History = new Mongo.Collection('companies_history');
+
 Screens_Live = new Mongo.Collection('screens_live');
 Screens_Authorization = new Mongo.Collection('screens_authorization');
 Screens_History = new Mongo.Collection('screens_history');
@@ -34,12 +38,29 @@ Firmwares_Live = new Mongo.Collection('firmwares_live');
 Firmwares_Authorization = new Mongo.Collection('firmwares_authorization');
 Firmwares_History = new Mongo.Collection('firmwares_history');
 
+Articles_Live = new Mongo.Collection('articles_live');
+Articles_Authorization = new Mongo.Collection('articles_authorization');
+Articles_History = new Mongo.Collection('articles_history');
+
+Articles_Options_Live = new Mongo.Collection('articles_options_live');
+Articles_Options_Authorization = new Mongo.Collection('articles_options_authorization');
+Articles_Options_History = new Mongo.Collection('articles_options_history');
+
+Contracts_Live = new Mongo.Collection('contracts_live');
+Contracts_Authorization = new Mongo.Collection('contracts_authorization');
+Contracts_History = new Mongo.Collection('contracts_history');
+
+Contracts_Type_Live = new Mongo.Collection('contracts_type_live');
+Contracts_Type_Authorization = new Mongo.Collection('contracts_type_authorization');
+Contracts_Type_History = new Mongo.Collection('contracts_type_history');
+
+Firmwares_Screens_Live = new Mongo.Collection('firmwares_screens_live');
+Firmwares_Screens_Authorization = new Mongo.Collection('firmwares_screens_authorization');
+Firmwares_Screens_History = new Mongo.Collection('firmwares_screens_history');
+
+Currencies_Live = new Mongo.Collection('currencies_live');
+Currencies_Authorization = new Mongo.Collection('currencies_authorization');
+Currencies_History = new Mongo.Collection('currencies_history');
+
 Matrix = new Mongo.Collection('matrix');
-/*
-_Live
-_Authorization
-_History
-_live
-_authorization
-_history
-*/
+Languages_Live = new Mongo.Collection('languages_live');

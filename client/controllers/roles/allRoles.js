@@ -3196,7 +3196,9 @@ function getItemSelected(){
   return array;
 }
 Template.allRoles.rendered = function(){
+    settingLanguage();
     var userLogged = Session.get("UserLogged");
+    console.log(Session.get("USER_ROLE_XX"));
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
@@ -3214,37 +3216,49 @@ Template.allRoles.events({
   //            Live events          //
   'click .saveAdd'() {
     var roleAdded = getValuesFromFormForAdd();
-    if(roleAdded.roleName != null){
-      swal({ title: "Alert !",text: "Please enter role name !",type: "warning",closeOnConfirm: true });
+    if(roleAdded.roleName == null){
+      if(Session.get("UserLogged").language == "en"){
+        toastr.error('Enter the role name please !');
+      }else {
+        toastr.error('Entrez le nom du rôle s\'il vous plaît');
+      }
     }else {
       roleAdded.currentNumber = roleAdded.currentNumber + 1 ;
       Roles_Authorization.insert(roleAdded);
-      toastr.success('With success','Addition done !');
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Addition done !');
+      }else {
+        toastr.success('Avec succès','Enregistrer fait !');
+      }
     }
   },
   'click .validateAdd'() {
     var roleAdded = getValuesFromFormForAdd();
-    if(roleAdded.roleName != null){
-      swal({ title: "Alert !",text: "Please enter role name !",type: "warning",closeOnConfirm: true });
+    if(roleAdded.roleName == null){
+      if(Session.get("UserLogged").language == "en"){
+        toastr.error('Enter the role name please !');
+      }else {
+        toastr.error('Entrez le nom du rôle s\'il vous plaît');
+      }
     }else {
       roleAdded.currentNumber = roleAdded.currentNumber + 1 ;
       roleAdded.status = 'INAU';
       Roles_Authorization.insert(roleAdded);
-      toastr.success('With success','Addition done !');
+      if(Session.get("UserLogged").language == "en"){
+        toastr.success('With success','Addition done !');
+      }else {
+        toastr.success('Avec succès','Enregistrer fait !');
+      }
     }
   },
   'click .btn-edit'() {
+    settingLanguage();
     var role = Roles_Live.findOne({ "_id" : this._id });
     if (verifyEdit(role._id)){
       Session.set("roleSelected", role);
       $('#updateRolePopup').modal();
     }else{
-      swal({
-        title: "Access denied",
-        text: "Edit operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
-      });
+      $('#edictState').modal();
     }
   },
   'click .saveUpdate'() {
@@ -3256,7 +3270,11 @@ Template.allRoles.events({
     roleUpdated.currentNumber = role.currentNumber + 1;
     roleUpdated._id = role._id;
     Roles_Authorization.insert(roleUpdated);
-    toastr.success('With success','Edict done !');
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
+    }
   },
   'click .validateUpdate'() {
     var roleUpdated = getValuesFromFormForEdit();
@@ -3268,7 +3286,11 @@ Template.allRoles.events({
     roleUpdated._id = role._id;
     roleUpdated.status = "INAU";
     Roles_Authorization.insert(roleUpdated);
-    toastr.success('With success','Edict done !');
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
+    }
   },
   'click .btn-delete'() {
     var role = Roles_Live.findOne({ "_id" : this._id });
@@ -3276,30 +3298,30 @@ Template.allRoles.events({
       $('#checkDeleting').modal();
       Session.set("deleteRoleLive",role);
     }else{
-      swal({
-        title: "Access denied",
-        text: "Delete operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
-      });
+      $('#deletionState').modal();
     }
   },
   //          Authorization events        //
   'click .editAu'() {
+    settingLanguage();
     var role = Roles_Authorization.findOne({ "_id" : this._id });
     Session.set("roleSelectedAu", role);
     $('#updateAuRolePopup').modal();
   },
   'click .saveUpdateAu'() {
     var roleUpdated = getValuesFromFormForEditAu();
-    console.log("New role : ", roleUpdated.roleName);
+    //console.log("New role : ", roleUpdated.roleName);
     var role = Session.get("roleSelectedAu");
-    console.log("OLD role : ", role.roleName);
+    //console.log("OLD role : ", role.roleName);
     roleUpdated.inputter = "Saver AUTH";
     roleUpdated._id = role._id;
     Roles_Authorization.remove(role._id);
     Roles_Authorization.insert(roleUpdated);
-    toastr.success('With success','Edict done !');
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
+    }
   },
   'click .validateUpdateAu'() {
     var roleUpdated = getValuesFromFormForEditAu();
@@ -3309,10 +3331,14 @@ Template.allRoles.events({
     roleUpdated._id = role._id;
     Roles_Authorization.remove(role._id);
     Roles_Authorization.insert(roleUpdated);
-    toastr.success('With success','Edict done !');
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Edict done !');
+    }else {
+      toastr.success('Avec succès','Modification fait !');
+    }
   },
   'click .validateAu'() {
-    console.log("ID :", this._id);
+    //console.log("ID :", this._id);
     Roles_Authorization.update({ "_id" : this._id }, {'$set':{ 'status' : 'INAU', 'inputter' : "xxx" , 'dateTime' : new Date() }});
   },
   'click .BtnDelete'() {
@@ -3323,16 +3349,25 @@ Template.allRoles.events({
     role.dateTime = new Date();
     role.authorizer = null;
     Roles_Authorization.insert(role);
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Deletion done !');
+    }else {
+      toastr.success('Avec succès','Suppression fait !');
+    }
   },
   'click .cancelAu'() {
     var role = Roles_Authorization.findOne({ "_id" : this._id });
     Session.set("deleteRoleAu",role);
-    $('#checkCancel').modal();
+    $('#checkDeleting').modal();
   },
   'click .BtnCancel'() {
     var role = Session.get("deleteRoleAu");
     Roles_Authorization.remove(role._id);
-    toastr.success('With success','Deleting operation done ');
+    if(Session.get("UserLogged").language == "en"){
+      toastr.success('With success','Deletion done !');
+    }else {
+      toastr.success('Avec succès','Suppression fait !');
+    }
   },
   'click .btn-details'() {
     var role = Roles_Live.findOne({ "_id" : this._id });
@@ -3347,7 +3382,7 @@ Template.allRoles.events({
   'click .authorizeAu'() {
     var oldRole = Roles_Live.findOne({ "_id" : this._id });
     var newRole = Roles_Authorization.findOne({ "_id" : this._id });
-    console.log("New role name :", newRole.roleName);
+    //console.log("New role name :", newRole.roleName);
     Session.set("OLD_ROLE",oldRole);
     Session.set("NEW_ROLE",newRole);
     $('#checkAuthorising').modal();
@@ -3363,14 +3398,17 @@ Template.allRoles.events({
   },
 });
 Template.allRoles.helpers({
+  role(){
+    return Session.get("USER_ROLE_XX");
+  },
   roles_live() {
-    return Roles_Live.find({ "code" : Session.get("UserLogged").code });
+    return Roles_Live.find({ "codeCompany" : Session.get("UserLogged").codeCompany });
   },
   recap() {
     return Session.get("RECAP");;
   },
   roles_authorization() {
-    var roles = Roles_Authorization.find({ "code" : Session.get("UserLogged").code });
+    var roles = Roles_Authorization.find({ "codeCompany" : Session.get("UserLogged").codeCompany });
     var rolesAuthorization = [];
     roles.forEach(function(doc){
       var buttonDetails = true;

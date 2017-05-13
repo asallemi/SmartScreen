@@ -1,5 +1,6 @@
 settingLanguage = function(){
   if(Session.get("UserLogged").language != "en" && Session.get("UserLogged").language != "fr" ){
+  // First access to the app, language will be "english"
     $.i18n.init({
         resGetPath: 'locales/__lng__.json',
         load: 'unspecific',
@@ -9,10 +10,12 @@ settingLanguage = function(){
         $('.i18container').i18n();
         $('#side-menu').i18n();
         $('.navbar-top-links').i18n();
-        $('.row').i18n();
+        $('.wrapper').i18n();
         $('.modal').i18n();
         $('.center').i18n();
         $('.modal-body').i18n();
+        $('.radio').i18n();
+        $('.checkbox').i18n();
     });
   }else {
     $.i18n.init({
@@ -24,10 +27,12 @@ settingLanguage = function(){
         $('.i18container').i18n();
         $('#side-menu').i18n();
         $('.navbar-top-links').i18n();
-        $('.row').i18n();
+        $('.wrapper').i18n();
         $('.modal').i18n();
         $('.center').i18n();
         $('.modal-body').i18n();
+        $('.radio').i18n();
+        $('.checkbox').i18n();
     });
   }
   $('.set_en').on('click', function (){
@@ -35,10 +40,12 @@ settingLanguage = function(){
           $('.i18container').i18n();
           $('#side-menu').i18n();
           $('.navbar-top-links').i18n();
-          $('.row').i18n();
+          $('.wrapper').i18n();
           $('.modal').i18n();
           $('.center').i18n();
           $('.modal-body').i18n();
+          $('.radio').i18n();
+          $('.checkbox').i18n();
 
           $('.set_en').addClass('active');
           $('.set_fr').removeClass('active');
@@ -50,10 +57,12 @@ settingLanguage = function(){
           $('.i18container').i18n();
           $('#side-menu').i18n();
           $('.navbar-top-links').i18n();
-          $('.row').i18n();
+          $('.wrapper').i18n();
           $('.modal').i18n();
           $('.center').i18n();
           $('.modal-body').i18n();
+          $('.radio').i18n();
+          $('.checkbox').i18n();
 
           $('.set_fr').addClass('active');
           $('.set_en').removeClass('active');

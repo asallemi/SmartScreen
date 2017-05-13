@@ -1,5 +1,5 @@
 // Create handlers and subscribers
-let handle = Meteor.subscribe('screensLive');
+let handleX = Meteor.subscribe('screensLive');
 let handleSegmentAuthorization = Meteor.subscribe('segmentsAuthorization');
 let handleSegmentLive = Meteor.subscribe('segmentsLive');
 let handleBookingAuthorization =  Meteor.subscribe('bookingsAuthorization');
@@ -406,26 +406,28 @@ Template.allBookings.rendered = function(){
       }]
   };
   // Get all html elements for map
-  var mapElement = document.getElementById('map');
+  var mapElement = document.getElementById('mapBooking');
   // Create the Google Map using elements
-  var map = new google.maps.Map(mapElement, mapOptions);
+  var mapBooking = new google.maps.Map(mapElement, mapOptions);
   Tracker.autorun(function(c){
-   if(handle.ready()){
+   if(handleX.ready()){
      var screens = Screens_Live.find();
      // set all markers in the Map
      screens.forEach(function(doc){
-       //console.log("RES -> ",doc.clientsIDs.indexOf(Session.get("UserLogged").code));
-       if( doc.clientsIDs.indexOf(Session.get("UserLogged").code) > -1 ){
-       //if( doc.clientsIDs == Session.get("UserLogged").code ){
-         var screen = new google.maps.Marker({
-           position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
-           title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
-           idScreen: doc._id,
-           id: doc.screenIdentity,
-           icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|04B486'
-         });
-        }
-       screen.setMap(map);
+       var res = doc.clientsIDs.split(" ");
+       if(doc.clientsIDs.length > 0){
+         if( res.indexOf(Session.get("UserLogged").code) > -1 ){
+         //if( doc.clientsIDs == Session.get("UserLogged").code ){
+           var screen = new google.maps.Marker({
+             position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
+             title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
+             idScreen: doc._id,
+             id: doc.screenIdentity,
+             icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|04B486'
+           });
+          }
+       }
+       screen.setMap(mapBooking);
        screen.addListener('click', function() {
          console.log("SCREEN_ID -> ", screen.idScreen);
          Session.set("SCREEN_ID", screen.idScreen);
@@ -452,7 +454,7 @@ Template.allBookings.rendered = function(){
        });
 
      });
-     c.stop()
+     c.stop();
    }
   });
   // Initialize fooTable
@@ -515,7 +517,6 @@ Template.allBookings.events({
       Bookings_Live.remove(Session.get("ID"));
     }*/
     Bookings_Live.insert(booking);
-    console.log("ID ---->   ", booking.segmentID);
     Segments_Authorization.update({ '_id' : booking.segmentID }, {'$set':{ 'segmentAvailability' : 0 }});
     if(Session.get("UserLogged").language == "en"){
       toastr.success('With success','Reservation authorized !');

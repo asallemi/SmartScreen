@@ -1,7 +1,7 @@
 let clientsLive = Meteor.subscribe('clientsLive');
 let rolesLive = Meteor.subscribe('roles');
 Template.navigation.onCreated(function () {
-  var user =
+  /*var user =
   {
     "_id" : "iEhwLMXKYuscmz948",
     "fname" : "Akrem",
@@ -19,118 +19,9 @@ Template.navigation.onCreated(function () {
     "status" : "LIVE",
     "inputter" : "test",
     "authorizer" : "Akrem Sallemi",
-    "code" : "SM7000MP"
+    "code" : "0000"
   };
-  Session.set("UserLogged",user);
-  /*console.log(sessionStorage.getItem("User"));
-  var user = JSON.parse(sessionStorage.getItem("User"));
-  var user =
-  {
-    "_id" : user._id,
-    "fname" : user.fname,
-    "surname" : user.surname,
-    "legalIdentifier" : user.legalIdentifier,
-    "dateOfBirth" : user.dateOfBirth,
-    "phone" : user.phone,
-    "address" : user.address,
-    "email" : user.email,
-    "password" : user.password,
-    "photo" : user.photo,
-    "language" : user.language,
-    "roles" : user.roles,
-    "currentNumber" : user.currentNumber,
-    "status" : user.status,
-    "inputter" : user.inputter,
-    "authorizer" : user.authorizer,
-    "code" : user.code
-  };
-  Session.set("UserLogged",user);
-  console.log("User ->", user );
-  var role = JSON.parse(sessionStorage.getItem("Role"));
-  var roleX = {
-      'accountAdd': role.accountAdd,
-      'accountUpdate':  role.accountUpdate,
-      'accountDelete':  role.accountDelete,
-      'accountDisplay':  role.accountDisplay,
-      'accountPrint':  role.accountPrint,
-      'accountValidate':  role.accountValidate,
-      'contractAdd':  role.contractAdd,
-      'contractUpdate':  role.contractUpdate,
-      'contractDelete':  role.contractDelete,
-      'contractDisplay':  role.contractDisplay,
-      'contractPrint':  role.contractPrint,
-      'contractValidate':  role.contractValidate,
-      'contractSign':  role.contractSign,
-      'articleAdd':  role.articleAdd,
-      'articleUpdate':  role.articleUpdate,
-      'articleDelete':  role.articleDelete,
-      'articleDisplay':  role.articleDisplay,
-      'articlePrint':  role.articlePrint,
-      'articleValidate':  role.articleValidate,
-      'invoiceAdd':  role.invoiceAdd,
-      'invoiceUpdate':  role.invoiceUpdate,
-      'invoiceDelete':  role.invoiceDelete,
-      'invoiceDisplay':  role.invoiceDisplay,
-      'invoicePrint':  role.invoicePrint,
-      'invoiceValidate':  role.invoiceValidate,
-      'clientAdd':  role.clientAdd,
-      'clientUpdate':  role.clientUpdate,
-      'clientDelete':  role.clientDelete,
-      'clientDisplay':  role.clientDisplay,
-      'clientPrint':  role.clientPrint,
-      'clientValidate': role.clientValidate,
-      'clientAccountManagement': role.clientAccountManagement,
-      'screenUpdate':  role.screenUpdate,
-      'screenDelete':  role.screenDelete,
-      'screenDisplay':  role.screenDisplay,
-      'screenPrint':  role.screenPrint,
-      'screenValidate':  role.screenValidate,
-      'screenShow':  role.screenShow,
-      'screenUpdateSystem':  role.screenUpdateSystem,
-      'screenClear':  role.screenClear,
-      'screenMonitor':  role.screenMonitor,
-      'screenActivate':  role.screenActivate,
-      'screenOnOff':  role.screenOnOff,
-      'segmentUpdate':  role.segmentUpdate,
-      'segmentDelete':  role.segmentDelete,
-      'segmentDisplay':  role.segmentDisplay,
-      'segmentPrint':  role.segmentPrint,
-      'segmentAffect':  role.segmentAffect,
-      'segmentValidate':  role.segmentValidate,
-      'tariffAdd':  role.tariffAdd,
-      'tariffUpdate':  role.tariffUpdate,
-      'tariffDelete':  role.tariffDelete,
-      'tariffDisplay':  role.tariffDisplay,
-      'tariffPrint':  role.tariffPrint,
-      'tariffAffect':  role.tariffAffect,
-      'tariffValidate':  role.tariffValidate,
-      'bookingAdd':  role.bookingAdd,
-      'bookingUpdate':  role.bookingUpdate,
-      'bookingDelete':  role.bookingDelete,
-      'bookingDisplay':  role.bookingDisplay,
-      'bookingPrint':  role.bookingPrint,
-      'bookingValidate':  role.bookingValidate,
-      'contentAdd':  role.contentAdd,
-      'contentDelete':  role.contentDelete,
-      'contentDisplay':  role.contentDisplay,
-      'roleDelete':  role.roleDelete,
-      'roleDisplay':  role.roleDisplay,
-      'rolePrint':  role.rolePrint,
-      'roleAffect':  role.roleAffect,
-      'roleValidate':  role.roleValidate,
-      'firmwareAdd':  role.firmwareAdd,
-      'firmwareUpdate':  role.firmwareUpdate,
-      'firmwareDelete':  role.firmwareDelete,
-      'firmwareDisplay':  role.firmwareDisplay,
-      'firmwarePrint':  role.firmwarePrint,
-      'firmwareAffect':  role.firmwareAffect,
-      'firmwareValidate':  role.firmwareValidate,
-      'signatureAdd':  role.signatureAdd,
-      'signatureValidate':  role.signatureValidate
-    };
-  console.log("ROLE -> ",roleX);
-  Session.set("USER_ROLE_XX",roleX);*/
-
+  Session.set("UserLogged", user);
   ///        a static role for testing         //
   var role = {
       'accountAdd': true,
@@ -198,6 +89,7 @@ Template.navigation.onCreated(function () {
       'contentAdd':  true,
       'contentDelete':  true,
       'contentDisplay':  true,
+      'roleUpdate':  true,
       'roleDelete':  true,
       'roleDisplay':  true,
       'rolePrint':  true,
@@ -213,7 +105,110 @@ Template.navigation.onCreated(function () {
       'signatureAdd':  true,
       'signatureValidate':  true
     };
-  Session.set("USER_ROLE_XX",role);
+  Session.set("USER_ROLE_XX",role);*/
+
+  console.log(localStorage.getItem("User"));
+  var user = JSON.parse(localStorage.getItem("User"));
+  var user =
+  {
+    "_id" : user._id,
+    "fname" : user.fname,
+    "surname" : user.surname,
+    "legalIdentifier" : user.legalIdentifier,
+    "email" : user.email,
+    "password" : user.password,
+    "photo" : user.photo,
+    "language" : user.language,
+    "codeCompany" : user.codeCompany,
+    "code" : user.code
+  };
+  Session.set("UserLogged", user);
+  console.log("User ->", user );
+  var role = JSON.parse(localStorage.getItem("Role"));
+  var roleX = {
+      'accountAdd': role.accountAdd,
+      'accountUpdate':  role.accountUpdate,
+      'accountDelete':  role.accountDelete,
+      'accountDisplay':  role.accountDisplay,
+      'accountPrint':  role.accountPrint,
+      'accountValidate':  role.accountValidate,
+      'contractAdd':  role.contractAdd,
+      'contractUpdate':  role.contractUpdate,
+      'contractDelete':  role.contractDelete,
+      'contractDisplay':  role.contractDisplay,
+      'contractPrint':  role.contractPrint,
+      'contractValidate':  role.contractValidate,
+      'contractSign':  role.contractSign,
+      'articleAdd':  role.articleAdd,
+      'articleUpdate':  role.articleUpdate,
+      'articleDelete':  role.articleDelete,
+      'articleDisplay':  role.articleDisplay,
+      'articlePrint':  role.articlePrint,
+      'articleValidate':  role.articleValidate,
+      'invoiceAdd':  role.invoiceAdd,
+      'invoiceUpdate':  role.invoiceUpdate,
+      'invoiceDelete':  role.invoiceDelete,
+      'invoiceDisplay':  role.invoiceDisplay,
+      'invoicePrint':  role.invoicePrint,
+      'invoiceValidate':  role.invoiceValidate,
+      'clientAdd':  role.clientAdd,
+      'clientUpdate':  role.clientUpdate,
+      'clientDelete':  role.clientDelete,
+      'clientDisplay':  role.clientDisplay,
+      'clientPrint':  role.clientPrint,
+      'clientValidate': role.clientValidate,
+      'clientAccountManagement': role.clientAccountManagement,
+      'screenUpdate':  role.screenUpdate,
+      'screenDelete':  role.screenDelete,
+      'screenDisplay':  role.screenDisplay,
+      'screenPrint':  role.screenPrint,
+      'screenValidate':  role.screenValidate,
+      'screenShow':  role.screenShow,
+      'screenUpdateSystem':  role.screenUpdateSystem,
+      'screenClear':  role.screenClear,
+      'screenMonitor':  role.screenMonitor,
+      'screenActivate':  role.screenActivate,
+      'screenOnOff':  role.screenOnOff,
+      'segmentUpdate':  role.segmentUpdate,
+      'segmentDelete':  role.segmentDelete,
+      'segmentDisplay':  role.segmentDisplay,
+      'segmentPrint':  role.segmentPrint,
+      'segmentAffect':  role.segmentAffect,
+      'segmentValidate':  role.segmentValidate,
+      'tariffAdd':  role.tariffAdd,
+      'tariffUpdate':  role.tariffUpdate,
+      'tariffDelete':  role.tariffDelete,
+      'tariffDisplay':  role.tariffDisplay,
+      'tariffPrint':  role.tariffPrint,
+      'tariffAffect':  role.tariffAffect,
+      'tariffValidate':  role.tariffValidate,
+      'bookingAdd':  role.bookingAdd,
+      'bookingUpdate':  role.bookingUpdate,
+      'bookingDelete':  role.bookingDelete,
+      'bookingDisplay':  role.bookingDisplay,
+      'bookingPrint':  role.bookingPrint,
+      'bookingValidate':  role.bookingValidate,
+      'contentAdd':  role.contentAdd,
+      'contentDelete':  role.contentDelete,
+      'contentDisplay':  role.contentDisplay,
+      'roleUpdate':  role.roleUpdate,
+      'roleDelete':  role.roleDelete,
+      'roleDisplay':  role.roleDisplay,
+      'rolePrint':  role.rolePrint,
+      'roleAffect':  role.roleAffect,
+      'roleValidate':  role.roleValidate,
+      'firmwareAdd':  role.firmwareAdd,
+      'firmwareUpdate':  role.firmwareUpdate,
+      'firmwareDelete':  role.firmwareDelete,
+      'firmwareDisplay':  role.firmwareDisplay,
+      'firmwarePrint':  role.firmwarePrint,
+      'firmwareAffect':  role.firmwareAffect,
+      'firmwareValidate':  role.firmwareValidate,
+      'signatureAdd':  role.signatureAdd,
+      'signatureValidate':  role.signatureValidate
+    };
+  console.log("ROLE -> ",roleX);
+  Session.set("USER_ROLE_XX",roleX);
 });
 Template.navigation.rendered = function(){
     // Initialize metisMenu
@@ -231,10 +226,13 @@ Template.navigation.helpers({
   role(){
     return Session.get("USER_ROLE_XX");
   },
+  status(){
+    return Session.get("UserLogged").codeCompany;
+  },
   userName(){
     return Session.get("UserLogged").fname+" "+Session.get("UserLogged").surname;
   },
   equals: function(v1, v2) {
-    return (v1 === v2);
+    return (v1 == v2);
   },
 });

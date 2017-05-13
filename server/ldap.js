@@ -41,6 +41,33 @@ Meteor.methods({
           scope: 'sub',
           //attributes: ['dn', 'sn', 'cn', 'uid']
         };
+        if(entreprise.indexOf("company") > -1 ){
+          console.log("Company case");
+          client.search('AEmail='+login+',o=Admin,'+'CpCode='+code+',o=Company,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
+            res.on('error', function(err) {
+              result = 0;
+              myFuture.return(result);
+              console.log("Denied ***");
+            });
+            res.on('searchEntry', function(entry) {
+              var jsonEntry = JSON.parse(JSON.stringify(entry.object));
+              console.log('Json entry: ' + JSON.stringify(entry.object));
+              console.log('Json entry login : ' + jsonEntry.AEmail);
+              console.log('Json entry Password : ' + jsonEntry.pwd);
+              var pwd = CryptoJS.AES.decrypt(jsonEntry.pwd, 'SmartScreen').toString(CryptoJS.enc.Utf8);
+              console.log("Compared password :", pwd);
+              if( login == jsonEntry.AEmail && pwd == password ){
+                console.log("Success");
+                result = 1;
+                myFuture.return(result);
+              }else{
+                result = 0;
+                myFuture.return(result);
+                console.log("Denied");
+              }
+            });
+          });
+        }
         if(entreprise == "administration"){
           console.log("Admin case");
           client.search('AEmail='+login+',o=Administrators,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
@@ -68,7 +95,7 @@ Meteor.methods({
             });
           });
         }
-        if(entreprise != "administration"){
+        if(entreprise != "administration" && entreprise.indexOf("company") < 0 ){
           console.log("Establishments case");
           if(code != null){
             console.log("Code != null");

@@ -1,0 +1,786 @@
+<template name="companyAccounts">
+
+    <!-- Page heading -->
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-12">
+          <br>
+          <h3 data-i18n="account.title"></h3>
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                        <div class="ibox-tools">
+                          {{#if equals role.accountAdd true}}
+                            <button type="button" class="btn btn-primary btn-xs newUser"><i class="fa fa-male"></i>       <span data-i18n="account.btn-newUser"></span></button>
+                          {{/if}}
+                        </div>
+                        <br>
+                    <div class="ibox-content">
+                      <div class="row">
+                          <div class="col-md-12 col-md-offset-5">
+                            {{#if notEquals company null }}
+                              <h2>{{company}}</h2>
+                            {{/if}}
+                          </div>
+                      </div>
+                      <div class="clients-list">
+                        <ul class="nav nav-tabs">
+                          <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="account.onglet1"></span></a></li>
+                          <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i><span data-i18n="account.onglet2"></span></a></li>
+                        </ul>
+                          <div class="tab-content">
+                              <div id="tab-1" class="tab-pane active">
+                                <div class="full-height-scroll">
+                                  <div class="row">
+                                      <div class="col-lg-12">
+                                          <div class="ibox float-e-margins">
+                                            <br>
+                                                  <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                                                  <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                                                    <thead>
+                                                    <tr>
+                                                        <th data-i18n="account.name"></th>
+                                                        <th data-i18n="account.email"></th>
+                                                        <th data-i18n="account.address"></th>
+                                                        <th data-i18n="common.action"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      {{#each userLive}}
+                                                        <tr class="gradeX">
+                                                            <td>{{fname}} {{surname}}</td>
+                                                            <td>{{email}}</td>
+                                                            <td>{{address}}</td>
+                                                            <td class="center">
+                                                              <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                              {{#if equals role.accountUpdate true}}
+                                                                <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></button>
+                                                              {{/if}}
+                                                              {{#if equals role.accountDelete true}}
+                                                                <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                              {{/if}}
+                                                            </td>
+                                                        </tr>
+                                                      {{/each}}
+                                                    </tbody>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <td colspan="5">
+                                                          <ul class="pagination pull-right"></ul>
+                                                        </td>
+                                                    </tr>
+                                                    </tfoot>
+                                                  </table>
+                                              </div>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+                              <div id="tab-2" class="tab-pane">
+                                <div class="full-height-scroll">
+                                  <div class="row">
+                                      <div class="col-lg-12">
+                                          <div class="ibox float-e-margins">
+                                              <br>
+                                                  <input type="text" class="form-control input-sm m-b-xs" id="filter1" data-i18n="[placeholder]common.placeholder_search">
+                                                  <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
+                                                    <thead>
+                                                    <tr>
+                                                      <th data-i18n="account.name"></th>
+                                                      <th data-i18n="account.email"></th>
+                                                      <th data-i18n="account.address"></th>
+                                                      <th data-i18n="common.action"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      {{#each userAuthorization}}
+                                                        <tr class="gradeX">
+                                                            <td>{{fname}} {{surname}}</td>
+                                                            <td>{{email}}</td>
+                                                            <td>{{address}}</td>
+                                                            <td>
+                                                              {{#if equals buttonDetail true}}
+                                                                <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                              {{/if}}
+                                                              {{#if equals buttonValidate true}}
+                                                                <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                              {{/if}}
+                                                              {{#if equals role.accountValidate true}}
+                                                                {{#if equals buttonAuthorize true}}
+                                                                  <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                                {{/if}}
+                                                              {{/if}}
+                                                              {{#if equals buttonEdit true}}
+                                                                <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                              {{/if}}
+                                                              <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                            </td>
+                                                        </tr>
+                                                      {{/each}}
+                                                    </tbody>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <td colspan="5">
+                                                          <ul class="pagination pull-right"></ul>
+                                                        </td>
+                                                    </tr>
+                                                    </tfoot>
+                                                  </table>
+                                          </div>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="newUserPopup" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+        <form class="wizard-big form">
+          <div class="modal-content animated bounceInRight" style="width:940px; left: -175px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="glyphicon glyphicon-user modal-icon"></i>
+                <h2 class="modal-title" data-i18n="account.new_user"></h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                          <div class="ibox-content">
+                                  <fieldset>
+                                      <h2 data-i18n="account.account_info"></h2>
+                                      <div class="row">
+                                          <div class="col-sm-6 b-r">
+                                              <div class="form-group">
+                                                  <label data-i18n="account.email"> *</label>
+                                                  <input id="mail" name="mail" type="email" class="form-control email" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.password"> *</label>
+                                                  <input id="pass1" name="password" type="password" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.confirm"> *</label>
+                                                  <input id="pass2" name="confirm" type="password" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2 data-i18n="account.profile"></h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label data-i18n="account.legal_id"> *</label>
+                                                <input id="legalIdentifier" name="legalIdentifier" type="text" class="form-control" required>
+                                            </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.fname"> *</label>
+                                                  <input id="fname" name="fname" type="text" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.lname"> *</label>
+                                                  <input id="surname" name="surname" type="text" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.birth"> *</label>
+                                                  <input id="dateOfBirth" type="text" name="dateOfBirth" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control" required>
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                  <label data-i18n="account.phone"> *</label>
+                                                  <input id="phone" name="phone" type="text" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.address"> *</label>
+                                                  <input id="address" name="address" type="text" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2 data-i18n="account.choose_role"></h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            {{#each roles}}
+                                              <div class="form-group">
+                                                  <label> <input class="icheckbox_square-green" id="{{_id}}" type="checkbox" name="{{_id}}" value="{{_id}}"> <i></i> {{ roleName }}</label>
+                                              </div>
+                                            {{/each}}
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="submit" class="ladda-button btn btn-primary validateAdd" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                <button type="submit" class="ladda-button btn btn-danger saveAdd" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="modal inmodal" id="editUserPopUp" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width:940px; left: -175px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-pencil modal-icon"></i>
+                <h2 class="modal-title" data-i18n="account.edit_user"></h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                          <div class="ibox-content">
+                                  <fieldset>
+                                      <h2 data-i18n="account.account_info"></h2>
+                                      <div class="row">
+                                          <div class="col-sm-6 b-r">
+                                              <div class="form-group">
+                                                  <label data-i18n="account.email"></label>
+                                                  <input id="mailEdit" name="mail" type="email" value="{{userSelected.email}}" class="form-control email" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.old_password"> *</label>
+                                                  <input id="oldPassword" name="password" type="password" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.new_password"> *</label>
+                                                  <input id="newPassword" name="password" type="password"  class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.confirm"> *</label>
+                                                  <input id="confirmPassword" name="password" type="password" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2 data-i18n="account.profile"></h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label data-i18n="account.legal_id"></label>
+                                                <input id="legalIdentifierEdit" name="legalIdentifier" type="text" value="{{userSelected.legalIdentifier}}" class="form-control" required>
+                                            </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.fname"></label>
+                                                  <input id="fnameEdit" name="fname" type="text" value="{{userSelected.fname}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.lname"></label>
+                                                  <input id="surnameEdit" name="surname" type="text" value="{{userSelected.surname}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.birth"></label>
+                                                  <input id="dateOfBirthEdit" type="text" name="dateOfBirth" value="{{userSelected.dateOfBirth}}" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control" required>
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                  <label data-i18n="account.phone"></label>
+                                                  <input id="phoneEdit" name="phone" type="text" value="{{userSelected.phone}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.address"></label>
+                                                  <input id="addressEdit" name="address" type="text" value="{{userSelected.address}}" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2 data-i18n="account.choose_role"></h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            {{#each rolesList}}
+                                              {{#if equals status true}}
+                                                <div class="form-group">
+                                                    <label> <input class="icheckbox_square-green" id="{{id}}#" type="checkbox" checked=""> <i></i> {{ roleName }}</label>
+                                                </div>
+                                              {{else}}
+                                                <div class="form-group">
+                                                    <label> <input class="icheckbox_square-green" id="{{id}}#" type="checkbox"> <i></i> {{ roleName }}</label>
+                                                </div>
+                                              {{/if}}
+                                            {{/each}}
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="submit" class="ladda-button btn btn-primary validateEditLive" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                <button type="submit" class="ladda-button btn btn-danger saveEditLive" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="editUserPopUpAu" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width:940px; left: -175px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-pencil modal-icon"></i>
+                <h2 class="modal-title" data-i18n="account.edit_user"></h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                          <div class="ibox-content">
+                                  <fieldset>
+                                      <h2 data-i18n="account.account_info"></h2>
+                                      <div class="row">
+                                          <div class="col-sm-6 b-r">
+                                              <div class="form-group">
+                                                  <label data-i18n="account.email"></label>
+                                                  <input id="mailEdit1" name="mail" type="email" value="{{userSelected.email}}" class="form-control email" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.old_password"> *</label>
+                                                  <input id="oldPassword1" name="password" type="password" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.new_password"> *</label>
+                                                  <input id="newPassword1" name="password" type="password"  class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.confirm"> *</label>
+                                                  <input id="confirmPassword1" name="password" type="password" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2 data-i18n="account.profile"></h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label data-i18n="account.legal_id"></label>
+                                                <input id="legalIdentifierEdit1" name="legalIdentifier" type="text" value="{{userSelected.legalIdentifier}}" class="form-control" required>
+                                            </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.fname"></label>
+                                                  <input id="fnameEdit1" name="fname" type="text" value="{{userSelected.fname}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.lname"></label>
+                                                  <input id="surnameEdit1" name="surname" type="text" value="{{userSelected.surname}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.birth"></label>
+                                                  <input id="dateOfBirthEdit1" type="text" name="dateOfBirth" value="{{userSelected.dateOfBirth}}" data-mask="99/99/9999" placeholder="dd/mm/yyyy" class="form-control" required>
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6">
+                                              <div class="form-group">
+                                                  <label data-i18n="account.phone"></label>
+                                                  <input id="phoneEdit1" name="phone" type="text" value="{{userSelected.phone}}" class="form-control" required>
+                                              </div>
+                                              <div class="form-group">
+                                                  <label data-i18n="account.address"></label>
+                                                  <input id="addressEdit1" name="address" type="text" value="{{userSelected.address}}" class="form-control" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset>
+                                      <h2 data-i18n="account.choose_role"></h2>
+                                      <div class="row">
+                                          <div class="col-lg-6">
+                                            {{#each rolesList}}
+                                              {{#if equals status true}}
+                                                <div class="form-group">
+                                                    <label> <input class="icheckbox_square-green" id="{{id}}##" type="checkbox" checked=""> <i></i> {{ roleName }}</label>
+                                                </div>
+                                              {{else}}
+                                                <div class="form-group">
+                                                    <label> <input class="icheckbox_square-green" id="{{id}}##" type="checkbox"> <i></i> {{ roleName }}</label>
+                                                </div>
+                                              {{/if}}
+                                            {{/each}}
+                                          </div>
+                                      </div>
+                                  </fieldset>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="submit" class="ladda-button btn btn-primary validateEditAu" data-dismiss="modal" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                <button type="submit" class="ladda-button btn btn-danger saveEditAu" data-dismiss="modal" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="userDetailsPopUp" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width:725px; left: -86px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h2 class="modal-title" data-i18n="account.details_user">Details</h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                          <div class="ibox-content">
+                            <table>
+                              <tr>
+                                <td><label data-i18n="account.email"> :  </label></td>
+                                <td>{{userDetail.email}}</td>
+                              </tr>
+                              <tr>
+                                <td><label data-i18n="account.legal_id"> :  </label></td>
+                                <td>{{userDetail.legalIdentifier}}</td>
+                              </tr>
+                              <tr>
+                                 <td><label data-i18n="account.fname"> :  </label></td>
+                                 <td>{{userDetail.fname}}</td>
+                              </tr>
+                              <tr>
+                                <td><label data-i18n="account.lname"> :  </label></td>
+                                <td>{{userDetail.surname}}</td>
+                              </tr>
+                              <tr>
+                                <td><label data-i18n="account.birth"> :  </label></td>
+                                <td>{{userDetail.dateOfBirth}}</td>
+                              </tr>
+                              <tr>
+                                <td><label data-i18n="account.phone"> :  </label></td>
+                                <td>{{userDetail.phone}}</td>
+                              </tr>
+                              <tr>
+                                <td><label data-i18n="account.address"> :  </label></td>
+                                <td>{{userDetail.address}}</td>
+                              </tr>
+                              <tr>
+                                <td><h2 data-i18n="account.roles"></h2></td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  {{#each roles}}
+                                    {{#if exist (_id) }}
+                                      <div class="form-group">
+                                          <label> <input class="icheckbox_square-green" id="{{_id}}" type="checkbox" checked="" disabled="" name="{{_id}}" value="{{_id}}"> <i></i> {{ roleName }}</label>
+                                      </div>
+                                    {{/if}}
+                                  {{/each}}
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="width:1000px; left: -211px;top: -30px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="common.authorization"></h4>
+                </div>
+                <div class="modal-body">
+                  <table>
+                    <tr>
+                      <td><h2 data-i18n="account.inputter"></h2></td>
+                      <td><h2>{{newUser.inputter}}</h2></td>
+                    </tr>
+                    <tr>
+                      <td><h2 data-i18n="account.date"></h2></td>
+                      <td><h2>{{newUser.dateTime}}</h2></td>
+                    </tr>
+                  </table>
+                  <table style="width:900px;">
+                    <tr>
+                      <td><h2 data-i18n="account.new_user"></h2></td>
+                      <td><h2 data-i18n="account.old_user"></h2></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <table>
+                          <tr>
+                            <td><label data-i18n="account.email"></label></td>
+                            <td>{{newUser.email}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.legal_id"></label></td>
+                            <td>{{newUser.legalIdentifier}}</td>
+                          </tr>
+                          <tr>
+                             <td><label data-i18n="account.fname"></label></td>
+                             <td>{{newUser.fname}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.lname"></label></td>
+                            <td>{{newUser.surname}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.birth"></label></td>
+                            <td>{{newUser.dateOfBirth}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.phone"></label></td>
+                            <td>{{newUser.phone}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.address"></label></td>
+                            <td>{{newUser.address}}</td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td>
+                        <table>
+                          <tr>
+                            <td><label data-i18n="account.email"></label></td>
+                            <td>{{oldUser.email}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.legal_id"></label></td>
+                            <td>{{oldUser.legalIdentifier}}</td>
+                          </tr>
+                          <tr>
+                             <td><label data-i18n="account.fname"></label></td>
+                             <td>{{oldUser.fname}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.lname"></label></td>
+                            <td>{{oldUser.surname}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.birth"></label></td>
+                            <td>{{oldUser.dateOfBirth}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.phone"></label></td>
+                            <td>{{oldUser.phone}}</td>
+                          </tr>
+                          <tr>
+                            <td><label data-i18n="account.address"></label></td>
+                            <td>{{oldUser.address}}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                </div>
+                <div class="modal-footer">
+                  <p><strong><h3 data-i18n="account.auth_msg"></h3></strong></p>
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="checkDeleting" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="account.alert"> !</h4>
+                </div>
+                <div class="modal-body">
+                    <strong><h3 data-i18n="account.delete_msg"></h3></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" class="btn btn-danger BtnDelete" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="checkCancel" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="account.alert"></h4>
+                </div>
+                <div class="modal-body">
+                    <strong><h3 data-i18n="account.cancel_msg"></h3></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" class="btn btn-danger BtnCancel" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="checkCanceling" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="account.alert"></h4>
+                </div>
+                <div class="modal-body">
+                    <strong><h3 data-i18n="account.cancel_msg"></h3></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" id="BtnCancel" class="btn btn-danger" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="warning" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="account.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><span data-i18n="account.warning_msg"></span><br>
+                    <br> <br>
+                    {{#each warnings}}
+                      <label> {{message}} </label> <br>
+                    {{/each}}
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" id="" class="btn btn-danger" data-dismiss="modal"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="edictState" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="account.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="account.edictState"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="deletionState" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="account.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="account.deletionState"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="enterEmailPwd" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="account.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="account.enterEmailPwd"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="rightOldPwd" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="account.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="account.rightOldPwd"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="samePasswordTwice" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="account.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="account.samePasswordTwice"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="minOneRole" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top:120px;">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <i class="fa fa-warning modal-icon"></i>
+                  <h4 class="modal-title" data-i18n="account.warning"></h4>
+                </div>
+                <div class="modal-body">
+                  <p><h3 data-i18n="account.minOneRole"></h3></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

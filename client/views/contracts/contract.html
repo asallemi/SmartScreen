@@ -1,0 +1,157 @@
+<template name="contract">
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+          <h3 data-i18n="contract.newContract"></h3>
+      </div>
+  </div>
+  <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+      <div class="ibox-content">
+        <a href="{{pathFor route='allContracts'}}" class="btn btn-primary btn-xs"><i class="fa fa-reply-all"></i>       <span data-i18n="common.btn-back"></span></a>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="alert alert-info">
+                        <label data-i18n="contract.parametersChoosen"></label> <br>
+                        <label data-i18n="contract.language"></label>  {{configuration.languageName}} <br>
+                        <label data-i18n="currencies.currencyName"></label>  {{configuration.currency}} <br>
+                        <label data-i18n="currencies.rate"></label>  {{configuration.rate}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-6">
+                        <div id="warning1" class="alert alert-danger alert-dismissable">
+                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="contract.requiredClient"></span>
+                        </div>
+                        {{#each loopCount configuration.clientsNumber}}
+                          <div class="form-group">
+                              <label for="message" data-i18n="contract.client"></label> <label>{{index}}</label>
+                              <div id="select">
+                                <select id="{{index}}XXX" class="select2_demo_1 form-control select" style="width: 400px;">
+                                  <option value="">Select one</option>
+                                  {{#each clients}}
+                                      <option value="{{_id}}">{{name}}</option>
+                                  {{/each}}
+                                </select>
+                              </div>
+                          </div>
+                        {{/each}}
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="message" data-i18n="contract.contractType"></label>
+                            <div id="select">
+                              <select id="typeContract" class="select2_demo_1 form-control" style="width: 400px;">
+                                <option value="Type1">Type1</option>
+                                <option value="Type2">Type2</option>
+                                <option value="Type3">Type3</option>
+                                <option value="Type4">Type4</option>
+                              </select>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group" id="data_1">
+                            <label data-i18n="contract.startDate"></label>
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input id="startDate" type="text" class="form-control">
+                            </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" id="data_1">
+                            <label data-i18n="contract.endDate"></label>
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input id="endDate" type="text" class="form-control">
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                  {{#if verify numberOfArticles}}
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <div class="alert alert-danger">
+                            <a class="alert-link" href="#"><span data-i18n="contract.noArticle"></span></a>.
+                        </div>
+                      </div>
+                    </div>
+                  {{else}}
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <h3 data-i18n="contract.articlesList"></h3>
+                        <p class="small"><i class="fa fa-hand-o-up"></i> <span data-i18n="contract.dragArticle"></span></p>
+                        <ul class="sortable-list connectList agile-list" id="notSelected">
+                          {{#each articles}}
+                            <li class="success-element" id="{{_id}}">
+                                {{title}}
+                                <a href="#" class="pull-right btn btn-xs btn-white articleDetails"><span data-i18n="common.btn-details"></span></a>
+                            </li>
+                          {{/each}}
+                        </ul>
+                      </div>
+                      <div class="col-lg-6">
+                        <h3 data-i18n="contract.articlesSelected"></h3>
+                        <p class="small"><i class="fa fa-hand-o-up"></i> <span data-i18n="contract.dragArticle"></span></p>
+                        <ul class="sortable-list connectList agile-list" id="selected">
+
+                        </ul>
+                      </div>
+                    </div>
+                  {{/if}}
+                  <br>
+                  <br>
+                  <button type="submit" class="ladda-button btn btn-primary validate" data-dismiss="modal"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger save" data-dismiss="modal"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal inmodal fade" id="selectUser" tabindex="-1" role="dialog"  aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">{{clientSelected}}</h4>
+              </div>
+              <div class="modal-body">
+                {{#if equals users null }}
+                  <h3 data-i18n="contract.noPerson"></h3>
+                {{else}}
+                  {{#each users}}
+                    <div class="radio"><input type="radio" value="{{_id}}" name="user"><label for="radio"> {{fname}} {{surname}}</label> </div>
+                  {{/each}}
+                {{/if}}
+
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-primary validateResponsable" data-dismiss="modal"><span data-i18n="common.btn-validate"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="warning" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content" style="top: 100px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.alert"></h4>
+              </div>
+              <div class="modal-body">
+                  <strong><h3 data-i18n="contract.noPerson"></h3></strong>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-close"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+</template>

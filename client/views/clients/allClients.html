@@ -16,6 +16,13 @@
                     </div>
                     <br>
                     <div class="ibox-content">
+                      <div class="row">
+                          <div class="col-md-12 col-md-offset-5">
+                            {{#if notEquals company null }}
+                              <h2>{{company}}</h2>
+                            {{/if}}
+                          </div>
+                      </div>
                       <div class="clients-list">
                           <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="client.onglet1"></span></a></li>
@@ -162,7 +169,6 @@
                       <div class="form-group"><label data-i18n="client.code"></label> <input type="text" id="code" class="form-control"></div>
                       <div class="form-group"><label data-i18n="client.email"></label> <input type="email" id="email" class="form-control"></div>
                       <div class="form-group"><label data-i18n="client.phone"></label> <input type="text" id="phone" class="form-control"></div>
-                      <div><button id="upload" class="btn btn-sm btn-success pull-right m-t-n-xs" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="client.uploadLogo"></strong></button></div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group"><label data-i18n="client.fax"></label> <input type="text" id="fax" class="form-control"></div>
@@ -180,7 +186,7 @@
                           <input type="radio" id="radio" checked name="radioOption">
                           <label for="radio"> <strong data-i18n="client.notCorporatif"></strong></label>
                       </div>
-                      <div id="show-me" style="display:none"> <input type="text" id="accountNumber" value="1" data-i18n="[placeholder]common.placeholder" class="form-control"></div>
+                      <div id="show-me" style="display:none"> <input type="text" id="accountNumber" value="1" data-i18n="[placeholder]client.number" class="form-control"></div>
                     </div>
                 </div>
               </div>
@@ -211,7 +217,6 @@
                       <div class="form-group"><label data-i18n="client.code"></label> <input type="text" id="code1" value="{{clientSelectedLive.code}}" class="form-control"></div>
                       <div class="form-group"><label data-i18n="client.email"></label> <input type="email" id="email1" value="{{clientSelectedLive.email}}" class="form-control"></div>
                       <div class="form-group"><label data-i18n="client.balance"></label> <input type="text" id="balance" value="{{clientSelectedLive.balance}}" class="form-control"></div>
-                      <div><button class="btn btn-sm btn-success pull-right m-t-n-xs upload" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="client.uploadLogo"></strong></button></div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group"><label data-i18n="client.phone"></label> <input type="text" id="phone1" value="{{clientSelectedLive.phone}}" class="form-control"></div>
@@ -252,7 +257,6 @@
                       <div class="form-group"><label data-i18n="client.code"></label> <input type="text" id="code2" value="{{clientSelectedAu.code}}" class="form-control"></div>
                       <div class="form-group"><label data-i18n="client.email"></label> <input type="email" id="email2" value="{{clientSelectedAu.email}}" class="form-control"></div>
                       <div class="form-group"><label data-i18n="client.balance"></label> <input type="text" id="balance1" value="{{clientSelectedAu.balance}}" class="form-control"></div>
-                      <div><button id="upload" class="btn btn-sm btn-success pull-right m-t-n-xs" type="submit"><i class="fa fa-cloud-upload"></i>      <strong data-i18n="client.uploadLogo"></strong></button></div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group"><label data-i18n="client.phone"></label> <input type="text" id="phone2" value="{{clientSelectedAu.phone}}" class="form-control"></div>

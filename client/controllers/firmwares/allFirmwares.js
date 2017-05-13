@@ -1,5 +1,7 @@
 Meteor.subscribe('firmwaresLive');
 Meteor.subscribe('firmwaresAuthorization');
+let handle = Meteor.subscribe('screensLive');
+
 function getValuesFromFormForAdd(){
   if (document.getElementById('packageName') != null) {
     var name = document.getElementById("packageName").value;
@@ -111,12 +113,12 @@ Template.allFirmwares.rendered = function(){
   settingLanguage();
   $('.footable').footable();
   $('.footable2').footable();
+
 };
 Template.allFirmwares.events({
-  'click .newPackage'() {
-    $('#packageName').val("");
-    $('#packageDescription').val("");
-    $('#newPackagePopup').modal();
+  'click .upload'() {
+    $('#upload').modal();
+    Meteor.call('newPackage', "/home/akrem/packages");
   },
   'click .btn-details'() {
     var firmware = Firmwares_Live.findOne({ "_id" : this._id });
@@ -145,37 +147,36 @@ Template.allFirmwares.events({
   'click .btn-edit'() {
     var firmware = Firmwares_Live.findOne({ "_id" : this._id });
     if (verifyEdit(firmware._id)){
-      Session.set("FirmwareDetails", firmware);
-      $('#editFirmwarePopUp').modal();
+      Session.set("TypeEdict", "LIVE");
+      Session.set("FirmwareForEdit", firmware);
+      // Set all screens in an array
+      var screens = Screens_Live.find({});
+      var arrayOfObjects = [];
+      screens.forEach(function(doc){
+        var screen = {
+          'name': doc.screenAddress,
+          'selected': false
+        }
+        arrayOfObjects.push(screen);
+      });
+      // set in the session list of screens assigned to this firmware
+      var list = firmware.screensID.split("#");
+      var screens = [];
+      if(firmware.screensID.length > 0){
+        for(var i=0; i < list.length; i++){
+          for(var j=0; j < arrayOfObjects.length; j++){
+            if(list[i] == arrayOfObjects[j].name){
+              arrayOfObjects[j].selected = true;
+            }
+          }
+        }
+        Session.set("ScreensList", arrayOfObjects);
+      }else {
+        Session.set("ScreensList", arrayOfObjects);
+      }
+      Router.go('firmware');
     }else{
       $('#edictState').modal();
-    }
-  },
-  'click .saveUpdate'() {
-    var firmwareUpdated = getValuesFromFormForEdit();
-    var firmware = Session.get("firmwareSelectedLive");
-    firmwareUpdated.inputter = Session.get("UserLogged")._id;
-    firmwareUpdated._id = firmware._id;
-    firmwareUpdated.currentNumber = firmware.currentNumber + 1;
-    Firmwares_Authorization.insert(firmwareUpdated);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Edict done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
-  },
-  'click .validateUpdate'() {
-    var firmwareUpdated = getValuesFromFormForEdit();
-    var firmware = Session.get("firmwareSelectedLive");
-    firmwareUpdated.inputter = Session.get("UserLogged")._id;
-    firmwareUpdated._id = firmware._id;
-    firmwareUpdated.status = "INAU";
-    firmwareUpdated.currentNumber = firmware.currentNumber + 1;
-    Firmwares_Authorization.insert(firmwareUpdated);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Edict done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
     }
   },
   'click .btn-delete'() {
@@ -219,14 +220,54 @@ Template.allFirmwares.events({
     }
     Session.set("NewFirmware",newFirmware);
     $('#checkAuthorising').modal();
-    Session.set("FirmwareAuthorized", Firmwares_Authorization.findOne({ "_id" : this._id }));
+    Session.set("FirmwareAuthorized", newFirmware);
   },
   'click .BtnAuthorize'() {
-    authorize(Session.get("FirmwareAuthorized"));
+    if(Session.get("FirmwareAuthorized").screensID.length > 0){
+      authorize(Session.get("FirmwareAuthorized"));
+      Meteor.call('createRepo', Session.get("FirmwareAuthorized").name);
+    }else {
+      if(Session.get("UserLogged").language == "en"){
+        toastr.error('Package must assign at least one screen');
+      }else {
+        toastr.error('Le paquet doit etre assigner au moins à un écran !');
+      }
+    }
+
   },
   'click .cancelAu'() {
     Session.set("firmwareUserAu", Firmwares_Authorization.findOne({ "_id" : this._id }));
     $('#checkCancel').modal();
+  },
+  'click .editAu'() {
+    Session.set("TypeEdict", "AUTH");
+    var firmware = Firmwares_Authorization.findOne({ "_id" : this._id });
+    Session.set("FirmwareForEdit", firmware);
+    // Set all screens in an array
+    var screens = Screens_Live.find({});
+    var arrayOfObjects = [];
+    screens.forEach(function(doc){
+      var screen = {
+        'name': doc.screenAddress,
+        'selected': false
+      }
+      arrayOfObjects.push(screen);
+    });
+    // set in the session list of screens assigned to this firmware
+    var list = firmware.screensID.split("#");
+    var screens = [];
+    if(firmware.screensID.length > 0){
+      for(var i=0; i < list.length; i++){
+        for(var j=0; j < arrayOfObjects.length; j++){
+          if(list[i] == arrayOfObjects[j].name){
+            arrayOfObjects[j].selected = true;
+          }
+        }
+      }
+      Session.set("ScreensList", arrayOfObjects);
+    }else {
+      Session.set("ScreensList", arrayOfObjects);
+    }
   },
   'click .BtnCancel'() {
     var firmware = Session.get("firmwareUserAu");

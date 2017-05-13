@@ -84,6 +84,48 @@ Meteor.methods({
         console.log("ERROR"+error);
       });
     },
+    'newPackage': function(url, id){
+    // Dropzone uploading
+      Future = Npm.require('fibers/future');
+      var getDuration = Npm.require('get-video-duration');
+      var future = new Future();
+      UploadServer.init({
+        tmpDir: '/home/akrem/packages',
+        uploadDir: '/home/akrem/packages/',
+        checkCreateDirectories: true,
+        uploadUrl: url,
+        finished: function(file, formData){
+          console.log("File name : "+file.name);
+          var realName = file.name.replace(".noarch.rpm", "");
+          console.log("File saved with name ", realName);
+          var d = new Date().toString();
+          var res = d.split(" ");
+          var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
+          var firmware =
+            {
+              'name' : realName,
+              'description' : "",
+              'screensID': "",
+              'currentNumber': 0,
+              'status': 'HLD',
+              'inputter': id,
+              'authorizer': null,
+              'dateTime': dat.toString()
+            };
+          Firmwares_Authorization.insert(firmware);
+        }
+      });
+    },
+    'createRepo': function(fileName) {
+      const child_process = Npm.require('child_process');
+      const exec = child_process.exec;
+      var cmd = "chmod 777 /home/akrem/packages/"+fileName+"; createrepo --update /home/akrem/packages"
+      // We installed "apt-get install createrepo"
+      exec(cmd , function (error, stdout, stderr) {
+        //console.log("STDOUT"+stdout);
+        console.log("ERROR"+error);
+      });
+    },
     // A function which the responsable of synchronization of contents between Web Server and FTP server. This function executed when the user authorize the content.
     // Certificate should be with 500 permession(chmod)
     'synchronizeContents': function(){

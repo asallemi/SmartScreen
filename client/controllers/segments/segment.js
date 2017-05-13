@@ -383,7 +383,6 @@ Template.segment.events({
     },
     'click .saveAdd'(){
       var plan = getValuesFromForm();
-      if(60 % slot == 0){
         if(validateDate(plan.startDate) && validateDate(plan.endDate) ){
           Plans_Authorization.insert(plan);
           if(Session.get("UserLogged").language == "en"){
@@ -394,13 +393,9 @@ Template.segment.events({
         }else{
           $('#verifyPlan').modal();
         }
-      }else {
-        $('#slotInvalide').modal();
-      }
     },
     'click .validateAdd'(){
       var plan = getValuesFromForm();
-      if(60 % slot == 0){
         if(validateDate(plan.startDate) && validateDate(plan.endDate) ){
           plan.status = "INAU";
           Plans_Authorization.insert(plan);
@@ -412,9 +407,6 @@ Template.segment.events({
         }else{
           $('#verifyPlan').modal();
         }
-      }else {
-        $('#slotInvalide').modal();
-      }
     },
     //        Authorization events       //
     'click .cancelAu'() {

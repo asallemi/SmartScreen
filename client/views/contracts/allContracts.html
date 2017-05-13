@@ -1,0 +1,487 @@
+<template name="allContracts">
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+        <h3 data-i18n="contract.title"></h3>
+      </div>
+  </div>
+  <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="ibox float-e-margins">
+                  <div class="ibox-tools">
+                    {{#if equals role.contractAdd true}}
+                      <a class="btn btn-primary btn-xs newContract"><i class="fa fa-clipboard"></i>   <span data-i18n="contract.btn-newContract"></span></a>
+                    {{/if}}
+                    <a class="btn btn-primary btn-xs newType"><i class="fa fa-bookmark"></i>   <span data-i18n="contract.contractsType"></span></a>
+                  </div>
+                  <br>
+                  <div class="ibox-content">
+                    <div class="clients-list">
+                        <ul class="nav nav-tabs">
+                          <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="contract.onglet1"></span></a></li>
+                          <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="contract.onglet2"></span></a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tab-1" class="tab-pane active">
+                              <div class="full-height-scroll">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="ibox float-e-margins">
+                                          <br>
+                                          <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                                          <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
+                                            <thead>
+                                              <tr>
+                                                <th data-i18n="contract.client"></th>
+                                                <th data-i18n="contract.contractType"></th>
+                                                <th data-i18n="contract.startDate"></th>
+                                                <th data-i18n="contract.endDate"></th>
+                                                <th data-i18n="common.action" style="width: 200px;"></th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {{#each contractsLive}}
+                                                <tr class="gradeX">
+                                                  <td>{{client}}</td>
+                                                  <td>{{typeContract}}</td>
+                                                  <td>{{startDate}}</td>
+                                                  <td>{{endDate}}</td>
+                                                  <td class="center">
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                    {{#if equals role.contractUpdate true}}
+                                                      <a type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></a>
+                                                    {{/if}}
+                                                    {{#if equals role.contractDelete true}}
+                                                      <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                    {{/if}}
+                                                  </td>
+                                                </tr>
+                                              {{/each}}
+                                            </tbody>
+                                            <tfoot>
+                                              <tr>
+                                                  <td colspan="5">
+                                                    <ul class="pagination pull-right"></ul>
+                                                  </td>
+                                              </tr>
+                                            </tfoot>
+                                          </table>
+                                        </div>
+                                    </div>
+                                </div>
+                              </div>
+                          </div>
+                          <div id="tab-2" class="tab-pane">
+                            <div class="full-height-scroll">
+                              <div class="row">
+                                  <div class="col-lg-12">
+                                      <div class="ibox float-e-margins">
+                                        <br>
+                                        <input type="text" class="form-control input-sm m-b-xs" id="filter1" data-i18n="[placeholder]common.placeholder_search">
+                                        <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
+                                          <thead>
+                                            <tr>
+                                              <th data-i18n="contract.client"></th>
+                                              <th data-i18n="contract.contractType"></th>
+                                              <th data-i18n="contract.startDate"></th>
+                                              <th data-i18n="contract.endDate"></th>
+                                              <th data-i18n="common.action" style="width: 200px;"></th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {{#each contractsAuthorization}}
+                                              <tr>
+                                                <td>{{client}}</td>
+                                                <td>{{typeContract}}</td>
+                                                <td>{{startDate}}</td>
+                                                <td>{{endDate}}</td>
+                                                <td class="center">
+                                                  {{#if equals buttonDetail true}}
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                  {{/if}}
+                                                  {{#if equals buttonValidate true}}
+                                                    <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                  {{/if}}
+                                                  {{#if equals role.contractValidate true}}
+                                                    {{#if equals buttonAuthorize true}}
+                                                      <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                    {{/if}}
+                                                  {{/if}}
+                                                  {{#if equals buttonEdit true}}
+                                                    <a type="button" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></a>
+                                                  {{/if}}
+                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                  {{#if equals role.contractPrint true}}
+                                                    <a href="#" class="btn btn-outline btn-info btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="Print email"><i class="fa fa-print"></i> </a>
+                                                  {{/if}}
+                                                </td>
+                                              </tr>
+                                            {{/each}}
+                                          </tbody>
+                                          <tfoot>
+                                            <tr>
+                                                <td colspan="5">
+                                                  <ul class="pagination pull-right"></ul>
+                                                </td>
+                                            </tr>
+                                          </tfoot>
+                                        </table>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="configuration" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width: 575px;top:0px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-cog modal-icon"></i>
+                <h2 class="modal-title" data-i18n="contract.configuration"></h2>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="message" data-i18n="contract.language"></label><br>
+                      {{#each languagesLive}}
+                        {{#if equals isPivot true}}
+                          <div class="radio"><input type="radio" id="{{_id}}" value="{{_id}}" checked name="language"><label for="radio" data-i18n="article.{{languageName}}"></label></div>
+                        {{else}}
+                          <div class="radio"><input type="radio" id="{{_id}}" value="{{_id}}" name="language"><label for="radio" data-i18n="article.{{languageName}}"></label></div>
+                        {{/if}}
+                      {{/each}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group" style="width: 300px;">
+                      <label for="message" data-i18n="contract.clientNumber"></label>
+                      <input class="touchspin3" id="clientNumber" type="text" value="1">
+                    </div>
+                    <div class="form-group" style="width: 300px;">
+                      <label for="message" data-i18n="contract.devise"></label>
+                      <select id="currency" class="select2_demo_1 form-control" style="width: 300px;">
+                        {{#each currencies}}
+                          {{#if equals isPivot true}}
+                            <option selected="" value="{{currencyCode}}">{{currencyName}}</option>
+                          {{else}}
+                            <option value="{{currencyCode}}">{{currencyName}}</option>
+                          {{/if}}
+                        {{/each}}
+                      </select>
+                    </div>
+                    <div class="form-group" style="width: 200px;">
+                      <label for="message" data-i18n="contract.rate"></label>
+                      <input type="text" id="rate" class="form-control">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="button" data-dismiss="modal" class="btn btn-outline btn-info btn-sm btn-danger confirm"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-confirm"></span> </button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="width:1000px; left: -211px; top: -35px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.authorization"></h4>
+              </div>
+              <div class="modal-body" style="height: 450px;">
+                {{#if equals oldContract null}}
+                  <div class="col-lg-12">
+                      <div class="ibox">
+                        <div class="row">
+                          <div class="col-md-8">
+                            <h2 data-i18n="contract.newContract"></h2>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.client"></label>  {{newContract.client}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.contractType"></label>  {{newContract.typeContract}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.startDate"></label>  {{newContract.startDate}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.endDate"></label>  {{newContract.endDate}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.created"></label>  {{newContract.dateTime}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.language"></label>  {{newContract.language}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.amount"></label>  {{newContract.amount}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.devise"></label>  {{newContract.currency}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="title" data-i18n="contract.articlesList"></label><br>
+                            {{#each newContract.articlesList}}
+                              {{_id}} - {{title}} <br>
+                            {{/each}}
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                {{else}}
+                  <div class="col-lg-6">
+                    <div class="ibox">
+                        <div class="ibox-content text-left">
+                            <div>
+                              <h3 data-i18n="contract.client"></h3>
+                                {{newContract.client}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.contractType"></h3><br>
+                                {{newContract.typeContract}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.startDate"></h3><br>
+                                {{newContract.startDate}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.endDate"></h3><br>
+                                {{newContract.endDate}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.created"></h3><br>
+                                {{newContract.dateTime}}
+                            </div>
+                            <h3 data-i18n="contract.articlesList"></h3><br>
+                            <div>
+                                {{#each newContract.articlesList}}
+                                  {{_id}} - {{title}} <br>
+                                {{/each}}
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="ibox">
+                        <div class="ibox-content text-left">
+                            <div>
+                              <h3 data-i18n="contract.client"></h3>
+                                {{oldContract.client}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.contractType"></h3><br>
+                                {{oldContract.typeContract}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.startDate"></h3><br>
+                                {{oldContract.startDate}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.endDate"></h3><br>
+                                {{oldContract.endDate}}
+                            </div>
+                            <div>
+                              <h3 data-i18n="contract.created"></h3><br>
+                                {{oldContract.dateTime}}
+                            </div>
+                            <h3 data-i18n="contract.articlesList"></h3><br>
+                            <div>
+                                {{#each oldContract.articlesList}}
+                                  {{_id}} - {{title}} <br>
+                                {{/each}}
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                {{/if}}
+              </div>
+              <div class="modal-footer">
+                <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="ContractDetails" tabindex="-1" user="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight" style="width:800px; left: -115px; top: -25px;">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="fa fa-list-alt modal-icon"></i>
+              <h2 class="modal-title" data-i18n="common.details"></h2>
+            </div>
+            <div class="ibox-content">
+                <div class="pull-right">
+                    <span class="text-muted"><i class="fa fa-clock-o"></i> 31/03/2017</span>
+                </div>
+                <div class="text-center article-title">
+
+
+                    <h1>
+                        CONTRAT DE PRESTATION DE SERVICE PUBLICITAIRE
+                    </h1>
+                </div>
+                <p>
+                    Many desktop publishing packages and web page editors now use <strong>Lorem Ipsum as their
+                    default model text</strong>, and a search for 'lorem ipsum' will uncover many web
+                </p>
+
+                <p>
+                    One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in
+                    his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a
+                    little he could see his brown belly, slightly domed and divided by arches into stiff
+                    sections. The bedding was hardly able to cover it and seemed ready to slide off any moment.
+                    His many legs, pitifully thin compared with the size of the rest of him, waved about
+                    helplessly as he looked. "What's happened to me?" he thought. It wasn't a dream. His room, a
+                    proper human room although a little too small, lay peacefully between its four familiar
+                    walls. A collection of textile samples lay spread out on the table - Samsa was a travelling
+                    salesman - and above it there hung a picture that he had recently cut out of an illustrated
+                    magazine and housed in a nice, gilded frame. It showed a lady fitted out with a fur hat and
+                    fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm
+                    towards the viewer. Gregor then turned to look out the window at the dull weather. Drops
+                </p>
+
+                <p>
+                    <i>
+                        Far far away, behind the word mountains, far from the countries Vokalia and Consonantia,
+                        there live the blind texts. Separated they live in Bookmarksgrove right at the coast of
+                        the Semantics, a large language ocean. A small river named Duden flows by their place
+                        and supplies it with the necessary regelialia. It is a paradisematic country, in which
+                        roasted parts of sentences fly into your mouth.
+                    </i>
+                </p>
+
+                <p>
+                    The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild
+                    Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her
+                    seven versalia, put her initial into the belt and made herself on the way. When she reached
+                    the first hills of the Italic Mountains, she had a last view back on the skyline of her
+                    hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road,
+                    the Line Lane. Pityful a rethoric question ran over her cheek,
+                </p>
+
+                <p>
+                    Two driven jocks help fax my big quiz. Quick, Baz, get my woven flax jodhpurs! "Now fax quiz
+                    Jack!" my brave ghost pled. Five quacking zephyrs jolt my wax bed. Flummoxed by job,
+                    kvetching W. zaps Iraq. Cozy sphinx waves quart jug of bad milk. A very bad quack might jinx
+                    zippy fowls. Few quips galvanized the mock jury box. Quick brown dogs jump over the lazy
+                    fox. The jay, pig, fox, zebra, and my wolves quack! Blowzy red vixens fight for a quick
+                    jump. Joaquin Phoenix was gazed by MTV for luck. A wizard’s job is to vex chumps quickly in
+                    fog. Watch "Jeopardy!", Alex Trebek's fun TV quiz game. Woven silk pyjamas exchanged for
+                    blue quartz. Brawny gods just
+                </p>
+
+                <p>
+                    Brick quiz whangs jumpy veldt fox. Bright vixens jump; dozy fowl quack. Quick wafting
+                    zephyrs vex bold Jim. Quick zephyrs blow, vexing daft Jim. Sex-charged fop blew my junk TV
+                    quiz. How quickly daft jumping zebras vex.
+                </p>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Tags:</h5>
+                        <button class="btn btn-primary btn-xs" type="button">Model</button>
+                        <button class="btn btn-white btn-xs" type="button">Publishing</button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="small text-right">
+                            <h5>Stats:</h5>
+
+                            <div><i class="fa fa-comments-o"> </i> 56 comments</div>
+                            <i class="fa fa-eye"> </i> 144 views
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-close"></span></button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="edictState" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top:120px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-warning modal-icon"></i>
+                <h4 class="modal-title" data-i18n="common.warning"></h4>
+              </div>
+              <div class="modal-body">
+                <p><h3 data-i18n="common.edictState"></h3></p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-primary cancelWarning"><span data-i18n="common.btn-ok"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="checkDeleting" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top: 100px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.alert"></h4>
+              </div>
+              <div class="modal-body">
+                  <strong><h3 data-i18n="common.delete_msg"></h3></strong>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="btn btn-danger BtnDelete" data-dismiss="modal"><span data-i18n="common.btn-auth"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal inmodal" id="checkCancel" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content animated flipInY" style="top: 100px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.alert"></h4>
+              </div>
+              <div class="modal-body">
+                  <strong><h3 data-i18n="common.delete_msg"></h3></strong>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="btn btn-danger BtnCancel" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+              </div>
+          </div>
+      </div>
+  </div>
+</template>

@@ -24,15 +24,64 @@ Router.route('/home', {
   layoutTemplate: 'mainLayout',
   name: 'home'
 });
-//home
+//Accounts
 Router.route('/accounts', {
   layoutTemplate: 'mainLayout',
   name: 'allAccounts'
 });
-//home
+Router.route('/companyAccounts', {
+  layoutTemplate: 'mainLayout',
+  name: 'companyAccounts'
+});
+//Roles
 Router.route('/roles', {
   layoutTemplate: 'mainLayout',
   name: 'allRoles'
+});
+Router.route('/companyRoles', {
+  layoutTemplate: 'mainLayout',
+  name: 'companyRoles'
+});
+
+// Contracts
+Router.route('/contract',{
+    layoutTemplate: 'mainLayout',
+    name: 'contract'
+});
+Router.route('/editContract',{
+    layoutTemplate: 'mainLayout',
+    name: 'editContract'
+});
+Router.route('/allContracts',{
+   layoutTemplate: 'mainLayout',
+   name: 'allContracts'
+});
+Router.route('/currencies',{
+   layoutTemplate: 'mainLayout',
+   name: 'currencies'
+});
+// Contract types
+Router.route('/contractsType',{
+    layoutTemplate: 'mainLayout',
+    name: 'contractsType'
+});
+// Articles
+Router.route('/article',{
+    layoutTemplate: 'mainLayout',
+    name: 'article'
+});
+Router.route('/editArticle',{
+    layoutTemplate: 'mainLayout',
+    name: 'editArticle'
+});
+Router.route('/articles',{
+   layoutTemplate: 'mainLayout',
+   name: 'allArticles'
+});
+// Articles Option
+Router.route('/allOptions',{
+    layoutTemplate: 'mainLayout',
+    name: 'allOptions'
 });
 // Screens
 Router.route('/Screens',{
@@ -58,6 +107,11 @@ Router.route('/allContents',{
   layoutTemplate: 'mainLayout',
   name: 'allContents'
 });
+// Companies
+Router.route('/companies',{
+  layoutTemplate: 'mainLayout',
+  name: 'allCompanies'
+ });
 // client
 Router.route('/clients',{
   layoutTemplate: 'mainLayout',
@@ -72,6 +126,10 @@ Router.route('/clients',{
    name: 'allClientsRoles'
  });
 // Firmware
+Router.route('/firmware',{
+    layoutTemplate: 'mainLayout',
+    name: 'firmware'
+   });
  Router.route('/firmwares',{
    layoutTemplate: 'mainLayout',
    name: 'allFirmwares'

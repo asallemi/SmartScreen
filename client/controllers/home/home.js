@@ -3,34 +3,10 @@ let handle = Meteor.subscribe('screensLive');
 let handleSegment = Meteor.subscribe('segmentsAuthorization');
 let handleBooking =  Meteor.subscribe('bookingsAuthorization');
 
-function initCalender(jsonArr){
-    $('#calendar2').fullCalendar({
-      theme: true,
-      lang: Session.get("UserLogged").language,
-      header: {
-        left: 'prev,next, today',
-        center: 'title',
-        right: 'month,agendaWeek,agendaDay'
-      },
-      slotDuration: '00:10:00',
-      defaultView: 'agendaDay',
-      eventLimit: true,
-      editable: false,
-      eventOverlap: false,
-      events: jsonArr,
-      axisFormat: 'H:mm', // uppercase H for 24-hour clock
-      timeFormat: 'H:mm',
-      eventRender: function (event, element) {
-        if (!event.color.localeCompare('#1ab394')){
-          var value = event.id+"*"+event.segmentDate+"*"+event.segmentStartTime+"*"+event.segmentEndTime;
-          element.html('<input type="checkbox" class="checkbox slots" name="segemntSelected" value="'+value+'" style="align:right; vertical-align:top; padding:0px; margin:0;"/>');
-        }
-      },
-    });
-}
 function getAllEvents(screenID){
   if(handleSegment.ready()){
     var segments = Segments_Authorization.find({ "segmentScreenID" : screenID });
+    console.log("Segments count -> ", segments.count());
     var jsonArr = [];
     segments.forEach(function(doc){
       // edit strat day
@@ -53,7 +29,6 @@ function getAllEvents(screenID){
         var client = Clients_Live.findOne({ "code": seg2.code});
       }
       if (doc.segmentAvailability == 1){
-
         if(client != undefined){
           jsonArr.push({
               title: client.name,
@@ -121,7 +96,7 @@ function getAllEvents(screenID){
   }
   return jsonArr;
 }
-function displayMapByDate(){
+/*function displayMapByDate(){
       var mapOptions1 = {
           zoom: 9,
           center: new google.maps.LatLng(48.8534100, 2.3488000),
@@ -186,40 +161,11 @@ function displayMapByDate(){
          console.log("New date ->", date);
          var segments = Segments_Authorization.find({ "segmentDate": date, "segmentAvailability": 1 }).fetch();
          console.log("ALL slots :", segments);
-         /*.distinct('segmentScreenID', function(error,ids){
-           for(var i=0; i<ids.length;i++){
-             console.log("IDS[",i,"]:",ids[i]);
-           }
-         });*/
-         //console.log("Slots by date: ",segments.count());
-         /*segments.forEach(function(doc){
-           var screens = Screens_Live.find({ '_id': doc.segmentScreenID});
-           // set a marker in the Map
-           screens.forEach(function(screen){
-                 if( screen.screenStatus == 0){
-                   var marker = new google.maps.Marker({
-                     position: new google.maps.LatLng(screen.screenLatitude, screen.screenLongitude),
-                     title: "Size : "+screen.screenDimension+"| Address : "+screen.screenAddress,
-                     idScreen: screen._id,
-                     icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FE7569'
-                   });
-                  }
-                 marker.setMap(map1);
-                 marker.addListener('click', function() {
-                      Session.set("SCREEN_ID", marker.idScreen);
-                      Session.set("ScreenINFO",doc);
-                      // Initialize the calendar
-                      $('#screenDetailsPopup').modal();
-                      initCalender(getAllEvents(marker.idScreen));
-                      //Session.set("EVENTS", getAllEvents(marker.idScreen));
-                 });
-            });
-         });*/
          c.stop();
       }
       });
 
-}
+}*/
 function displayMap(){
   // Options for Google map
   var mapOptions1 = {
@@ -297,13 +243,9 @@ function displayMap(){
              Session.set("ScreenINFO",doc);
              // Initialize the calendar
              $('#screenDetailsPopup').modal();
-             //Session.set("OLD_EVENTS",getAllEvents(marker.idScreen));
-             //$('#calendar2').fullCalendar( 'addEventSource', getAllEvents(marker.idScreen));
-             initCalender(getAllEvents(marker.idScreen));
-             //Session.set("EVENTS", getAllEvents(marker.idScreen));
            });
       });
-     c.stop()
+     c.stop();
    }
   });
   //return jsonArr;
@@ -312,7 +254,9 @@ function displayMap(){
 function codeCltExistScreen(code){
   if(handle.ready()){
     var screen = Screens_Live.findOne({ '_id': Session.get("SCREEN_ID") });
-    if(screen.clientsIDs.indexOf(code) > -1){
+    var res = screen.clientsIDs.split(" ");
+    console.log("length -> ", res.length);
+    if(res.indexOf(code) > -1){
       return null;
     }
   }
@@ -320,6 +264,29 @@ function codeCltExistScreen(code){
 }
 Template.home.rendered = function () {
     settingLanguage();
+    $('#calendar2').fullCalendar({
+      theme: true,
+      lang: Session.get("UserLogged").language,
+      header: {
+        left: 'prev,next, today',
+        center: 'title',
+        right: 'month,agendaWeek,agendaDay'
+      },
+      slotDuration: '00:10:00',
+      defaultView: 'agendaDay',
+      eventLimit: true,
+      editable: false,
+      eventOverlap: false,
+      //events: jsonArr,
+      axisFormat: 'H:mm', // uppercase H for 24-hour clock
+      timeFormat: 'H:mm',
+      eventRender: function (event, element) {
+        if (!event.color.localeCompare('#1ab394')){
+          var value = event.id+"*"+event.segmentDate+"*"+event.segmentStartTime+"*"+event.segmentEndTime;
+          element.html('<input type="checkbox" class="checkbox slots" name="segemntSelected" value="'+value+'" style="align:right; vertical-align:top; padding:0px; margin:0;"/>');
+        }
+      },
+    });
     /*if(Session.get("LOGIN") != "ok"){
       Router.go('login');
     }*/
@@ -343,6 +310,10 @@ Template.home.rendered = function () {
 Template.home.events({
     'click .btn-bookingAgenda'() {
       $('#agendaPopUp').modal();
+      $('#calendar2').fullCalendar( 'removeEvents');
+      $('#calendar2').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
+      $('#calendar2').fullCalendar('render');
+      $('#calendar2').fullCalendar( 'refetchEvents' );
     },
     'click .closeDiv'() {
       // when user close the "dispalyDate" DIV, return to initial google maps
@@ -362,7 +333,6 @@ Template.home.events({
     },
     'click .validateBooking'() {
       var checkboxes = document.getElementsByClassName('slots');
-      console.log(checkboxes);
       if(checkboxes.length > -1){
         $('#loadingBooking').modal();
         //var checkedValues = [];
@@ -395,8 +365,11 @@ Template.home.events({
                 if(handleSegment.ready()){
                    Segments_Authorization.update({ '_id' : res[0] }, {'$set':{ 'segmentAvailability' : -1 }});
                 }
+                console.log("OK0");
+                console.log(Session.get("UserLogged").code);
                 // Test if client code not exist in clientId of the screen -> if exist don't add it
                 if(codeCltExistScreen(Session.get("UserLogged").code) != null){
+                  console.log("OK1");
                   var result = codeCltExistScreen(Session.get("UserLogged").code);
                   var newClientsIDs = result+" "+Session.get("UserLogged").code;
                   Screens_Live.update({ '_id' : Session.get("SCREEN_ID") }, {'$set':{ 'clientsIDs' : newClientsIDs }});

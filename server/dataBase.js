@@ -1,5 +1,5 @@
 if (Meteor.isServer) {
-
+  
   /*if (Screens_Live.find().count() === 0) {
     var screen =
     {

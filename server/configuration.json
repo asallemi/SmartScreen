@@ -16,7 +16,7 @@
   "mini_broker":
   {
     "address": "127.0.1.1",
-    "port": "7000",
+    "port": "7001",
     "run": "export PYTHONPATH=/home/akrem/Akrem/Projects/ChanelProject;cd /home/akrem/Akrem/Projects/ChanelProject/org/swallow_labs/test; python3.5 T00.5.1-RunClientTest.py"
   }
 }

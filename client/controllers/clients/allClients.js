@@ -108,7 +108,6 @@ function authorize(client){
     Meteor.call('createClientDirectory', client.code);
   }
 }
-
 function getDate(){
   var d = new Date().toString();
   var res = d.split(" ");
@@ -206,10 +205,6 @@ function getValuesFromFormForAdd(){
   }else{
     var accountNumber = 1;
   }
-
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var client =
     {
       'name' : name,
@@ -226,12 +221,13 @@ function getValuesFromFormForAdd(){
       'country' : country,
       'balance' : 0,
       'accountNumber' : accountNumber,
-      'logo' : '/home/clients/',
+      'codeCompany' : Session.get("COMPANY_ID"),
+      'logo' : "/home",
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'From Add',
+      'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': date
+      'dateTime': getDateNow()
     };
   return client;
 }
@@ -306,9 +302,6 @@ function getValuesFromFormForEdit(){
   }else{
     var accountNumber1 = null;
   }
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var client =
     {
       'name' : name1,
@@ -325,12 +318,13 @@ function getValuesFromFormForEdit(){
       'country' : country1,
       'balance' : balance,
       'accountNumber' : accountNumber1,
-      'logo' : '/home/clients/',
+      'codeCompany' : Session.get("COMPANY_ID"),
+      'logo' : '/home',
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'Edit live',
+      'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': date
+      'dateTime': getDateNow()
     };
   return client;
 }
@@ -405,9 +399,6 @@ function getValuesFromFormForEditAu(){
   }else{
     var accountNumber2 = null;
   }
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var client =
     {
       'name' : name2,
@@ -424,16 +415,18 @@ function getValuesFromFormForEditAu(){
       'country' : country2,
       'balance' : balance1,
       'accountNumber' : accountNumber2,
-      'logo' : '/home/clients/',
+      'codeCompany' : Session.get("COMPANY_ID"),
+      'logo' : '/home',
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'WXXXX',
+      'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': date
+      'dateTime': getDateNow()
     };
   return client;
 }
 function sendCapsule(client, state){
+  var companyCode = Session.get("COMPANY_CODE");
   var d = new Date().toString();
   var res = d.split(" ");
   var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
@@ -451,31 +444,28 @@ function sendCapsule(client, state){
     'ACK': "NO"
   };
   if(state == "add" ){
-    Session.set("clientConnected","admin");
-    if (Session.get("clientConnected") == "admin"){
-      var payload = {
-        'att':['dn','objectClass','Eadress','Ebalance','ECode','EEmail','Efax','Ename','Ephone','ESector','EShortName','EuserAccountNum', 'Elogo'],
-        'dn': 'ECode='+client.code+',o=Establishments,o=WebApp,dc=swallow,dc=tn',
-        'objectClass': ['top','ClientEstablishment'],
-        'Eadress': client.street+" "+client.codePostal+" "+client.province+" "+client.city+" "+client.country,
-        'Ebalance': client.balance,
-        'ECode': client.code,
-        'EEmail': client.email,
-        'Efax': client.fax,
-        'Ename': client.name,
-        'Ephone': client.phone,
-        'ESector': client.sector,
-        'EShortName': client.shortName,
-        'EuserAccountNum': client.accountNumber,
-        'Elogo': client.logo
-      };
-      capsule.sort = "LDAP_ADD_MSG";
-      capsule.payload = payload;
-     }
-    }else if( state == "edit"){
+    var payload = {
+      'att':['dn','objectClass','Eadress','Ebalance','ECode','EEmail','Efax','Ename','Ephone','ESector','EShortName','EuserAccountNum', 'Elogo'],
+      'dn': 'ECode='+client.code+',o=Establishment,'+'CpCode='+companyCode+',o=Company,o=WebApp,dc=swallow,dc=tn',
+      'objectClass': ['top','ClientEstablishment'],
+      'Eadress': client.street+" "+client.codePostal+" "+client.province+" "+client.city+" "+client.country,
+      'Ebalance': client.balance,
+      'ECode': client.code,
+      'EEmail': client.email,
+      'Efax': client.fax,
+      'Ename': client.name,
+      'Ephone': client.phone,
+      'ESector': client.sector,
+      'EShortName': client.shortName,
+      'EuserAccountNum': client.accountNumber,
+      'Elogo': client.logo
+    };
+    capsule.sort = "LDAP_ADD_MSG";
+    capsule.payload = payload;
+  }else if( state == "edit"){
       var payload = {
         'att':['dn','changetype','replace'],
-        'dn': 'ECode='+client.code+',o=Establishments,o=WebApp,dc=swallow,dc=tn','changetype': 'modify',
+        'dn': 'ECode='+client.code+',o=Establishment,'+'CpCode='+companyCode+',o=Company,o=WebApp,dc=swallow,dc=tn','changetype': 'modify',
         'replace': ['Eadress','Ebalance','ECode','EEmail','Efax','Ename','Ephone','ESector','EShortName','EuserAccountNum', 'Elogo'] ,
         'Eadress': client.street+" "+client.codePostal+" "+client.province+" "+client.city+" "+client.country,
         'Ebalance': client.balance,
@@ -491,12 +481,12 @@ function sendCapsule(client, state){
       };
       capsule.sort = "LDAP_MOD_MSG";
       capsule.payload = payload;
-    }else{
+  }else{
       //case "delete"
-      var payload = {'dn': 'ECode='+client.code+',o=Establishments,o=WebApp,dc=swallow,dc=tn' };
+      var payload = {'dn': 'ECode='+client.code+',o=Establishment,'+'CpCode='+companyCode+',o=Company,o=WebApp,dc=swallow,dc=tn' };
       capsule.sort = "LDAP_DEL_MSG";
       capsule.payload = payload;
-    }
+  }
   Meteor.call('sendCapsule', capsule, function(error){
     if(error){
       alert('Error');
@@ -523,6 +513,21 @@ function addAuthorised(code){
 }
 Template.allClients.onCreated(function() {
   let clientsLive = Meteor.subscribe('clientsLive');
+  /*console.log("CODE , ", Session.get("UserLogged").code);
+  console.log(Session.get("COMPANY_ID"));
+  if (Session.get("UserLogged").code == "0000") {// swallowlabs user
+    var companyID = Session.get("COMPANY_ID");
+    var table = companyID+'_clients_authorization';
+    console.log(table);
+    Clients_Authorization = new Mongo.Collection(table.toString());
+    //Clients_Live = new Mongo.Collection(Session.get("COMPANY_ID")+'clients_live');
+    //Clients_Authorization = new Mongo.Collection(Session.get("COMPANY_ID")+'clients_authorization');
+    //Clients_History = new Mongo.Collection(Session.get("COMPANY_ID")+'clients_history');
+  }else {
+    Clients_Live = new Mongo.Collection(Session.get("UserLogged").code+'_clients_live');
+    Clients_Authorization = new Mongo.Collection(Session.get("UserLogged").code+'_clients_authorization');
+    Clients_History = new Mongo.Collection(Session.get("UserLogged").code+'_clients_history');
+  }*/
 });
 Template.allClients.onRendered(function(){
     settingLanguage();
@@ -557,6 +562,19 @@ Template.allClients.events({
     Session.set("CLIENT_NAME_X", client.name);
   },
   'click .newClient'(){
+    $('#name').val("");
+    $('#shortName').val("");
+    $('#sector').val("");
+    $('#code').val("");
+    $('#email').val("");
+    $('#phone').val("");
+    $('#fax').val("");
+    $('#street').val("");
+    $('#codePostal').val("");
+    $('#province').val("");
+    $('#city').val("");
+    $('#country').val("");
+    $('#accountNumber').val("");
     $('#newClientPopUp').modal();
   },
   'click .save'(){
@@ -725,13 +743,10 @@ Template.allClients.helpers({
     return Session.get("USER_ROLE_XX");
   },
   clientsLive(){
-    console.log("Client Live: ",Clients_Live.find({}).count());
-    return Clients_Live.find({});
+    return Clients_Live.find({ "codeCompany": Session.get("COMPANY_ID") });
   },
   clientAuthorization(){
-    //console.log("Client authorization: ",Clients_Authorization.find({}).count());
-    //return Clients_Authorization.find({});
-    var clients = Clients_Authorization.find({});
+    var clients = Clients_Authorization.find({ "codeCompany": Session.get("COMPANY_ID") });
     var clientsAuthorization = [];
     clients.forEach(function(doc){
       var buttonDetails = true;
@@ -790,7 +805,13 @@ Template.allClients.helpers({
   oldClient() {
     return Session.get("OldClient");;
   },
+  company(){
+    return Session.get("COMPANY_NAME");
+  },
   equals: function(v1, v2) {
     return (v1 === v2);
+  },
+  notEquals: function(v1, v2) {
+    return (v1 != v2);
   },
 });

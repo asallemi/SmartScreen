@@ -1,0 +1,119 @@
+<template name="editContract">
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+          <h3 data-i18n="contract.editContract"></h3>
+      </div>
+  </div>
+  <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+      <div class="ibox-content">
+        <a href="{{pathFor route='allContracts'}}" class="btn btn-primary btn-xs"><i class="fa fa-reply-all"></i>       <span data-i18n="common.btn-back"></span></a>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-md-6">
+                      <div id="warning1" class="alert alert-danger alert-dismissable">
+                          <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="contract.requiredClient"></span>
+                      </div>
+                      <label for="message" data-i18n="contract.clients"></label> {{clts}}
+                </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                        <label data-i18n="contract.amount"></label>  {{contractEdit.currency}}
+                        <input id="amount" disabled="" value="{{contractEdit.amount}}" type="text" class="form-control">
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="message" data-i18n="contract.oldContractType"></label> {{contractEdit.typeContract}}
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="message" data-i18n="contract.newTypeContract"></label>
+                        <div id="select">
+                          <select id="typeContract" class="select2_demo_1 form-control" style="width: 400px;">
+                            <option value=""></option>
+                            <option value="Type1">Type1</option>
+                            <option value="Type2">Type2</option>
+                            <option value="Type3">Type3</option>
+                            <option value="Type4">Type4</option>
+                          </select>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group" id="data_1">
+                        <label data-i18n="contract.startDate"></label>
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input id="startDate" value="{{contractEdit.startDate}}" type="text" class="form-control">
+                        </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group" id="data_1">
+                        <label data-i18n="contract.endDate"></label>
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input id="endDate" value="{{contractEdit.endDate}}" type="text" class="form-control">
+                        </div>
+                    </div>
+                  </div>
+              </div>
+              {{#if verify numberOfArticles}}
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="alert alert-danger">
+                        <a class="alert-link" href="#"><span data-i18n="contract.noArticle"></span></a>.
+                    </div>
+                  </div>
+                </div>
+              {{else}}
+                <div class="row">
+                  <div class="col-lg-6">
+                    <h3 data-i18n="contract.articlesList"></h3>
+                    <p class="small"><i class="fa fa-hand-o-up"></i> <span data-i18n="contract.dragArticle"></span></p>
+                    <ul class="sortable-list connectList agile-list" id="notSelected">
+                      {{#each selectedArticles}}
+                        <li class="success-element" id="{{_id}}">
+                            {{title}}
+                            <a href="#" class="pull-right btn btn-xs btn-white articleDetails"><span data-i18n="common.btn-details"></span></a>
+                        </li>
+                      {{/each}}
+                    </ul>
+                  </div>
+                  <div class="col-lg-6">
+                    <h3 data-i18n="contract.articlesSelected"></h3>
+                    <p class="small"><i class="fa fa-hand-o-up"></i> <span data-i18n="contract.dragArticle"></span></p>
+                    <ul class="sortable-list connectList agile-list" id="selected">
+                      {{#each notSelectedArticles}}
+                        <li class="success-element" id="{{_id}}">
+                            {{title}}
+                            <a href="#" class="pull-right btn btn-xs btn-white articleDetails"><span data-i18n="common.btn-details"></span></a>
+                        </li>
+                      {{/each}}
+                    </ul>
+                  </div>
+                </div>
+              {{/if}}
+              <br>
+              <br>
+              <button type="submit" class="ladda-button btn btn-primary validate" data-dismiss="modal"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+              <button type="submit" class="ladda-button btn btn-danger save" data-dismiss="modal"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</template>
