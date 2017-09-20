@@ -14,13 +14,6 @@
                   </div>
                   <br>
                     <div class="ibox-content">
-                      <div class="row">
-                          <div class="col-md-12 col-md-offset-5">
-                            {{#if notEquals company null }}
-                              <h2>{{company}}</h2>
-                            {{/if}}
-                          </div>
-                      </div>
                       <strong data-i18n="currencies.subTitle"></strong> {{pivotCurrency.currencyName}}
                       <div class="clients-list">
                         <ul class="nav nav-tabs">
@@ -53,9 +46,9 @@
                                                           <td>{{sellRate}}</td>
                                                           <td>{{buyRate}}</td>
                                                           <td class="center">
-                                                            <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
-                                                            <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></button>
-                                                            <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                            <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
+                                                            <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit" title="{{updateTitle}}"><i class="fa fa-pencil"></i></button>
+                                                            <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                           </td>
                                                         </tr>
                                                       {{/each}}
@@ -99,18 +92,18 @@
                                                       <td>{{buyRate}}</td>
                                                       <td class="center">
                                                         {{#if equals buttonDetail true}}
-                                                          <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                          <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                         {{/if}}
                                                         {{#if equals buttonValidate true}}
-                                                          <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                          <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="{{validateTitle}}"><i class="fa fa-thumbs-up"></i></button>
                                                         {{/if}}
                                                         {{#if equals buttonAuthorize true}}
-                                                          <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                          <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="{{authorizeTitle}}"><i class="fa fa-angellist"></i></button>
                                                         {{/if}}
                                                         {{#if equals buttonEdit true}}
-                                                          <button type="button" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                          <button type="button" class="btn btn-outline btn-primary btn-sm editAu" title="{{updateTitle}}"><i class="fa fa-pencil"></i></button>
                                                         {{/if}}
-                                                        <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                        <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                       </td>
                                                     </tr>
                                                   {{/each}}

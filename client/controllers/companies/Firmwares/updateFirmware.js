@@ -27,12 +27,7 @@ function getValuesFromFormForEdit(){
       }
     }
   }
-
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
-  var firmware =
-    {
+  var firmware = {
       'name' : name,
       'description' : description,
       'screensID': screens,
@@ -40,12 +35,14 @@ function getValuesFromFormForEdit(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': dat.toString()
-    };
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("COMPANY_CODE")
+  };
   return firmware;
 }
 
-Template.firmware.rendered = function(){
+Template.updateFirmware.rendered = function(){
+  checkSession();
   settingLanguage();
   if(Session.get("ScreensList") == null){
     Router.go('allFirmwares');
@@ -61,11 +58,7 @@ Template.firmware.rendered = function(){
   //$(".select2_demo_2").select2();
   $(".select2_demo_2").select2();
 };
-Template.firmware.events({
-  'click .upload'() {
-    $('#upload').modal();
-    Meteor.call('newPackage', "/home/akrem/packages");
-  },
+Template.updateFirmware.events({
   'click .saveUpdate'() {
     // if the record came from Live
     if(Session.get("TypeEdict") == "LIVE"){
@@ -75,12 +68,8 @@ Template.firmware.events({
       firmwareUpdated._id = firmware._id;
       firmwareUpdated.currentNumber = firmware.currentNumber+1;
       Firmwares_Authorization.insert(firmwareUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
-      Router.go('allFirmwares');
+      toastrModificationSaved();
+      Router.go('companyFirmwares');
     }
     if(Session.get("TypeEdict") == "AUTH"){
       var firmwareUpdated = getValuesFromFormForEdit();
@@ -89,12 +78,8 @@ Template.firmware.events({
       firmwareUpdated._id = firmware._id;
       Firmwares_Authorization.remove(firmware._id);
       Firmwares_Authorization.insert(firmwareUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
-      Router.go('allFirmwares');
+      toastrModificationSaved();
+      Router.go('companyFirmwares');
     }
 
   },
@@ -107,12 +92,8 @@ Template.firmware.events({
       firmwareUpdated.status = "INAU";
       firmwareUpdated.currentNumber = firmware.currentNumber+1;
       Firmwares_Authorization.insert(firmwareUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
-      Router.go('allFirmwares');
+      toastrModificationValidated();
+      Router.go('companyFirmwares');
     }
     if(Session.get("TypeEdict") == "AUTH"){
       var firmwareUpdated = getValuesFromFormForEdit();
@@ -122,16 +103,12 @@ Template.firmware.events({
       firmwareUpdated.status = "INAU";
       Firmwares_Authorization.remove(firmware._id);
       Firmwares_Authorization.insert(firmwareUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
-      Router.go('allFirmwares');
+      toastrModificationValidated()
+      Router.go('companyFirmwares');
     }
   },
 });
-Template.firmware.helpers({
+Template.updateFirmware.helpers({
   firmware(){
     return Session.get("FirmwareForEdit");
   },

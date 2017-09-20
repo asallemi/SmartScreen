@@ -29,10 +29,6 @@ Router.route('/accounts', {
   layoutTemplate: 'mainLayout',
   name: 'allAccounts'
 });
-Router.route('/companyAccounts', {
-  layoutTemplate: 'mainLayout',
-  name: 'companyAccounts'
-});
 //Roles
 Router.route('/roles', {
   layoutTemplate: 'mainLayout',
@@ -42,7 +38,23 @@ Router.route('/companyRoles', {
   layoutTemplate: 'mainLayout',
   name: 'companyRoles'
 });
-
+// Menus
+Router.route('/allModules', {
+  layoutTemplate: 'mainLayout',
+  name: 'allModules'
+});
+Router.route('/newModule', {
+  layoutTemplate: 'mainLayout',
+  name: 'newModule'
+});
+Router.route('/updateModule', {
+  layoutTemplate: 'mainLayout',
+  name: 'updateModule'
+});
+Router.route('/allActions', {
+  layoutTemplate: 'mainLayout',
+  name: 'allActions'
+});
 // Contracts
 Router.route('/contract',{
     layoutTemplate: 'mainLayout',
@@ -83,6 +95,11 @@ Router.route('/allOptions',{
     layoutTemplate: 'mainLayout',
     name: 'allOptions'
 });
+//languages
+Router.route('/languages',{
+    layoutTemplate: 'mainLayout',
+    name: 'allLanguages'
+});
 // Screens
 Router.route('/Screens',{
   layoutTemplate: 'mainLayout',
@@ -112,6 +129,50 @@ Router.route('/companies',{
   layoutTemplate: 'mainLayout',
   name: 'allCompanies'
  });
+ Router.route('/companyAccounts', {
+   layoutTemplate: 'mainLayout',
+   name: 'companyAccounts'
+ });
+Router.route('/companyClients',{
+   layoutTemplate: 'mainLayout',
+   name: 'companyClients'
+});
+Router.route('/companyCurrencies',{
+   layoutTemplate: 'mainLayout',
+   name: 'companyCurrencies'
+});
+Router.route('/companyArticles',{
+   layoutTemplate: 'mainLayout',
+   name: 'companyArticles'
+});
+Router.route('/newArticle',{
+   layoutTemplate: 'mainLayout',
+   name: 'newArticle'
+});
+Router.route('/updateArticle',{
+   layoutTemplate: 'mainLayout',
+   name: 'updateArticle'
+});
+Router.route('/articleOptions',{
+   layoutTemplate: 'mainLayout',
+   name: 'articleOptions'
+});
+Router.route('/companySegments',{
+   layoutTemplate: 'mainLayout',
+   name: 'companySegments'
+});
+Router.route('/CompanyScreens',{
+  layoutTemplate: 'mainLayout',
+  name: 'companyScreens'
+});
+Router.route('/CompanyFirmwares',{
+  layoutTemplate: 'mainLayout',
+  name: 'companyFirmwares'
+});
+Router.route('/updateFirmware',{
+  layoutTemplate: 'mainLayout',
+  name: 'updateFirmware'
+});
 // client
 Router.route('/clients',{
   layoutTemplate: 'mainLayout',
@@ -124,6 +185,10 @@ Router.route('/clients',{
  Router.route('/clientsRoles',{
    layoutTemplate: 'mainLayout',
    name: 'allClientsRoles'
+ });
+ Router.route('/clientsContents',{
+   layoutTemplate: 'mainLayout',
+   name: 'allClientContents'
  });
 // Firmware
 Router.route('/firmware',{

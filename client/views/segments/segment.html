@@ -1,19 +1,17 @@
 <template name="segment">
-
     <!-- Page heading -->
-    <div class="row wrapper border-bottom white-bg page-heading">
+    <div class="row border-bottom white-bg page-heading">
         <div class="col-lg-12">
           <br>
           <h3 data-i18n="segment.title"></h3>
         </div>
     </div>
-
     <div class="wrapper wrapper-content">
-          <div class="row">
-              <div class="col-md-12">
-                <div class="google-map" id="map" style="height: 470px"></div>
-              </div>
+      <div class="row">
+          <div class="col-md-12">
+            <div class="google-map" id="map" style="height: 550px"></div>
           </div>
+      </div>
     </div>
     <div class="modal inmodal" id="addSegmentPopUp" tabindex="-1" role="dialog" aria-hidden="false">
       <div class="modal-dialog">
@@ -30,10 +28,10 @@
                 <div class="row">
                   <div class="col-lg-12">
                       <div class="ibox float-e-margins">
-                            <div class="ibox-tools">
-                                <button type="button" class="btn btn-primary btn-xs newPlan"><i class="fa fa-calendar"></i>   <span data-i18n="segment.btn-newPlanning"></span></button>
-                            </div>
-                            <br>
+                        <div class="ibox-tools">
+                            <button type="button" class="btn btn-primary btn-xs newPlan"><i class="fa fa-calendar"></i>   <span data-i18n="segment.btn-newPlanning"></span></button>
+                        </div>
+                        <br>
                         <div class="ibox-content" style="height: 375px;">
                             <div class="clients-list">
                               <ul class="nav nav-tabs">
@@ -100,18 +98,18 @@
                                                                   <td>{{slot}}</td>
                                                                   <td class="center">
                                                                     {{#if equals buttonDetail true}}
-                                                                      <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                                      <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                                     {{/if}}
                                                                     {{#if equals buttonValidate true}}
-                                                                      <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="{{validateTitle}}"><i class="fa fa-thumbs-up"></i></button>
                                                                     {{/if}}
                                                                     {{#if equals buttonAuthorize true}}
-                                                                      <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="{{authorizeTitle}}"><i class="fa fa-angellist"></i></button>
                                                                     {{/if}}
                                                                     {{#if equals buttonEdit true}}
-                                                                      <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                                      <button type="button" class="btn btn-outline btn-primary btn-sm editAu" title="{{updateTitle}}"><i class="fa fa-pencil"></i></button>
                                                                     {{/if}}
-                                                                    <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                                    <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                                   </td>
                                                               </tr>
                                                             {{/each}}

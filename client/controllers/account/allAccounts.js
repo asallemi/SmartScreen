@@ -1,80 +1,15 @@
 let rolesLive = Meteor.subscribe('usersLive');
 let UsersAuthorization = Meteor.subscribe('usersAuthorization');
-nextState = function (status){
-  var matrix = Matrix.find({ "state" : status});
-  // Array contains all next state of "status"
-  var array = [];
-  matrix.forEach(function(doc){
-    for( var i = 0; i < doc.nextState.length; i++){
-      array.push(doc.nextState[i]);
-    }
-  });
-  return array;
-}
-hideShowButtons = function (array){
-  if (array.indexOf("HLD") < 0 ){
-    $("#save").hide();
-  }
-  if (array.indexOf("INAU") < 0 ){
-    $("#validate").hide();
-  }
-  if (array.indexOf("LIVE") < 0 ){
-    $("#authorize").hide();
-  }
-  if (array.indexOf("RNAU") < 0 ){
-    $("#delete").hide();
-  }
-  if (array.indexOf("HLD") >=0 ){
-    $("#save").show();
-  }
-  if (array.indexOf("INAU") >=0 ){
-    $("#validate").show();
-  }
-  if (array.indexOf("LIVE") >=0 ){
-    $("#authorize").show();
-  }
-  if (array.indexOf("RNAU") >=0 ){
-    $("#delete").show();
-  }
-}
+
 function verifyEdit(id){
   var user = Users_Authorization.findOne({ "_id" : id });
-  if(user == undefined){
-    return true;
-  }
-  return false;
+  return user == undefined;
 }
 function verifyDelete(id){
   var user = Users_Authorization.findOne({ "_id" : id+"#D" });
-  if( user == undefined ){
-    return true;
-  }
-  return false;
+  return user == undefined;
 }
-getButtonsAu = function (array){
-  var button = {
-    'editAu' :false,
-    'validateAu' :false,
-    'authorizeAu' :false
-  };
-  if (array.indexOf("HLD") >= 0 ){
-    button.editAu = true;
-  }
-  if (array.indexOf("INAU") >= 0 ){
-    button.validateAu = true;
-  }
-  if (array.indexOf("LIVE") >= 0 ){
-    button.authorizeAu = true;
-  }
-  if (array.indexOf("RNAU") >= 0 ){
-    button.authorizeAu = true;
-  }
-  if (array.indexOf("HIS") >= 0 ){
-    button.authorizeAu = true;
-  }
-  return button;
-}
-authorize = function (user){
+function authorize(user){
   if(user._id.indexOf("#") > 0){
     user._id = user._id.replace("#D", "");
   }
@@ -82,10 +17,10 @@ authorize = function (user){
   // entry validated and new entry
   if(userX !== undefined && user.status == "INAU"){
     user.status = "LIVE";
-    user.authorizer = "Akrem Sallemi";
-    user.dateTime = new Date();
+    user.authorizer = Session.get("UserLogged")._id;
+    user.dateTime = getDateNow();
     userX.status = 'HIS';
-    userX.dateTime = new Date();
+    userX.dateTime = getDateNow();
     userX.currentNumber = user.currentNumber;
     userX._id = user._id+"#"+(user.currentNumber-1);
     Users_History.insert(userX);
@@ -94,31 +29,23 @@ authorize = function (user){
     Users_Authorization.remove(user._id);
   // Authorise deleting user
   }else if(userX !== undefined && user.status == "RNAU"){
-    user.authorizer= "3am ali";
+    user.authorizer= Session.get("UserLogged")._id;
     user.status = 'DEL';
-    user.dateTime = new Date();
+    user.dateTime = getDateNow();
     Users_History.insert(user);
     Users_Live.remove(userX._id);
     Users_Authorization.remove(user._id);
     Users_Authorization.remove(user._id+"#D");
   }else{
     user.status = "LIVE";
-    user.authorizer = "Akrem Sallemi";
-    user.dateTime = new Date();
+    user.authorizer = Session.get("UserLogged")._id;
+    user.dateTime = getDateNow();
     Users_Live.insert(user);
     Users_Authorization.remove(user._id);
   }
 }
-encryptPassword = function encryptPassword(password){
-  //encrypt/decrypt data with AES using Crypto-JS
-  return CryptoJS.AES.encrypt(password, 'SmartScreen').toString();
-}
-decryptPassword = function (password){
-  //encrypt/decrypt data with AES using Crypto-JS
-  return CryptoJS.AES.decrypt(password, 'SmartScreen').toString(CryptoJS.enc.Utf8);
-}
 function getValuesFromFormForAdd(){
-  var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
+  var roles = Roles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "code": Session.get("UserLogged").code });
   var arrayIDs = [];
   roles.forEach(function(doc){
     arrayIDs.push(doc._id);
@@ -160,6 +87,7 @@ function getValuesFromFormForAdd(){
   }else {
     var address = null;
   }
+  //console.log(" rolesID :",rolesID);
   if (document.getElementById('mail') != null) {
     var email = document.getElementById("mail").value;
   }else {
@@ -170,7 +98,13 @@ function getValuesFromFormForAdd(){
   }else {
     var pass1 = null;
   }
-  //console.log(" rolesID :",rolesID);
+  if(Session.get("UserLogged").code  == null){ // swallow-labs or company user
+    var code = null;
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }else {
+    var code = Session.get("UserLogged").code;
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }
   var user =
     {
       'fname' : fname,
@@ -180,20 +114,21 @@ function getValuesFromFormForAdd(){
       'phone' : phone,
       'address' : address,
       'email' : email,
-      'password' : encryptPassword(pass1),
+      'password' : pass1,
       'photo' : '/public/upload/users/1001',
       'roles': rolesID.slice(0, rolesID.length-1),
+      'code': code,
+      'codeCompany': codeCompany,
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'test',
+      'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': new Date(),
-      'code': Session.get("UserLogged").code
+      'dateTime': getDateNow()
     };
   return user;
 }
 function getValuesFromFormForEditAu(){
-  var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
+  var roles = Roles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "code": Session.get("UserLogged").code });
   var arrayIDs = [];
   roles.forEach(function(doc){
     arrayIDs.push(doc._id);
@@ -245,6 +180,13 @@ function getValuesFromFormForEditAu(){
   }else {
     var newPassword = null;
   }
+  if(Session.get("UserLogged").code  == null){ // swallow-labs or company user
+    var code = null;
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }else {
+    var code = Session.get("UserLogged").code;
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }
   var user =
     {
       'fname' : fname,
@@ -257,17 +199,18 @@ function getValuesFromFormForEditAu(){
       'password' : newPassword,
       'photo' : '/public/upload/users/',
       'roles': rolesID.slice(0, rolesID.length-1),
+      'code': code,
+      'codeCompany': codeCompany,
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'test',
+      'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': new Date(),
-      'code': Session.get("UserLogged").code
+      'dateTime': getDateNow()
     };
   return user;
 }
 function getValuesFromFormForEdit(){
-  var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
+  var roles = Roles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "code": Session.get("UserLogged").code });
   var arrayIDs = [];
   roles.forEach(function(doc){
     arrayIDs.push(doc._id);
@@ -319,6 +262,13 @@ function getValuesFromFormForEdit(){
   }else {
     var newPassword = null;
   }
+  if(Session.get("UserLogged").code  == null){ // swallow-labs or company user
+    var code = null;
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }else {
+    var code = Session.get("UserLogged").code;
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }
   var user =
     {
       'fname' : fname,
@@ -331,12 +281,13 @@ function getValuesFromFormForEdit(){
       'password' : newPassword,
       'photo' : '/public/upload/users/1001',
       'roles': rolesID.slice(0, rolesID.length-1),
+      'code': code,
+      'codeCompany': codeCompany,
       'currentNumber': 0,
       'status': 'HLD',
-      'inputter': 'test',
+      'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': new Date(),
-      'code': Session.get("UserLogged").code
+      'dateTime': getDateNow()
     };
   return user;
 }
@@ -356,228 +307,25 @@ checkOldPassword = function (id, oldPassword){
 checkConfirmPassword = function (){
   var pass1 = document.getElementById("newPassword").value;
   var pass2 = document.getElementById("confirmPassword").value;
-  if( pass1 == pass2 ){
-    return true;
-  }
-  return false
-}
-compare = function(val1, val2){
-  if (val1 == true && val1 == true){
-    return true;
-  }
-  if (val1 == true && val1 == false){
-    return false;
-  }
-  if (val1 == true && val1 == null){
-    return true;
-  }
-  if (val1 == false && val1 == true){
-    return false;
-  }
-  if (val1 == false && val1 == false){
-    return false;
-  }
-  if (val1 == false && val1 == null){
-    return false;
-  }
-  if (val1 == null && val1 == true){
-    return true;
-  }
-  if (val1 == null && val1 == false){
-    return false;
-  }
-  if (val1 == null && val1 == null){
-    return null;
-  }
-}
-getFinalRole = function(listRoles){
-  var role = {
-      'accountAdd': listRoles[0].accountAdd,
-      'accountUpdate': listRoles[0].accountUpdate,
-      'accountDelete': listRoles[0].accountDelete,
-      'accountDisplay': listRoles[0].accountDisplay,
-      'accountPrint': listRoles[0].accountPrint,
-      'accountValidate': listRoles[0].accountValidate,
-      'contractAdd': listRoles[0].contractAdd,
-      'contractUpdate': listRoles[0].contractUpdate,
-      'contractDelete': listRoles[0].contractDelete,
-      'contractDisplay': listRoles[0].contractDisplay,
-      'contractPrint': listRoles[0].contractPrint,
-      'contractValidate': listRoles[0].contractValidate,
-      'contractSign': listRoles[0].contractSign,
-      'articleAdd': listRoles[0].articleAdd,
-      'articleUpdate': listRoles[0].articleUpdate,
-      'articleDelete': listRoles[0].articleDelete,
-      'articleDisplay': listRoles[0].articleDisplay,
-      'articlePrint': listRoles[0].articlePrint,
-      'articleValidate': listRoles[0].articleValidate,
-      'invoiceAdd': listRoles[0].invoiceAdd,
-      'invoiceUpdate': listRoles[0].invoiceUpdate,
-      'invoiceDelete': listRoles[0].invoiceDelete,
-      'invoiceDisplay': listRoles[0].invoiceDisplay,
-      'invoicePrint': listRoles[0].invoicePrint,
-      'invoiceValidate': listRoles[0].invoiceValidate,
-      'clientAdd': listRoles[0].clientAdd,
-      'clientUpdate': listRoles[0].clientUpdate,
-      'clientDelete': listRoles[0].clientDelete,
-      'clientDisplay': listRoles[0].clientDisplay,
-      'clientPrint': listRoles[0].clientPrint,
-      'clientValidate': listRoles[0].clientValidate,
-      'clientAccountManagement': listRoles[0].clientAccountManagement,
-      'screenUpdate': listRoles[0].screenUpdate,
-      'screenDelete': listRoles[0].screenDelete,
-      'screenDisplay': listRoles[0].screenDisplay,
-      'screenPrint': listRoles[0].screenPrint,
-      'screenValidate': listRoles[0].screenValidate,
-      'screenShow': listRoles[0].screenShow,
-      'screenUpdateSystem': listRoles[0].screenUpdateSystem,
-      'screenClear': listRoles[0].screenClear,
-      'screenMonitor': listRoles[0].screenMonitor,
-      'screenActivate': listRoles[0].screenActivate,
-      'screenOnOff': listRoles[0].screenOnOff,
-      'segmentUpdate': listRoles[0].segmentUpdate,
-      'segmentDelete': listRoles[0].segmentDelete,
-      'segmentDisplay': listRoles[0].segmentDisplay,
-      'segmentPrint': listRoles[0].segmentPrint,
-      'segmentAffect': listRoles[0].segmentAffect,
-      'segmentValidate': listRoles[0].segmentValidate,
-      'tariffAdd': listRoles[0].tariffAdd,
-      'tariffUpdate': listRoles[0].tariffUpdate,
-      'tariffDelete': listRoles[0].tariffDelete,
-      'tariffDisplay': listRoles[0].tariffDisplay,
-      'tariffPrint': listRoles[0].tariffPrint,
-      'tariffAffect': listRoles[0].tariffAffect,
-      'tariffValidate': listRoles[0].tariffValidate,
-      'bookingAdd': listRoles[0].bookingAdd,
-      'bookingUpdate': listRoles[0].bookingUpdate,
-      'bookingDelete': listRoles[0].bookingDelete,
-      'bookingDisplay': listRoles[0].bookingDisplay,
-      'bookingPrint': listRoles[0].bookingPrint,
-      'bookingValidate': listRoles[0].bookingValidate,
-      'contentAdd': listRoles[0].contentAdd,
-      'contentDelete': listRoles[0].contentDelete,
-      'contentDisplay': listRoles[0].contentDisplay,
-      'contentValidate': listRoles[0].contentValidate,
-      'roleAdd': listRoles[0].roleAdd,
-      'roleUpdate': listRoles[0].roleUpdate,
-      'roleDelete': listRoles[0].roleDelete,
-      'roleDisplay': listRoles[0].roleDisplay,
-      'rolePrint': listRoles[0].rolePrint,
-      'roleAffect': listRoles[0].roleAffect,
-      'roleValidate': listRoles[0].roleValidate,
-      'firmwareAdd': listRoles[0].firmwareAdd,
-      'firmwareUpdate': listRoles[0].firmwareUpdate,
-      'firmwareDelete': listRoles[0].firmwareDelete,
-      'firmwareDisplay': listRoles[0].firmwareDisplay,
-      'firmwarePrint': listRoles[0].firmwarePrint,
-      'firmwareAffect': listRoles[0].firmwareAffect,
-      'firmwareValidate': listRoles[0].firmwareValidate,
-      'signatureAdd': listRoles[0].signatureAdd
-    };
-  for(var i=1; i<listRoles.length; i++){
-    var role = {
-      'accountAdd': compare(listRoles[i].accountAdd, role.accountAdd),
-      'accountUpdate': compare(listRoles[i].accountUpdate, role.accountUpdate),
-      'accountDelete': compare(listRoles[i].accountDelete, role.accountDelete),
-      'accountDisplay': compare(listRoles[i].accountDisplay, role.accountDisplay),
-      'accountPrint': compare(listRoles[i].accountPrint, role.accountPrint),
-      'accountValidate': compare(listRoles[i].accountValidate, role.accountValidate),
-      'contractAdd': compare(listRoles[i].contractAdd, role.contractAdd),
-      'contractUpdate': compare(listRoles[i].contractUpdate, role.contractUpdate),
-      'contractDelete': compare(listRoles[i].contractDelete, role.contractDelete),
-      'contractDisplay': compare(listRoles[i].contractDisplay, role.contractDisplay),
-      'contractPrint': compare(listRoles[i].contractPrint, role.contractPrint),
-      'contractValidate': compare(listRoles[i].contractValidate, role.contractValidate),
-      'contractSign': compare(listRoles[i].contractSign, role.contractSign),
-      'articleAdd': compare(listRoles[i].articleAdd, role.articleAdd),
-      'articleUpdate': compare(listRoles[i].articleUpdate, role.articleUpdate),
-      'articleDelete': compare(listRoles[i].articleDelete, role.articleDelete),
-      'articleDisplay': compare(listRoles[i].articleDisplay, role.articleDisplay),
-      'articlePrint': compare(listRoles[i].articlePrint, role.articlePrint),
-      'articleValidate': compare(listRoles[i].articleValidate, role.articleValidate),
-      'invoiceAdd': compare(listRoles[i].invoiceAdd, role.invoiceAdd),
-      'invoiceUpdate': compare(listRoles[i].invoiceUpdate, role.invoiceUpdate),
-      'invoiceDelete': compare(listRoles[i].invoiceDelete, role.invoiceDelete),
-      'invoiceDisplay': compare(listRoles[i].invoiceDisplay, role.invoiceDisplay),
-      'invoicePrint': compare(listRoles[i].invoicePrint, role.invoicePrint),
-      'invoiceValidate': compare(listRoles[i].invoiceValidate, role.invoiceValidate),
-      'clientAdd': compare(listRoles[i].clientAdd, role.clientAdd),
-      'clientUpdate': compare(listRoles[i].clientUpdate, role.clientUpdate),
-      'clientDelete': compare(listRoles[i].clientDelete, role.clientDelete),
-      'clientDisplay': compare(listRoles[i].clientDisplay, role.clientDisplay),
-      'clientPrint': compare(listRoles[i].clientPrint, role.clientPrint),
-      'clientValidate': compare(listRoles[i].clientValidate, role.clientValidate),
-      'clientAccountManagement': compare(listRoles[i].clientAccountManagement, role.clientAccountManagement),
-      'screenUpdate': compare(listRoles[i].screenUpdate, role.screenUpdate),
-      'screenDelete': compare(listRoles[i].screenDelete, role.screenDelete),
-      'screenDisplay': compare(listRoles[i].screenDisplay, role.screenDisplay),
-      'screenPrint': compare(listRoles[i].screenPrint, role.screenPrint),
-      'screenValidate': compare(listRoles[i].screenValidate, role.screenValidate),
-      'screenShow': compare(listRoles[i].screenShow, role.screenShow),
-      'screenUpdateSystem': compare(listRoles[i].screenUpdateSystem, role.screenUpdateSystem),
-      'screenClear': compare(listRoles[i].screenClear, role.screenClear),
-      'screenMonitor': compare(listRoles[i].screenMonitor, role.screenMonitor),
-      'screenActivate': compare(listRoles[i].accountAdd, role.accountAdd),
-      'screenOnOff': compare(listRoles[i].screenOnOff, role.screenOnOff),
-      'segmentUpdate': compare(listRoles[i].segmentUpdate, role.segmentUpdate),
-      'segmentDelete': compare(listRoles[i].segmentDelete, role.segmentDelete),
-      'segmentDisplay': compare(listRoles[i].segmentDisplay, role.segmentDisplay),
-      'segmentPrint': compare(listRoles[i].segmentPrint, role.segmentPrint),
-      'segmentAffect': compare(listRoles[i].segmentAffect, role.segmentAffect),
-      'segmentValidate': compare(listRoles[i].segmentValidate, role.segmentValidate),
-      'tariffAdd': compare(listRoles[i].tariffAdd, role.tariffAdd),
-      'tariffUpdate': compare(listRoles[i].tariffUpdate, role.tariffUpdate),
-      'tariffDelete': compare(listRoles[i].tariffDelete, role.tariffDelete),
-      'tariffDisplay': compare(listRoles[i].tariffDisplay, role.tariffDisplay),
-      'tariffPrint': compare(listRoles[i].tariffPrint, role.tariffPrint),
-      'tariffAffect': compare(listRoles[i].tariffAffect, role.tariffAffect),
-      'tariffValidate': compare(listRoles[i].tariffValidate, role.tariffValidate),
-      'bookingAdd': compare(listRoles[i].bookingAdd, role.bookingAdd),
-      'bookingUpdate': compare(listRoles[i].bookingUpdate, role.bookingUpdate),
-      'bookingDelete': compare(listRoles[i].bookingDelete, role.bookingDelete),
-      'bookingDisplay': compare(listRoles[i].bookingDisplay, role.bookingDisplay),
-      'bookingPrint': compare(listRoles[i].bookingPrint, role.bookingPrint),
-      'bookingValidate': compare(listRoles[i].bookingValidate, role.bookingValidate),
-      'contentAdd': compare(listRoles[i].contentAdd, role.contentAdd),
-      'contentDelete': compare(listRoles[i].contentDelete, role.contentDelete),
-      'contentDisplay': compare(listRoles[i].contentDisplay, role.contentDisplay),
-      'contentValidate': compare(listRoles[i].contentValidate, role.contentValidate),
-      'roleAdd': compare(listRoles[i].roleAdd, role.roleAdd),
-      'roleUpdate': compare(listRoles[i].roleUpdate, role.roleUpdate),
-      'roleDelete': compare(listRoles[i].roleDelete, role.roleDelete),
-      'roleDisplay': compare(listRoles[i].roleDisplay, role.roleDisplay),
-      'rolePrint': compare(listRoles[i].rolePrint, role.rolePrint),
-      'roleAffect': compare(listRoles[i].roleAffect, role.roleAffect),
-      'roleValidate': compare(listRoles[i].roleValidate, role.roleValidate),
-      'firmwareAdd': compare(listRoles[i].firmwareAdd, role.firmwareAdd),
-      'firmwareUpdate': compare(listRoles[i].firmwareUpdate, role.firmwareUpdate),
-      'firmwareDelete': compare(listRoles[i].firmwareDelete, role.firmwareDelete),
-      'firmwareDisplay': compare(listRoles[i].firmwareDisplay, role.firmwareDisplay),
-      'firmwarePrint': compare(listRoles[i].firmwarePrint, role.firmwarePrint),
-      'firmwareValidate': compare(listRoles[i].firmwareValidate, role.firmwareValidate),
-      'signatureAdd': compare(listRoles[i].signatureAdd, role.signatureAdd)
-     };
-   }
-  return role;
+  return pass1 == pass2;
 }
 //This function return an array, each item contains an object of role
 // It takes a string in argument(IDs of roles seperated by "*")
-getListOfRoles = function(roles){
-  var res = roles.split("*");
-  var role;
-  var listRoles = [];
-  if( res.length == 1){
-    role = Roles_Live.findOne({ "_id" : roles });
-    listRoles.push(role);
-  }else{
-    for(var i=0; i < res.length; i++){
-      var role = Roles_Live.findOne({ "_id" : res[i] });
-      listRoles.push(role);
-    }
-  }
-  return listRoles;
-}
 function sendCapsule(user, state){
+  // Specify the DN (swallow-labs or company)
+  /*var codeCompany = Session.get("UserLogged").codeCompany;
+  var code = Session.get("UserLogged").code;
+  console.log("CODE COMPANY -> ", codeCompany, " CODE -> ", code );
+  if ( codeCompany == "swallow-labs") {
+    var dn = 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn';
+  }
+  if (codeCompany != "swallow-labs" && code == null) {
+    var dn = 'AEmail='+user.email+',o=Admin,CpCode='+codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn';
+  }
+  if (code != null) {
+    var dn = 'AEmail='+user.email+',ECode='+code+',o=Establishment,CpCode='+codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn';
+  }
+  console.log("DN -> ", dn);*/
   var d = new Date().toString();
   var res = d.split(" ");
   var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
@@ -594,45 +342,47 @@ function sendCapsule(user, state){
     'tts': 10,
     'ACK': "NO"
   };
-  if(state == "add" ){
-    var res = user.roles.split("*");
-    var role;
-    if( res.length == 1){
-      role = Roles_Live.findOne({ "_id" : user.roles });
-    }else{
-      var listRoles = [];
-      for(var i=0; i < res.length; i++){
-        var role = Roles_Live.findOne({ "_id" : res[i] });
-        listRoles.push(role);
-      }
-      role = getFinalRole(listRoles);
+  var res = user.roles.split("*");
+  var role;
+  if( res.length == 1){
+    role = Roles_Live.findOne({ "_id" : user.roles });
+  }else{
+    var listRoles = [];
+    for(var i=0; i < res.length; i++){
+      var role = Roles_Live.findOne({ "_id" : res[i] });
+      listRoles.push(role);
     }
-    Session.set("userConnected","admin");
-    if (Session.get("userConnected") == "admin"){
-      var payload = {'att': ['dn', 'objectClass', 'AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail',
-        'APhone', 'ADateOfBirth', 'APicture', 'ACIN', 'ContractAdd',
-        'ContractUpdate', 'ContractDelete', 'ContractDisplay', 'ContractPrint', 'ContractSign',
-        'ContractValidator', 'AccountAdd', 'AccountUpdate', 'AccountDelete',
-        'AccountDisplay', 'AccountPrint', 'AccountValidator', 'InvoiceAdd',
-        'InvoiceUpdate', 'InvoiceDelete', 'InvoiceDisplay', 'InvoicePrint', 'InvoiceSign',
-        'InvoiceValidator', 'ClientAdd', 'ClientUpdate', 'ClientDelete',
-        'ClientDisplay', 'ClientPrint', 'ClientAccountManagment', 'ClientValidator',
-        'ScreenActivation', 'ScreenDelete', 'ScreenDisplay', 'ScreenPrint',
-        'ScreenONOFF', 'ScreenClear', 'ScreenMonitoring', 'ScreenValidator',
-        'ScreenUpdate', 'ScreenShow', 'ScreenUpdateSystem', 'SegmentAffect', 'SegmentUpdate',
-        'SegmentDelete', 'SegmentPrint', 'SegmentDisplay', 'SegmentValidator',
-        'TariffAdd', 'TariffUpdate', 'TariffDelete', 'TariffPrint', 'TariffAffect',
-        'TariffValidator', 'BookingAdd', 'BookingUpdate', 'BookingDelete',
-        'BookingDisplay', 'BookingPrint', 'BookingValidator', 'ContentAdd',
-        'ContentDelete', 'ContentDisplay', 'ContentValidator', 'RoleAdd',
-        'RoleDelete', 'RoleUpdate', 'RoleDisplay', 'RolePrint', 'RoleValidator',
-        'ArticleAdd', 'ArticleUpdate', 'ArticleDelete', 'ArticleDisplay', 'ArticlePrint',
-        'ArticleAffect', 'ArticleValidator', 'SignatureAdd', 'SignatureValidator',
-        'FirmwareAdd', 'FirmwareUpdate', 'FirmwareDelete', 'FirmwareDisplay',
-        'FirmwarePrint', 'FirmwareValidator'],'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn','objectClass':
-        ['top','AppAdministrator', 'ContractManagment', 'AccountManagment','InvoiceManagment', 'ClientManagment', 'ScreenManagment', 'SegmentManagment',
-        'TariffManagment', 'BookingManagment', 'ContentManagment', 'RoleManagment',
-        'ArticleManagment', 'SignatureManagment', 'FirmwareManagment'],
+    role = getFinalRole(listRoles);
+  }
+  if(state == "add" ){
+    if (whoIsConnected() == "swallow-labs") {
+      var payload = {
+        'att': ['dn', 'objectClass', 'AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+        'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+        'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+        'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+        'SegmentUpdate','SegmentDelete','SegmentPrint','SegmentDisplay','SegmentAuthorize','SegmentDetail',
+        'TariffAdd','TariffUpdate','TariffDelete','TariffPrint','TariffDisplay','TariffAuthorize','TariffDetail',
+        'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+        'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+        'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+        'ArticleAdd','ArticleUpdate','ArticleDelete','ArticleDisplay','ArticlePrint','ArticleDetail','ArticleAuthorize','ArticleOptions',
+        'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint',
+        'FirmwareAdd','FirmwareUpdate','FirmwareDelete','FirmwareDisplay','FirmwarePrint','FirmwareAuthorize','FirmwareDetail',
+        'ClientAdd','ClientUpdate','ClientDelete','ClientDisplay','ClientPrint','ClientAuthorize','ClientDetail','ClientUsers','ClientRoles',
+        'ClientBookings','ClientContents','ClientContracts','ClientInvoices',
+        'ScreenAdd','ScreenUpdate','ScreenDelete','ScreenDisplay','ScreenPrint','ScreenAuthorize','ScreenDetail','ScreenActivation',
+        'ScreenONOFF','ScreenClear','ScreenMonitoring','ScreenShow','ScreenUpdateSystem',
+        'CompanyAdd','CompanyUpdate','CompanyDelete','CompanyDisplay','CompanyPrint','CompanyDetail','CompanyAuthorize','CompanyBooking','CompanyContent',
+        'CompanyRole','CompanyUser','CompanyArticle','CompanyContract','CompanyScreen','CompanyClient','CompanyInvoice','CompanyFirmware','CompanySegment',
+        'CompanyTariff','CompanyCurrency',
+        'ModuleAdd','ModuleUpdate','ModuleDelete','ModuleDisplay','ModuleDetail','ModuleAuthorize',
+        'CurrencyAdd','CurrencyUpdate','CurrencyDelete','CurrencyDisplay','CurrencyPrint','CurrencyDetail','CurrencyAuthorize',
+        'PlanningAdd','PlanningPrint','PlanningDisplay','PlanningDetail','PlanningAuthorize'],
+        'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn',
+        'objectClass':['top','AppAdministrator', 'ContractManagment', 'AccountManagment','InvoiceManagment', 'ClientManagment', 'ScreenManagment', 'SegmentManagment',
+        'TariffManagment', 'BookingManagment', 'ContentManagment', 'RoleManagment','ArticleManagment', 'SignatureManagment', 'FirmwareManagment',
+         'CurrencyManagment','CompanyManagment', 'ModuleManagment', 'PlanningManagment'],
         'AFirstName': user.fname,
         'ALastName': user.surname,
         'AAdress': user.address,
@@ -647,125 +397,168 @@ function sendCapsule(user, state){
         'ContractDelete': role.contractDelete,
         'ContractDisplay': role.contractDisplay,
         'ContractPrint': role.contractPrint,
-        'ContractSign': role.contractSign,
-        'ContractValidator': role.contractValidate,
+        'ContractAuthorize': role.contractAuthorize,
+        'ContractDetail': role.contractDetails,
         'AccountAdd': role.accountAdd,
         'AccountUpdate': role.accountUpdate,
         'AccountDelete': role.accountDelete,
         'AccountDisplay': role.accountDisplay,
         'AccountPrint': role.accountPrint,
-        'AccountValidator': role.accountValidate,
+        'AccountAuthorize': role.accountAuthorize,
+        'AccountDetail': role.accountDetails,
         'InvoiceAdd': role.invoiceAdd,
         'InvoiceUpdate': role.invoiceUpdate,
         'InvoiceDelete': role.invoiceDelete,
         'InvoiceDisplay': role.invoiceDisplay,
         'InvoicePrint': role.invoicePrint,
-        'InvoiceSign': null,
-        'InvoiceValidator': role.invoiceValidate,
-        'ClientAdd': role.clientAdd,
-        'ClientUpdate': role.clientUpdate,
-        'ClientDelete': role.clientDelete,
-        'ClientDisplay': role.clientDisplay,
-        'ClientPrint': role.clientPrint,
-        'ClientAccountManagment': role.clientAccountManagement,
-        'ClientValidator': role.clientValidate,
-        'ScreenActivation': role.screenActivate,
-        'ScreenDelete': role.screenDelete,
-        'ScreenDisplay': role.screenDisplay,
-        'ScreenPrint': role.screenPrint,
-        'ScreenONOFF': role.screenOnOff,
-        'ScreenClear': role.screenClear,
-        'ScreenMonitoring': role.screenMonitor,
-        'ScreenValidator': role.screenValidate,
-        'ScreenUpdate': role.screenUpdate,
-        'ScreenShow': role.screenShow,
-        'ScreenUpdateSystem': role.screenUpdateSystem,
-        'SegmentAffect': role.segmentAffect,
+        'InvoiceAuthorize': role.invoiceAuthorize,
+        'InvoiceDetail': role.invoiceDetails,
         'SegmentUpdate': role.segmentUpdate,
         'SegmentDelete': role.segmentDelete,
         'SegmentPrint': role.segmentPrint,
         'SegmentDisplay': role.segmentDisplay,
-        'SegmentValidator': role.segmentValidate,
+        'SegmentAuthorize': role.segmentAuthorize,
+        'SegmentDetail': role.segmentDetails,
         'TariffAdd': role.tariffAdd,
         'TariffUpdate': role.tariffUpdate,
         'TariffDelete': role.tariffDelete,
         'TariffPrint': role.tariffPrint,
-        'TariffAffect': role.tariffAffect,
-        'TariffValidator': role.tariffValidate,
+        'TariffDisplay': role.tariffDisplay,
+        'TariffAuthorize': role.tariffAuthorize,
+        'TariffDetail': role.tariffDetails,
         'BookingAdd': role.bookingAdd,
         'BookingUpdate': role.bookingUpdate,
         'BookingDelete': role.bookingDelete,
         'BookingDisplay': role.bookingDisplay,
         'BookingPrint': role.bookingPrint,
-        'BookingValidator': role.bookingValidate,
+        'BookingAuthorize': role.bookingAuthorize,
+        'BookingDetail': role.bookingDetails,
         'ContentAdd': role.contentAdd,
         'ContentDelete': role.contentDelete,
+        'ContentPrint': role.contentPrint,
         'ContentDisplay': role.contentDisplay,
-        'ContentValidator': role.contentValidate,
+        'ContentAuthorize': role.contentAuthorize,
+        'ContentDetail': role.contentDetails,
         'RoleAdd': role.roleAdd,
         'RoleDelete': role.roleDelete,
         'RoleUpdate': role.roleUpdate,
         'RoleDisplay': role.roleDisplay,
         'RolePrint': role.rolePrint,
-        'RoleValidator': role.roleValidate,
+        'RoleAuthorize': role.roleAuthorize,
+        'Roledetail': role.roleDetails,
         'ArticleAdd': role.articleAdd,
         'ArticleUpdate': role.articleUpdate,
         'ArticleDelete': role.articleDelete,
         'ArticleDisplay': role.articleDisplay,
         'ArticlePrint': role.articlePrint,
-        'ArticleAffect': null,
-        'ArticleValidator': role.articleValidate,
+        'ArticleDetail': role.articleDetails,
+        'ArticleAuthorize': role.articleAuthorize,
+        'ArticleOptions': role.articleOptions,
         'SignatureAdd': role.signatureAdd,
-        'SignatureValidator': null,
+        'SignatureDelete': role.signatureDelete,
+        'SignatureDisplay': role.signatureDisplay,
+        'SignaturePrint': role.signaturePrint,
         'FirmwareAdd': role.firmwareAdd,
         'FirmwareUpdate': role.firmwareUpdate,
         'FirmwareDelete': role.firmwareDelete,
         'FirmwareDisplay': role.firmwareDisplay,
         'FirmwarePrint': role.firmwarePrint,
-        'FirmwareValidator': role.firmwareValidate
+        'FirmwareAuthorize': role.firmwareAuthorize,
+        'FirmwareDetail': role.firmwareDetails,
+        'ClientAdd': role.clientAdd,
+        'ClientUpdate': role.clientUpdate,
+        'ClientDelete': role.clientDelete,
+        'ClientDisplay': role.clientDisplay,
+        'ClientPrint': role.clientPrint,
+        'ClientAuthorize': role.clientAuthorize,
+        'ClientDetail': role.clientDetails,
+        'ClientUsers': role.clientUsers,
+        'ClientRoles': role.clientRoles,
+        'ClientBookings': role.clientBookings,
+        'ClientContents': role.clientContents,
+        'ClientContracts': role.clientContracts,
+        'ClientInvoices': role.clientInvoices,
+        'ScreenAdd': role.screenAdd,
+        'ScreenUpdate': role.screenUpdate,
+        'ScreenDelete': role.screenDelete,
+        'ScreenDisplay': role.screenDisplay,
+        'ScreenPrint': role.screenPrint,
+        'ScreenAuthorize': role.screenAuthorize,
+        'ScreenDetail': role.screenDetails,
+        'ScreenActivation': role.screenActivate,
+        'ScreenONOFF': role.screenOnOff,
+        'ScreenClear': role.screenClear,
+        'ScreenMonitoring': role.screenMonitor,
+        'ScreenShow': role.screenShow,
+        'ScreenUpdateSystem': role.screenSystem,
+        'CompanyAdd': role.companyAdd,
+        'CompanyUpdate': role.companyUpdate,
+        'CompanyDelete': role.companyDelete,
+        'CompanyDisplay': role.companyDisplay,
+        'CompanyPrint': role.companyPrint,
+        'CompanyDetail': role.companyDetails,
+        'CompanyAuthorize': role.companyAuthorize,
+        'CompanyBooking': role.companyBookings,
+        'CompanyContent': role.companyContents,
+        'CompanyRole': role.companyRoles,
+        'CompanyUser': role.companyUsers,
+        'CompanyArticle': role.companyArticles,
+        'CompanyContract': role.companyContracts,
+        'CompanyScreen': role.companyScreens,
+        'CompanyClient': role.companyClients,
+        'CompanyInvoice': role.companyInvoices,
+        'CompanyFirmware': role.companyFirmwares,
+        'CompanySegment': role.companySegments,
+        'CompanyTariff': role.companyTariffs,
+        'CompanyCurrency': role.companyCurrencies,
+        'ModuleAdd': role.moduleAdd,
+        'ModuleUpdate': role.moduleUpdate,
+        'ModuleDelete': role.moduleDelete,
+        'ModuleDisplay': role.moduleDisplay,
+        'ModuleDetail': role.moduleDetails,
+        'ModuleAuthorize': role.moduleAuthorize,
+        'CurrencyAdd': role.currencyAdd,
+        'CurrencyUpdate': role.currencyUpdate,
+        'CurrencyDelete': role.currencyDelete,
+        'CurrencyDisplay': role.currencyDisplay,
+        'CurrencyPrint': role.currencyPrint,
+        'CurrencyDetail': role.currencyDetails,
+        'CurrencyAuthorize': role.currencyAuthorize,
+        'PlanningAdd': role.planningAdd,
+        'PlanningPrint': role.planningPrint,
+        'PlanningDisplay': role.planningDisplay,
+        'PlanningDetail': role.planningDetails,
+        'PlanningAuthorize': role.planningAuthorize
       };
-      capsule.sort = "LDAP_ADD_MSG";
-      capsule.payload = payload;
-     }
-    }else if( state == "edit"){
-      var res = user.roles.split("*");
-      var role;
-      if( res.length == 1){
-        role = Roles_Live.findOne({ "_id" : user.roles });
-      }else{
-        var listRoles = [];
-        for(var i=0; i < res.length; i++){
-          var role = Roles_Live.findOne({ "_id" : res[i] });
-          listRoles.push(role);
-        }
-        role = getFinalRole(listRoles);
-      }
+    }else if (whoIsConnected() == "company") {
       var payload = {
-        'att':['dn','changetype','replace'],'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn','changetype': 'modify',
-        'replace': ['AFirstName','ALastName','AAdress','pwd','APhone','ADateOfBirth','APicture','ACIN','ContractAdd',
-        'ContractUpdate', 'ContractDelete', 'ContractDisplay', 'ContractPrint', 'ContractSign',
-        'ContractValidator', 'AccountAdd', 'AccountUpdate', 'AccountDelete',
-        'AccountDisplay', 'AccountPrint', 'AccountValidator', 'InvoiceAdd',
-        'InvoiceUpdate', 'InvoiceDelete', 'InvoiceDisplay', 'InvoicePrint', 'InvoiceSign',
-        'InvoiceValidator', 'ClientAdd', 'ClientUpdate', 'ClientDelete',
-        'ClientDisplay', 'ClientPrint', 'ClientAccountManagment', 'ClientValidator',
-        'ScreenActivation', 'ScreenDelete', 'ScreenDisplay', 'ScreenPrint',
-        'ScreenONOFF', 'ScreenClear', 'ScreenMonitoring', 'ScreenValidator',
-        'ScreenUpdate', 'ScreenShow', 'ScreenUpdateSystem', 'SegmentAffect', 'SegmentUpdate',
-        'SegmentDelete', 'SegmentPrint', 'SegmentDisplay', 'SegmentValidator',
-        'TariffAdd', 'TariffUpdate', 'TariffDelete', 'TariffPrint', 'TariffAffect',
-        'TariffValidator', 'BookingAdd', 'BookingUpdate', 'BookingDelete',
-        'BookingDisplay', 'BookingPrint', 'BookingValidator', 'ContentAdd',
-        'ContentDelete', 'ContentDisplay', 'ContentValidator', 'RoleAdd',
-        'RoleDelete', 'RoleUpdate', 'RoleDisplay', 'RolePrint', 'RoleValidator',
-        'ArticleAdd', 'ArticleUpdate', 'ArticleDelete', 'ArticleDisplay', 'ArticlePrint',
-        'ArticleAffect', 'ArticleValidator', 'SignatureAdd', 'SignatureValidator',
-        'FirmwareAdd', 'FirmwareUpdate', 'FirmwareDelete', 'FirmwareDisplay',
-        'FirmwarePrint', 'FirmwareValidator'] ,
+        'att': ['dn', 'objectClass', 'AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+        'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+        'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+        'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+        'SegmentUpdate','SegmentDelete','SegmentPrint','SegmentDisplay','SegmentAuthorize','SegmentDetail',
+        'TariffAdd','TariffUpdate','TariffDelete','TariffPrint','TariffDisplay','TariffAuthorize','TariffDetail',
+        'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+        'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+        'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+        'ArticleAdd','ArticleUpdate','ArticleDelete','ArticleDisplay','ArticlePrint','ArticleDetail','ArticleAuthorize','ArticleOptions',
+        'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint',
+        'FirmwareAdd','FirmwareUpdate','FirmwareDelete','FirmwareDisplay','FirmwarePrint','FirmwareAuthorize','FirmwareDetail',
+        'ClientAdd','ClientUpdate','ClientDelete','ClientDisplay','ClientPrint','ClientAuthorize','ClientDetail','ClientUsers','ClientRoles',
+        'ClientBookings','ClientContents','ClientContracts','ClientInvoices',
+        'ScreenAdd','ScreenUpdate','ScreenDelete','ScreenDisplay','ScreenPrint','ScreenAuthorize','ScreenDetail','ScreenActivation',
+        'ScreenONOFF','ScreenClear','ScreenMonitoring','ScreenShow','ScreenUpdateSystem',
+        'CurrencyAdd','CurrencyUpdate','CurrencyDelete','CurrencyDisplay','CurrencyPrint','CurrencyDetail','CurrencyAuthorize',
+        'PlanningAdd','PlanningPrint','PlanningDisplay','PlanningDetail','PlanningAuthorize'],
+        'dn': 'AEmail='+user.email+',o=Admin,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn',
+        'objectClass':['top','AppAdministrator', 'ContractManagment', 'AccountManagment','InvoiceManagment', 'ClientManagment', 'ScreenManagment', 'SegmentManagment',
+        'TariffManagment', 'BookingManagment', 'ContentManagment', 'RoleManagment','ArticleManagment', 'SignatureManagment', 'FirmwareManagment',
+         'CurrencyManagment','PlanningManagment'],
         'AFirstName': user.fname,
         'ALastName': user.surname,
         'AAdress': user.address,
         'pwd': user.password,
+        'AEmail': user.email,
         'APhone': user.phone,
         'ADateOfBirth': user.dateOfBirth,
         'APicture': user.photo,
@@ -775,153 +568,597 @@ function sendCapsule(user, state){
         'ContractDelete': role.contractDelete,
         'ContractDisplay': role.contractDisplay,
         'ContractPrint': role.contractPrint,
-        'ContractSign': role.contractSign,
-        'ContractValidator': role.contractValidate,
+        'ContractAuthorize': role.contractAuthorize,
+        'ContractDetail': role.contractDetails,
         'AccountAdd': role.accountAdd,
         'AccountUpdate': role.accountUpdate,
         'AccountDelete': role.accountDelete,
         'AccountDisplay': role.accountDisplay,
         'AccountPrint': role.accountPrint,
-        'AccountValidator': role.accountValidate,
+        'AccountAuthorize': role.accountAuthorize,
+        'AccountDetail': role.accountDetails,
         'InvoiceAdd': role.invoiceAdd,
         'InvoiceUpdate': role.invoiceUpdate,
         'InvoiceDelete': role.invoiceDelete,
         'InvoiceDisplay': role.invoiceDisplay,
         'InvoicePrint': role.invoicePrint,
-        'InvoiceSign': null,
-        'InvoiceValidator': role.invoiceValidate,
-        'ClientAdd': role.clientAdd,
-        'ClientUpdate': role.clientUpdate,
-        'ClientDelete': role.clientDelete,
-        'ClientDisplay': role.clientDisplay,
-        'ClientPrint': role.clientPrint,
-        'ClientAccountManagment': role.clientAccountManagement,
-        'ClientValidator': role.clientValidate,
-        'ScreenActivation': role.screenActivate,
-        'ScreenDelete': role.screenDelete,
-        'ScreenDisplay': role.screenDisplay,
-        'ScreenPrint': role.screenPrint,
-        'ScreenONOFF': role.screenOnOff,
-        'ScreenClear': role.screenClear,
-        'ScreenMonitoring': role.screenMonitor,
-        'ScreenValidator': role.screenValidate,
-        'ScreenUpdate': role.screenUpdate,
-        'ScreenShow': role.screenShow,
-        'ScreenUpdateSystem': role.screenUpdateSystem,
-        'SegmentAffect': role.segmentAffect,
+        'InvoiceAuthorize': role.invoiceAuthorize,
+        'InvoiceDetail': role.invoiceDetails,
         'SegmentUpdate': role.segmentUpdate,
         'SegmentDelete': role.segmentDelete,
         'SegmentPrint': role.segmentPrint,
         'SegmentDisplay': role.segmentDisplay,
-        'SegmentValidator': role.segmentValidate,
+        'SegmentAuthorize': role.segmentAuthorize,
+        'SegmentDetail': role.segmentDetails,
         'TariffAdd': role.tariffAdd,
         'TariffUpdate': role.tariffUpdate,
         'TariffDelete': role.tariffDelete,
         'TariffPrint': role.tariffPrint,
-        'TariffAffect': role.tariffAffect,
-        'TariffValidator': role.tariffValidate,
+        'TariffDisplay': role.tariffDisplay,
+        'TariffAuthorize': role.tariffAuthorize,
+        'TariffDetail': role.tariffDetails,
         'BookingAdd': role.bookingAdd,
         'BookingUpdate': role.bookingUpdate,
         'BookingDelete': role.bookingDelete,
         'BookingDisplay': role.bookingDisplay,
         'BookingPrint': role.bookingPrint,
-        'BookingValidator': role.bookingValidate,
+        'BookingAuthorize': role.bookingAuthorize,
+        'BookingDetail': role.bookingDetails,
         'ContentAdd': role.contentAdd,
         'ContentDelete': role.contentDelete,
+        'ContentPrint': role.contentPrint,
         'ContentDisplay': role.contentDisplay,
-        'ContentValidator': role.contentValidate,
+        'ContentAuthorize': role.contentAuthorize,
+        'ContentDetail': role.contentDetails,
         'RoleAdd': role.roleAdd,
         'RoleDelete': role.roleDelete,
         'RoleUpdate': role.roleUpdate,
         'RoleDisplay': role.roleDisplay,
         'RolePrint': role.rolePrint,
-        'RoleValidator': role.roleValidate,
+        'RoleAuthorize': role.roleAuthorize,
+        'Roledetail': role.roleDetails,
         'ArticleAdd': role.articleAdd,
         'ArticleUpdate': role.articleUpdate,
         'ArticleDelete': role.articleDelete,
         'ArticleDisplay': role.articleDisplay,
         'ArticlePrint': role.articlePrint,
-        'ArticleAffect': null,
-        'ArticleValidator': role.articleValidate,
+        'ArticleDetail': role.articleDetails,
+        'ArticleAuthorize': role.articleAuthorize,
+        'ArticleOptions': role.articleOptions,
         'SignatureAdd': role.signatureAdd,
-        'SignatureValidator': null,
+        'SignatureDelete': role.signatureDelete,
+        'SignatureDisplay': role.signatureDisplay,
+        'SignaturePrint': role.signaturePrint,
         'FirmwareAdd': role.firmwareAdd,
         'FirmwareUpdate': role.firmwareUpdate,
         'FirmwareDelete': role.firmwareDelete,
         'FirmwareDisplay': role.firmwareDisplay,
         'FirmwarePrint': role.firmwarePrint,
-        'FirmwareValidator': role.firmwareValidate
+        'FirmwareAuthorize': role.firmwareAuthorize,
+        'FirmwareDetail': role.firmwareDetails,
+        'ClientAdd': role.clientAdd,
+        'ClientUpdate': role.clientUpdate,
+        'ClientDelete': role.clientDelete,
+        'ClientDisplay': role.clientDisplay,
+        'ClientPrint': role.clientPrint,
+        'ClientAuthorize': role.clientAuthorize,
+        'ClientDetail': role.clientDetails,
+        'ClientUsers': role.clientUsers,
+        'ClientRoles': role.clientRoles,
+        'ClientBookings': role.clientBookings,
+        'ClientContents': role.clientContents,
+        'ClientContracts': role.clientContracts,
+        'ClientInvoices': role.clientInvoices,
+        'ScreenAdd': role.screenAdd,
+        'ScreenUpdate': role.screenUpdate,
+        'ScreenDelete': role.screenDelete,
+        'ScreenDisplay': role.screenDisplay,
+        'ScreenPrint': role.screenPrint,
+        'ScreenAuthorize': role.screenAuthorize,
+        'ScreenDetail': role.screenDetails,
+        'ScreenActivation': role.screenActivate,
+        'ScreenONOFF': role.screenOnOff,
+        'ScreenClear': role.screenClear,
+        'ScreenMonitoring': role.screenMonitor,
+        'ScreenShow': role.screenShow,
+        'ScreenUpdateSystem': role.screenSystem,
+        'CurrencyAdd': role.currencyAdd,
+        'CurrencyUpdate': role.currencyUpdate,
+        'CurrencyDelete': role.currencyDelete,
+        'CurrencyDisplay': role.currencyDisplay,
+        'CurrencyPrint': role.currencyPrint,
+        'CurrencyDetail': role.currencyDetails,
+        'CurrencyAuthorize': role.currencyAuthorize,
+        'PlanningAdd': role.planningAdd,
+        'PlanningPrint': role.planningPrint,
+        'PlanningDisplay': role.planningDisplay,
+        'PlanningDetail': role.planningDetails,
+        'PlanningAuthorize': role.planningAuthorize
       };
-      capsule.sort = "LDAP_MOD_MSG";
-      capsule.payload = payload;
-    }else{
+    }else {
+      var payload = {
+        'att': ['dn', 'objectClass', 'AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+        'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+        'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+        'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+        'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+        'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+        'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+        'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint'],
+        'dn': 'AEmail='+user.email+',ECode='+user.code+',o=Establishment,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn',
+        'objectClass':['top','AppAdministrator', 'ContractManagment', 'AccountManagment','InvoiceManagment', 'BookingManagment', 'ContentManagment',
+        'RoleManagment', 'SignatureManagment'],
+        'AFirstName': user.fname,
+        'ALastName': user.surname,
+        'AAdress': user.address,
+        'pwd': user.password,
+        'AEmail': user.email,
+        'APhone': user.phone,
+        'ADateOfBirth': user.dateOfBirth,
+        'APicture': user.photo,
+        'ACIN': user.legalIdentifier,
+        'ContractAdd': role.contractAdd,
+        'ContractUpdate': role.contractUpdate,
+        'ContractDelete': role.contractDelete,
+        'ContractDisplay': role.contractDisplay,
+        'ContractPrint': role.contractPrint,
+        'ContractAuthorize': role.contractAuthorize,
+        'ContractDetail': role.contractDetails,
+        'AccountAdd': role.accountAdd,
+        'AccountUpdate': role.accountUpdate,
+        'AccountDelete': role.accountDelete,
+        'AccountDisplay': role.accountDisplay,
+        'AccountPrint': role.accountPrint,
+        'AccountAuthorize': role.accountAuthorize,
+        'AccountDetail': role.accountDetails,
+        'InvoiceAdd': role.invoiceAdd,
+        'InvoiceUpdate': role.invoiceUpdate,
+        'InvoiceDelete': role.invoiceDelete,
+        'InvoiceDisplay': role.invoiceDisplay,
+        'InvoicePrint': role.invoicePrint,
+        'InvoiceAuthorize': role.invoiceAuthorize,
+        'InvoiceDetail': role.invoiceDetails,
+        'BookingAdd': role.bookingAdd,
+        'BookingUpdate': role.bookingUpdate,
+        'BookingDelete': role.bookingDelete,
+        'BookingDisplay': role.bookingDisplay,
+        'BookingPrint': role.bookingPrint,
+        'BookingAuthorize': role.bookingAuthorize,
+        'BookingDetail': role.bookingDetails,
+        'ContentAdd': role.contentAdd,
+        'ContentDelete': role.contentDelete,
+        'ContentPrint': role.contentPrint,
+        'ContentDisplay': role.contentDisplay,
+        'ContentAuthorize': role.contentAuthorize,
+        'ContentDetail': role.contentDetails,
+        'RoleAdd': role.roleAdd,
+        'RoleDelete': role.roleDelete,
+        'RoleUpdate': role.roleUpdate,
+        'RoleDisplay': role.roleDisplay,
+        'RolePrint': role.rolePrint,
+        'RoleAuthorize': role.roleAuthorize,
+        'Roledetail': role.roleDetails,
+        'SignatureAdd': role.signatureAdd,
+        'SignatureDelete': role.signatureDelete,
+        'SignatureDisplay': role.signatureDisplay,
+        'SignaturePrint': role.signaturePrint
+      };
+    }
+    capsule.sort = "LDAP_ADD_MSG";
+    capsule.payload = payload;
+  }else if( state == "edit"){
+    if (whoIsConnected() == "swallow-labs") {
+      var payload = {
+        'att':['dn','changetype','replace'],
+        'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn',
+        'changetype': 'modify',
+        'replace': ['AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+        'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+        'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+        'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+        'SegmentUpdate','SegmentDelete','SegmentPrint','SegmentDisplay','SegmentAuthorize','SegmentDetail',
+        'TariffAdd','TariffUpdate','TariffDelete','TariffPrint','TariffDisplay','TariffAuthorize','TariffDetail',
+        'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+        'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+        'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+        'ArticleAdd','ArticleUpdate','ArticleDelete','ArticleDisplay','ArticlePrint','ArticleDetail','ArticleAuthorize','ArticleOptions',
+        'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint',
+        'FirmwareAdd','FirmwareUpdate','FirmwareDelete','FirmwareDisplay','FirmwarePrint','FirmwareAuthorize','FirmwareDetail',
+        'ClientAdd','ClientUpdate','ClientDelete','ClientDisplay','ClientPrint','ClientAuthorize','ClientDetail','ClientUsers','ClientRoles',
+        'ClientBookings','ClientContents','ClientContracts','ClientInvoices',
+        'ScreenAdd','ScreenUpdate','ScreenDelete','ScreenDisplay','ScreenPrint','ScreenAuthorize','ScreenDetail','ScreenActivation',
+        'ScreenONOFF','ScreenClear','ScreenMonitoring','ScreenShow','ScreenUpdateSystem',
+        'CompanyAdd','CompanyUpdate','CompanyDelete','CompanyDisplay','CompanyPrint','CompanyDetail','CompanyAuthorize','CompanyBooking','CompanyContent',
+        'CompanyRole','CompanyUser','CompanyArticle','CompanyContract','CompanyScreen','CompanyClient','CompanyInvoice','CompanyFirmware','CompanySegment',
+        'CompanyTariff','CompanyCurrency',
+        'ModuleAdd','ModuleUpdate','ModuleDelete','ModuleDisplay','ModuleDetail','ModuleAuthorize',
+        'CurrencyAdd','CurrencyUpdate','CurrencyDelete','CurrencyDisplay','CurrencyPrint','CurrencyDetail','CurrencyAuthorize',
+        'PlanningAdd','PlanningPrint','PlanningDisplay','PlanningDetail','PlanningAuthorize'],
+        'AFirstName': user.fname,
+        'ALastName': user.surname,
+        'AAdress': user.address,
+        'pwd': user.password,
+        'AEmail': user.email,
+        'APhone': user.phone,
+        'ADateOfBirth': user.dateOfBirth,
+        'APicture': user.photo,
+        'ACIN': user.legalIdentifier,
+        'ContractAdd': role.contractAdd,
+        'ContractUpdate': role.contractUpdate,
+        'ContractDelete': role.contractDelete,
+        'ContractDisplay': role.contractDisplay,
+        'ContractPrint': role.contractPrint,
+        'ContractAuthorize': role.contractAuthorize,
+        'ContractDetail': role.contractDetails,
+        'AccountAdd': role.accountAdd,
+        'AccountUpdate': role.accountUpdate,
+        'AccountDelete': role.accountDelete,
+        'AccountDisplay': role.accountDisplay,
+        'AccountPrint': role.accountPrint,
+        'AccountAuthorize': role.accountAuthorize,
+        'AccountDetail': role.accountDetails,
+        'InvoiceAdd': role.invoiceAdd,
+        'InvoiceUpdate': role.invoiceUpdate,
+        'InvoiceDelete': role.invoiceDelete,
+        'InvoiceDisplay': role.invoiceDisplay,
+        'InvoicePrint': role.invoicePrint,
+        'InvoiceAuthorize': role.invoiceAuthorize,
+        'InvoiceDetail': role.invoiceDetails,
+        'SegmentUpdate': role.segmentUpdate,
+        'SegmentDelete': role.segmentDelete,
+        'SegmentPrint': role.segmentPrint,
+        'SegmentDisplay': role.segmentDisplay,
+        'SegmentAuthorize': role.segmentAuthorize,
+        'SegmentDetail': role.segmentDetails,
+        'TariffAdd': role.tariffAdd,
+        'TariffUpdate': role.tariffUpdate,
+        'TariffDelete': role.tariffDelete,
+        'TariffPrint': role.tariffPrint,
+        'TariffDisplay': role.tariffDisplay,
+        'TariffAuthorize': role.tariffAuthorize,
+        'TariffDetail': role.tariffDetails,
+        'BookingAdd': role.bookingAdd,
+        'BookingUpdate': role.bookingUpdate,
+        'BookingDelete': role.bookingDelete,
+        'BookingDisplay': role.bookingDisplay,
+        'BookingPrint': role.bookingPrint,
+        'BookingAuthorize': role.bookingAuthorize,
+        'BookingDetail': role.bookingDetails,
+        'ContentAdd': role.contentAdd,
+        'ContentDelete': role.contentDelete,
+        'ContentPrint': role.contentPrint,
+        'ContentDisplay': role.contentDisplay,
+        'ContentAuthorize': role.contentAuthorize,
+        'ContentDetail': role.contentDetails,
+        'RoleAdd': role.roleAdd,
+        'RoleDelete': role.roleDelete,
+        'RoleUpdate': role.roleUpdate,
+        'RoleDisplay': role.roleDisplay,
+        'RolePrint': role.rolePrint,
+        'RoleAuthorize': role.roleAuthorize,
+        'Roledetail': role.roleDetails,
+        'ArticleAdd': role.articleAdd,
+        'ArticleUpdate': role.articleUpdate,
+        'ArticleDelete': role.articleDelete,
+        'ArticleDisplay': role.articleDisplay,
+        'ArticlePrint': role.articlePrint,
+        'ArticleDetail': role.articleDetails,
+        'ArticleAuthorize': role.articleAuthorize,
+        'ArticleOptions': role.articleOptions,
+        'SignatureAdd': role.signatureAdd,
+        'SignatureDelete': role.signatureDelete,
+        'SignatureDisplay': role.signatureDisplay,
+        'SignaturePrint': role.signaturePrint,
+        'FirmwareAdd': role.firmwareAdd,
+        'FirmwareUpdate': role.firmwareUpdate,
+        'FirmwareDelete': role.firmwareDelete,
+        'FirmwareDisplay': role.firmwareDisplay,
+        'FirmwarePrint': role.firmwarePrint,
+        'FirmwareAuthorize': role.firmwareAuthorize,
+        'FirmwareDetail': role.firmwareDetails,
+        'ClientAdd': role.clientAdd,
+        'ClientUpdate': role.clientUpdate,
+        'ClientDelete': role.clientDelete,
+        'ClientDisplay': role.clientDisplay,
+        'ClientPrint': role.clientPrint,
+        'ClientAuthorize': role.clientAuthorize,
+        'ClientDetail': role.clientDetails,
+        'ClientUsers': role.clientUsers,
+        'ClientRoles': role.clientRoles,
+        'ClientBookings': role.clientBookings,
+        'ClientContents': role.clientContents,
+        'ClientContracts': role.clientContracts,
+        'ClientInvoices': role.clientInvoices,
+        'ScreenAdd': role.screenAdd,
+        'ScreenUpdate': role.screenUpdate,
+        'ScreenDelete': role.screenDelete,
+        'ScreenDisplay': role.screenDisplay,
+        'ScreenPrint': role.screenPrint,
+        'ScreenAuthorize': role.screenAuthorize,
+        'ScreenDetail': role.screenDetails,
+        'ScreenActivation': role.screenActivate,
+        'ScreenONOFF': role.screenOnOff,
+        'ScreenClear': role.screenClear,
+        'ScreenMonitoring': role.screenMonitor,
+        'ScreenShow': role.screenShow,
+        'ScreenUpdateSystem': role.screenSystem,
+        'CompanyAdd': role.companyAdd,
+        'CompanyUpdate': role.companyUpdate,
+        'CompanyDelete': role.companyDelete,
+        'CompanyDisplay': role.companyDisplay,
+        'CompanyPrint': role.companyPrint,
+        'CompanyDetail': role.companyDetails,
+        'CompanyAuthorize': role.companyAuthorize,
+        'CompanyBooking': role.companyBookings,
+        'CompanyContent': role.companyContents,
+        'CompanyRole': role.companyRoles,
+        'CompanyUser': role.companyUsers,
+        'CompanyArticle': role.companyArticles,
+        'CompanyContract': role.companyContracts,
+        'CompanyScreen': role.companyScreens,
+        'CompanyClient': role.companyClients,
+        'CompanyInvoice': role.companyInvoices,
+        'CompanyFirmware': role.companyFirmwares,
+        'CompanySegment': role.companySegments,
+        'CompanyTariff': role.companyTariffs,
+        'CompanyCurrency': role.companyCurrencies,
+        'ModuleAdd': role.moduleAdd,
+        'ModuleUpdate': role.moduleUpdate,
+        'ModuleDelete': role.moduleDelete,
+        'ModuleDisplay': role.moduleDisplay,
+        'ModuleDetail': role.moduleDetails,
+        'ModuleAuthorize': role.moduleAuthorize,
+        'CurrencyAdd': role.currencyAdd,
+        'CurrencyUpdate': role.currencyUpdate,
+        'CurrencyDelete': role.currencyDelete,
+        'CurrencyDisplay': role.currencyDisplay,
+        'CurrencyPrint': role.currencyPrint,
+        'CurrencyDetail': role.currencyDetails,
+        'CurrencyAuthorize': role.currencyAuthorize,
+        'PlanningAdd': role.planningAdd,
+        'PlanningPrint': role.planningPrint,
+        'PlanningDisplay': role.planningDisplay,
+        'PlanningDetail': role.planningDetails,
+        'PlanningAuthorize': role.planningAuthorize
+      };
+    }else if (whoIsConnected() == "company") {
+      var payload = {
+        'att':['dn','changetype','replace'],
+        'dn': 'AEmail='+user.email+',o=Admin,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn',
+        'changetype': 'modify',
+        'replace': ['AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+        'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+        'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+        'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+        'SegmentUpdate','SegmentDelete','SegmentPrint','SegmentDisplay','SegmentAuthorize','SegmentDetail',
+        'TariffAdd','TariffUpdate','TariffDelete','TariffPrint','TariffDisplay','TariffAuthorize','TariffDetail',
+        'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+        'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+        'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+        'ArticleAdd','ArticleUpdate','ArticleDelete','ArticleDisplay','ArticlePrint','ArticleDetail','ArticleAuthorize','ArticleOptions',
+        'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint',
+        'FirmwareAdd','FirmwareUpdate','FirmwareDelete','FirmwareDisplay','FirmwarePrint','FirmwareAuthorize','FirmwareDetail',
+        'ClientAdd','ClientUpdate','ClientDelete','ClientDisplay','ClientPrint','ClientAuthorize','ClientDetail','ClientUsers','ClientRoles',
+        'ClientBookings','ClientContents','ClientContracts','ClientInvoices',
+        'ScreenAdd','ScreenUpdate','ScreenDelete','ScreenDisplay','ScreenPrint','ScreenAuthorize','ScreenDetail','ScreenActivation',
+        'ScreenONOFF','ScreenClear','ScreenMonitoring','ScreenShow','ScreenUpdateSystem',
+        'CurrencyAdd','CurrencyUpdate','CurrencyDelete','CurrencyDisplay','CurrencyPrint','CurrencyDetail','CurrencyAuthorize',
+        'PlanningAdd','PlanningPrint','PlanningDisplay','PlanningDetail','PlanningAuthorize'],
+        'AFirstName': user.fname,
+        'ALastName': user.surname,
+        'AAdress': user.address,
+        'pwd': user.password,
+        'AEmail': user.email,
+        'APhone': user.phone,
+        'ADateOfBirth': user.dateOfBirth,
+        'APicture': user.photo,
+        'ACIN': user.legalIdentifier,
+        'ContractAdd': role.contractAdd,
+        'ContractUpdate': role.contractUpdate,
+        'ContractDelete': role.contractDelete,
+        'ContractDisplay': role.contractDisplay,
+        'ContractPrint': role.contractPrint,
+        'ContractAuthorize': role.contractAuthorize,
+        'ContractDetail': role.contractDetails,
+        'AccountAdd': role.accountAdd,
+        'AccountUpdate': role.accountUpdate,
+        'AccountDelete': role.accountDelete,
+        'AccountDisplay': role.accountDisplay,
+        'AccountPrint': role.accountPrint,
+        'AccountAuthorize': role.accountAuthorize,
+        'AccountDetail': role.accountDetails,
+        'InvoiceAdd': role.invoiceAdd,
+        'InvoiceUpdate': role.invoiceUpdate,
+        'InvoiceDelete': role.invoiceDelete,
+        'InvoiceDisplay': role.invoiceDisplay,
+        'InvoicePrint': role.invoicePrint,
+        'InvoiceAuthorize': role.invoiceAuthorize,
+        'InvoiceDetail': role.invoiceDetails,
+        'SegmentUpdate': role.segmentUpdate,
+        'SegmentDelete': role.segmentDelete,
+        'SegmentPrint': role.segmentPrint,
+        'SegmentDisplay': role.segmentDisplay,
+        'SegmentAuthorize': role.segmentAuthorize,
+        'SegmentDetail': role.segmentDetails,
+        'TariffAdd': role.tariffAdd,
+        'TariffUpdate': role.tariffUpdate,
+        'TariffDelete': role.tariffDelete,
+        'TariffPrint': role.tariffPrint,
+        'TariffDisplay': role.tariffDisplay,
+        'TariffAuthorize': role.tariffAuthorize,
+        'TariffDetail': role.tariffDetails,
+        'BookingAdd': role.bookingAdd,
+        'BookingUpdate': role.bookingUpdate,
+        'BookingDelete': role.bookingDelete,
+        'BookingDisplay': role.bookingDisplay,
+        'BookingPrint': role.bookingPrint,
+        'BookingAuthorize': role.bookingAuthorize,
+        'BookingDetail': role.bookingDetails,
+        'ContentAdd': role.contentAdd,
+        'ContentDelete': role.contentDelete,
+        'ContentPrint': role.contentPrint,
+        'ContentDisplay': role.contentDisplay,
+        'ContentAuthorize': role.contentAuthorize,
+        'ContentDetail': role.contentDetails,
+        'RoleAdd': role.roleAdd,
+        'RoleDelete': role.roleDelete,
+        'RoleUpdate': role.roleUpdate,
+        'RoleDisplay': role.roleDisplay,
+        'RolePrint': role.rolePrint,
+        'RoleAuthorize': role.roleAuthorize,
+        'Roledetail': role.roleDetails,
+        'ArticleAdd': role.articleAdd,
+        'ArticleUpdate': role.articleUpdate,
+        'ArticleDelete': role.articleDelete,
+        'ArticleDisplay': role.articleDisplay,
+        'ArticlePrint': role.articlePrint,
+        'ArticleDetail': role.articleDetails,
+        'ArticleAuthorize': role.articleAuthorize,
+        'ArticleOptions': role.articleOptions,
+        'SignatureAdd': role.signatureAdd,
+        'SignatureDelete': role.signatureDelete,
+        'SignatureDisplay': role.signatureDisplay,
+        'SignaturePrint': role.signaturePrint,
+        'FirmwareAdd': role.firmwareAdd,
+        'FirmwareUpdate': role.firmwareUpdate,
+        'FirmwareDelete': role.firmwareDelete,
+        'FirmwareDisplay': role.firmwareDisplay,
+        'FirmwarePrint': role.firmwarePrint,
+        'FirmwareAuthorize': role.firmwareAuthorize,
+        'FirmwareDetail': role.firmwareDetails,
+        'ClientAdd': role.clientAdd,
+        'ClientUpdate': role.clientUpdate,
+        'ClientDelete': role.clientDelete,
+        'ClientDisplay': role.clientDisplay,
+        'ClientPrint': role.clientPrint,
+        'ClientAuthorize': role.clientAuthorize,
+        'ClientDetail': role.clientDetails,
+        'ClientUsers': role.clientUsers,
+        'ClientRoles': role.clientRoles,
+        'ClientBookings': role.clientBookings,
+        'ClientContents': role.clientContents,
+        'ClientContracts': role.clientContracts,
+        'ClientInvoices': role.clientInvoices,
+        'ScreenAdd': role.screenAdd,
+        'ScreenUpdate': role.screenUpdate,
+        'ScreenDelete': role.screenDelete,
+        'ScreenDisplay': role.screenDisplay,
+        'ScreenPrint': role.screenPrint,
+        'ScreenAuthorize': role.screenAuthorize,
+        'ScreenDetail': role.screenDetails,
+        'ScreenActivation': role.screenActivate,
+        'ScreenONOFF': role.screenOnOff,
+        'ScreenClear': role.screenClear,
+        'ScreenMonitoring': role.screenMonitor,
+        'ScreenShow': role.screenShow,
+        'ScreenUpdateSystem': role.screenSystem,
+        'CurrencyAdd': role.currencyAdd,
+        'CurrencyUpdate': role.currencyUpdate,
+        'CurrencyDelete': role.currencyDelete,
+        'CurrencyDisplay': role.currencyDisplay,
+        'CurrencyPrint': role.currencyPrint,
+        'CurrencyDetail': role.currencyDetails,
+        'CurrencyAuthorize': role.currencyAuthorize,
+        'PlanningAdd': role.planningAdd,
+        'PlanningPrint': role.planningPrint,
+        'PlanningDisplay': role.planningDisplay,
+        'PlanningDetail': role.planningDetails,
+        'PlanningAuthorize': role.planningAuthorize
+      };
+    }else {
+      var payload = {
+        'att':['dn','changetype','replace'],
+        'dn': 'AEmail='+user.email+',ECode='+user.code+',o=Establishment,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn',
+        'changetype': 'modify',
+        'replace': ['AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+        'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+        'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+        'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+        'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+        'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+        'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+        'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint'],
+        'AFirstName': user.fname,
+        'ALastName': user.surname,
+        'AAdress': user.address,
+        'pwd': user.password,
+        'AEmail': user.email,
+        'APhone': user.phone,
+        'ADateOfBirth': user.dateOfBirth,
+        'APicture': user.photo,
+        'ACIN': user.legalIdentifier,
+        'ContractAdd': role.contractAdd,
+        'ContractUpdate': role.contractUpdate,
+        'ContractDelete': role.contractDelete,
+        'ContractDisplay': role.contractDisplay,
+        'ContractPrint': role.contractPrint,
+        'ContractAuthorize': role.contractAuthorize,
+        'ContractDetail': role.contractDetails,
+        'AccountAdd': role.accountAdd,
+        'AccountUpdate': role.accountUpdate,
+        'AccountDelete': role.accountDelete,
+        'AccountDisplay': role.accountDisplay,
+        'AccountPrint': role.accountPrint,
+        'AccountAuthorize': role.accountAuthorize,
+        'AccountDetail': role.accountDetails,
+        'InvoiceAdd': role.invoiceAdd,
+        'InvoiceUpdate': role.invoiceUpdate,
+        'InvoiceDelete': role.invoiceDelete,
+        'InvoiceDisplay': role.invoiceDisplay,
+        'InvoicePrint': role.invoicePrint,
+        'InvoiceAuthorize': role.invoiceAuthorize,
+        'InvoiceDetail': role.invoiceDetails,
+        'BookingAdd': role.bookingAdd,
+        'BookingUpdate': role.bookingUpdate,
+        'BookingDelete': role.bookingDelete,
+        'BookingDisplay': role.bookingDisplay,
+        'BookingPrint': role.bookingPrint,
+        'BookingAuthorize': role.bookingAuthorize,
+        'BookingDetail': role.bookingDetails,
+        'ContentAdd': role.contentAdd,
+        'ContentDelete': role.contentDelete,
+        'ContentPrint': role.contentPrint,
+        'ContentDisplay': role.contentDisplay,
+        'ContentAuthorize': role.contentAuthorize,
+        'ContentDetail': role.contentDetails,
+        'RoleAdd': role.roleAdd,
+        'RoleDelete': role.roleDelete,
+        'RoleUpdate': role.roleUpdate,
+        'RoleDisplay': role.roleDisplay,
+        'RolePrint': role.rolePrint,
+        'RoleAuthorize': role.roleAuthorize,
+        'Roledetail': role.roleDetails,
+        'SignatureAdd': role.signatureAdd,
+        'SignatureDelete': role.signatureDelete,
+        'SignatureDisplay': role.signatureDisplay,
+        'SignaturePrint': role.signaturePrint
+      };
+    }
+    capsule.sort = "LDAP_MOD_MSG";
+    capsule.payload = payload;
+  }else{
       //case "delete"
-      var payload = {'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn' };
+      if (whoIsConnected() == "swallow-labs") {
+        var payload = {'dn': 'AEmail='+user.email+',o=Administrators,o=WebApp,dc=swallow,dc=tn' };
+      }else if (whoIsConnected() == "company") {
+        var payload = {'dn': 'AEmail='+user.email+',o=Admin,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn' };
+      }else {
+        var payload = {'dn': 'AEmail='+user.email+',ECode='+user.code+',o=Establishment,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn' };
+      }
       capsule.sort = "LDAP_DEL_MSG";
       capsule.payload = payload;
-    }
+  }
 
   Meteor.call('sendCapsule', capsule, function(error){
     if(error){
       alert('Error');
     }else{
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Authorization done ');
-      }else {
-        toastr.success('Avec succès','Autorisation fait !');
-      }
-      console.log("OK");
+      toastrAuthorizationDone();
     }
   });
 }
-verify = function (val1 , val2){
-  if( (val1 == true && val2 == false) || (val2 == true && val1 == false)){
-    return false
-  }
-  return true;
-}
-testRoles = function (roles){
-  var actions = [ 'accountAdd', 'accountUpdate', 'accountDelete','accountDisplay', 'accountPrint', 'accountValidate', 'invoiceAdd',
-  'invoiceUpdate', 'invoiceDelete', 'invoiceDisplay', 'invoicePrint', 'invoiceSign', 'invoiceValidate', 'clientAdd', 'clientUpdate', 'clientDelete',
-  'clientDisplay', 'clientPrint', 'clientAccountManagment', 'clientValidate', 'screenActivation', 'screenDelete', 'screenDisplay', 'screenPrint',
-  'screenONOFF', 'screenClear', 'screenMonitoring', 'screenValidator', 'screenUpdate', 'screenShow', 'screenUpdateSystem', 'segmentAffect', 'segmentUpdate',
-  'segmentDelete', 'segmentPrint', 'segmentDisplay', 'segmentValidate', 'tariffAdd', 'tariffUpdate', 'tariffDelete', 'tariffPrint', 'tariffAffect',
-  'tariffValidator', 'bookingAdd', 'bookingUpdate', 'bookingDelete','bookingDisplay', 'bookingPrint', 'bookingValidate', 'contentAdd',
-  'contentDelete', 'contentDisplay', 'contentValidate', 'roleAdd', 'roleDelete', 'roleUpdate', 'roleDisplay', 'rolePrint', 'roleValidate',
-  'articleAdd', 'articleUpdate', 'articleDelete', 'articleDisplay', 'articlePrint', 'articleAffect', 'articleValidate','signatureAdd', 'signatureValidate',
-  'firmwareAdd', 'firmwareUpdate', 'firmwareDelete', 'firmwareDisplay', 'firmwarePrint', 'firmwareValidate'];
-  var actionArray = [ 'Account Add', 'Account Update', 'Account Delete','Account Display', 'Account Print', 'Account Validate', 'Invoice Add',
-  'Invoice Update', 'Invoice Delete', 'Invoice Display', 'Invoice Print', 'Invoice Sign', 'Invoice Validate', 'Client Add', 'Client Update', 'Client Delete',
-  'Client Display', 'Client Print', 'Client Account Managment', 'Client Validate', 'Screen Activation', 'Screen Delete', 'Screen Display', 'Screen Print',
-  'Screen ON/OFF', 'Screen Clear', 'Screen Monitoring', 'Screen Validator', 'Screen Update', 'Screen Show', 'Screen Update System', 'Segment Affect', 'Segment Update',
-  'Segment Delete', 'Segment Print', 'Segment Display', 'Segment Validate', 'Tariff Add', 'Tariff Update', 'Tariff Delete', 'Tariff Print', 'Tariff Affect',
-  'Tariff Validator', 'Booking Add', 'Booking Update', 'Booking Delete','Booking Display', 'Booking Print', 'Booking Validate', 'Content Add',
-  'Content Delete', 'Content Display', 'Content Validate', 'Role Add', 'Role Delete', 'Role Update', 'Role Display', 'Role Print', 'Role Validate',
-  'Article Add', 'Article Update', 'Article Delete', 'Article Display', 'Article Print', 'Article Affect', 'Article Validate','Signature Add', 'Signature Validate',
-  'Firmware Add', 'Firmware Update', 'Firmware Delete', 'Firmware Display', 'Firmware Print', 'Firmware Validate'];
-  var roles = getListOfRoles(roles);
-  var warnings = [];
-  for(var x=0; x < roles.length; x++){
-    var role = roles[x];
-    for(var i=x+1; i < roles.length; i++){
-      var nextRole = roles[i];
-      for(var j=0; j < actions.length; j++){
-        if( ! verify(role[actions[j]], nextRole[actions[j]]) ){
-          var obj = {};
-          obj.message = actionArray[j];
-          warnings.push(obj);
-        }
-      }
-    }
-  }
-  if(warnings.length > 0){
-    Session.set("Warnings",warnings)
-    return false;
-  }
-  return true;
-}
 Template.allAccounts.rendered = function(){
-    var userLogged = Session.get("UserLogged");
+    checkSession();
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
@@ -929,6 +1166,8 @@ Template.allAccounts.rendered = function(){
     console.log(Session.get("UserLogged").language);
     settingLanguage();
     $("[data-toggle=tooltip]").tooltip();
+    $('#warning').hide();
+    $('#confirmPasword').hide();
 };
 Template.allAccounts.events({
   'click .newUser'() {
@@ -936,40 +1175,36 @@ Template.allAccounts.events({
   },
   'click .saveAdd'() {
     var userAdded = getValuesFromFormForAdd();
-    if(userAdded.password != null && userAdded.email != null){
-      $('#enterEmailPwd').modal();
+    if(userAdded.password.length == 0 && userAdded.email.length == 0){
+      $('#warning').show();
     }else {
+      $('#warning').hide();
+      $('#newUserPopup').modal('hide');
+      userAdded.password = encryptPassword(userAdded.password);
       Users_Authorization.insert(userAdded);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Save done !');
-      }else {
-        toastr.success('Avec succès','Enregistrer fait !');
-      }
+      toastrSaveDone();
     }
   },
   'click .validateAdd'() {
     var userAdded = getValuesFromFormForAdd();
-    if(userAdded.password != null && userAdded.email != null){
-      $('#enterEmailPwd').modal();
+    if(userAdded.password.length == 0 && userAdded.email.length == 0){
+      $('#warning').show();
     }else {
+      $('#warning').hide();
+      $('#newUserPopup').modal('hide');
       userAdded.status = "INAU";
+      userAdded.password = encryptPassword(userAdded.password);
       Users_Authorization.insert(userAdded);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Validation done !');
-      }else {
-        toastr.success('Avec succès','Validation fait !');
-      }
-
+      toastrValidatonDone();
     }
   },
   //         LIVE events         //
   'click .btn-edit'() {
     var user = Users_Live.findOne({ "_id" : this._id });
-    //sendCapsule(user);
     if (verifyEdit(user._id)){
       Session.set("userSelected", user);
       var res = user.roles.split("*");
-      var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
+      var roles = Roles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "code": Session.get("UserLogged").code });
       var rolesList = [];
       roles.forEach(function(doc){
         var obj = {};
@@ -1002,11 +1237,7 @@ Template.allAccounts.events({
           userUpdated.currentNumber = user.currentNumber + 1;
           Users_Authorization.remove(user._id);
           Users_Authorization.insert(userUpdated);
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Edict done !');
-          }else {
-            toastr.success('Avec succès','Modification fait !');
-          }
+          toastrModificationSaved();
         }else{
           $('#rightOldPwd').modal();
         }
@@ -1018,11 +1249,7 @@ Template.allAccounts.events({
       userUpdated.password = user.password;
       userUpdated.currentNumber = user.currentNumber + 1;
       Users_Authorization.insert(userUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
+      toastrModificationSaved();
     }
   },
   'click .validateEditLive'() {
@@ -1037,11 +1264,7 @@ Template.allAccounts.events({
           userUpdated.status = "INAU";
           Users_Authorization.remove(user._id);
           Users_Authorization.insert(userUpdated);
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Edict done !');
-          }else {
-            toastr.success('Avec succès','Modification fait !');
-          }
+          toastrModificationValidated();
         }else{
           $('#rightOldPwd').modal();
         }
@@ -1054,16 +1277,16 @@ Template.allAccounts.events({
       userUpdated.status = "INAU";
       userUpdated.currentNumber = user.currentNumber + 1;
       Users_Authorization.insert(userUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
+      toastrModificationValidated();
     }
   },
   'click .btn-details'() {
     var user = Users_Live.findOne({ "_id" : this._id });
-    Session.set("UserDetails",user);
+    var inputter = Users_Live.findOne({ "_id" : user.inputter });
+    user.inputter = inputter.fname+" "+inputter.surname;
+    var authorizer = Users_Live.findOne({ "_id" : user.authorizer });
+    user.authorizer = authorizer.fname+" "+authorizer.surname;
+    Session.set("UserDetails", user);
     var roles = user.roles.split("*");
     Session.set("RoleList", roles);
     $('#userDetailsPopUp').modal();
@@ -1082,7 +1305,7 @@ Template.allAccounts.events({
     user._id = user._id+"#D"
     user.status = "RNAU";
     user.inputter = "HEDI";
-    user.dateTime = new Date();
+    user.dateTime = getDateNow();
     user.authorizer = null;
     Users_Authorization.insert(user);
   },
@@ -1092,11 +1315,21 @@ Template.allAccounts.events({
     var newUser = Users_Authorization.findOne({ "_id" : this._id });
     // test User have minimum one role
     if(newUser.roles.length > 0 ){
-      Session.set("OldUser",oldUser);
-      Session.set("NewUser",newUser);
+      Session.set("UserAuthorized", newUser);
+      if(oldUser == undefined){
+        Session.set("OldUser", null);
+      }else {
+        var inputter = Users_Live.findOne({ "_id" : oldUser.inputter });
+        oldUser.inputter = inputter.fname+" "+inputter.surname;
+        var authorizer = Users_Live.findOne({ "_id" : oldUser.authorizer });
+        oldUser.authorizer = authorizer.fname+" "+authorizer.surname;
+        Session.set("OldUser", oldUser);
+      }
+      var inputter = Users_Live.findOne({ "_id" : newUser.inputter });
+      newUser.inputter = inputter.fname+" "+inputter.surname;
+      Session.set("NewUser", newUser);
+      settingLanguage();
       $('#checkAuthorising').modal();
-      var user = Users_Authorization.findOne({ "_id" : this._id });
-      Session.set("UserAuthorized",user);
     }else{
       $('#minOneRole').modal();
     }
@@ -1125,31 +1358,38 @@ Template.allAccounts.events({
   },
   'click .validateAu'() {
     var user = Users_Authorization.findOne({ "_id" : this._id });
-    Users_Authorization.update({'_id' : user._id }, {'$set':{ 'status' : 'INAU', 'inputter' : 'Ali Tounsi' , 'dateTime' : new Date() }});
+    if (userAuthorized(user.inputter)) {
+      Users_Authorization.update({'_id' : user._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
-
   'click .editAu'() {
     var user = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("userSelected", user);
-    var res = user.roles.split("*");
-    var roles = Roles_Live.find({ "code": Session.get("UserLogged").code });
-    var rolesList = [];
-    roles.forEach(function(doc){
-      var obj = {};
-      if( res.indexOf(doc._id) > -1 ){
-        obj.id = doc._id;
-        obj.roleName = doc.roleName;
-        obj.status = true;
-        rolesList.push(obj);
-      }else{
-        obj.id = doc._id;
-        obj.roleName = doc.roleName;
-        obj.status = false;
-        rolesList.push(obj);
-      }
-    });
-    Session.set("RoleList", rolesList);
-    $('#editUserPopUpAu').modal();
+    if (userAuthorized(user.inputter)) {
+      Session.set("userSelected", user);
+      var res = user.roles.split("*");
+      var roles = Roles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
+      var rolesList = [];
+      roles.forEach(function(doc){
+        var obj = {};
+        if( res.indexOf(doc._id) > -1 ){
+          obj.id = doc._id;
+          obj.roleName = doc.roleName;
+          obj.status = true;
+          rolesList.push(obj);
+        }else{
+          obj.id = doc._id;
+          obj.roleName = doc.roleName;
+          obj.status = false;
+          rolesList.push(obj);
+        }
+      });
+      Session.set("RoleList", rolesList);
+      $('#editUserPopUpAu').modal();
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .saveEditAu'() {
     var userUpdated = getValuesFromFormForEditAu();
@@ -1161,11 +1401,7 @@ Template.allAccounts.events({
           userUpdated.password = encryptPassword(document.getElementById("newPassword1").value);
           Users_Authorization.remove(user._id);
           Users_Authorization.insert(userUpdated);
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Edict done !');
-          }else {
-            toastr.success('Avec succès','Modification fait !');
-          }
+          toastrModificationSaved();
         }else{
           $('#rightOldPwd').modal();
         }
@@ -1177,11 +1413,7 @@ Template.allAccounts.events({
       userUpdated.password = user.password;
       Users_Authorization.remove(user._id);
       Users_Authorization.insert(userUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
+      toastrModificationSaved();
     }
   },
   'click .validateEditAu'() {
@@ -1195,11 +1427,7 @@ Template.allAccounts.events({
           userUpdated.status = "INAU";
           Users_Authorization.remove(user._id);
           Users_Authorization.insert(userUpdated);
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Edict done !');
-          }else {
-            toastr.success('Avec succès','Modification fait !');
-          }
+          toastrModificationValidated();
         }else{
           $('#rightOldPwd').modal();
         }
@@ -1212,46 +1440,44 @@ Template.allAccounts.events({
       userUpdated.status = "INAU";
       Users_Authorization.remove(user._id);
       Users_Authorization.insert(userUpdated);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
+      toastrModificationValidated();
     }
   },
   'click .cancelAu'() {
     var user = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("deleteUserAu",user);
-    $('#checkCancel').modal();
+    if (userAuthorized(user.inputter)) {
+      Session.set("deleteUserAu",user);
+      $('#checkCancel').modal();
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .BtnCancel'() {
     var user = Session.get("deleteUserAu");
     Users_Authorization.remove(user._id);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion operation done ');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
-
+    toastrSuppression();
   },
   'click .detailsAu'() {
     var user = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("UserDetails",user);
+    var inputter = Users_Live.findOne({ "_id" : user.inputter });
+    user.inputter = inputter.fname+" "+inputter.surname;
+    var authorizer = Users_Live.findOne({ "_id" : user.authorizer });
+    user.authorizer = authorizer.fname+" "+authorizer.surname;
+    Session.set("UserDetails", user);
     var roles = user.roles.split("*");
     Session.set("RoleList", roles);
     $('#userDetailsPopUp').modal();
   },
-
 });
 Template.allAccounts.helpers({
   role(){
     return Session.get("USER_ROLE_XX");
   },
   userLive: function() {
-    return Users_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
+    return Users_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "code": Session.get("UserLogged").code });
   },
   userAuthorization(){
-    var users = Users_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany });
+    var users = Users_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany, "code": Session.get("UserLogged").code });
     var usersAuthorization = [];
     users.forEach(function(doc){
       var buttonDetails = true;
@@ -1278,8 +1504,7 @@ Template.allAccounts.helpers({
           'inputter': doc.inputter,
           'authorizer': doc.authorizer,
           'dateTime': doc.dateTime,
-          'code': doc._id,
-          'buttonEdit' : button.editAu,
+          'codeCompany': doc.codeCompany,
           'buttonValidate' : button.validateAu,
           'buttonAuthorize' : button.authorizeAu,
           'buttonDetail' : buttonDetails
@@ -1297,7 +1522,7 @@ Template.allAccounts.helpers({
     return user;
   },
   roles(){
-    return Roles_Live.find({ "code": Session.get("UserLogged").code });
+    return Roles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "code": Session.get("UserLogged").code });
   },
   userDetail() {
     return Session.get("UserDetails");
@@ -1326,5 +1551,20 @@ Template.allAccounts.helpers({
       }
       return true;
     }
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

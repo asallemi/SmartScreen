@@ -11,8 +11,11 @@
                   <div class="ibox-tools">
                     {{#if equals role.articleAdd true}}
                       <a class="btn btn-primary btn-xs newArticle"><i class="fa fa-list"></i>   <span data-i18n="article.btn-newArticle"></span></a>
+                    {{/if}}
+                    {{#if equals role.articleOptions true}}
                       <a class="btn btn-primary btn-xs options"><i class="fa fa-cog"></i>   <span data-i18n="article.btn-options"></span></a>
                     {{/if}}
+                    <a class="btn btn-primary btn-xs languages"><i class="fa fa-language"></i>   <span data-i18n="article.btn-languages"></span></a>
                   </div>
                   <br>
                   <div class="ibox-content">
@@ -32,21 +35,35 @@
                                           <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
                                             <thead>
                                               <tr>
+                                                <th data-i18n="article.activated" style="width: 50px;"></th>
                                                 <th data-i18n="article.articleTitle"></th>
+                                                <th data-i18n="article.option"></th>
+                                                <th data-i18n="article.subSection" style="text-align: center"></th>
                                                 <th data-i18n="common.action" style="width: 200px;"></th>
                                               </tr>
                                             </thead>
                                             <tbody>
                                               {{#each articlesLive}}
-                                                <tr class="gradeX">
+                                                <tr>
+                                                    {{#if equals activated true}}
+                                                      <td><center><i class="fa fa-check"></i></center></td>
+                                                    {{else}}
+                                                      <td></td>
+                                                    {{/if}}
                                                     <td>{{titlePivot}}</td>
+                                                    <td>{{option}}</td>
+                                                    <td>
+                                                      {{#if length subSection}}
+                                                        <center><i class="fa fa-check"></i></center>
+                                                      {{/if}}
+                                                    </td>
                                                     <td class="center">
-                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                       {{#if equals role.articleUpdate true}}
-                                                        <a class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></a>
+                                                        <a class="btn btn-outline btn-primary btn-sm btn-edit" title="{{updateTitle}}"><i class="fa fa-pencil"></i></a>
                                                       {{/if}}
                                                       {{#if equals role.articleDelete true}}
-                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                       {{/if}}
                                                     </td>
                                                 </tr>
@@ -75,30 +92,44 @@
                                         <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
                                           <thead>
                                             <tr>
+                                              <th data-i18n="article.activated" style="width: 50px;"></th>
                                               <th data-i18n="article.articleTitle"></th>
+                                              <th data-i18n="article.option"></th>
+                                              <th data-i18n="article.subSection" style="text-align: center"></th>
                                               <th data-i18n="common.action" style="width: 200px;"></th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             {{#each articlesAuthorization}}
                                               <tr>
-                                                <td>{{titlePivot}}</td>
+                                                  {{#if equals activated true}}
+                                                    <td><center><i class="fa fa-check"></i></center></td>
+                                                  {{else}}
+                                                    <td></td>
+                                                  {{/if}}
+                                                  <td>{{titlePivot}}</td>
+                                                  <td>{{option}}</td>
+                                                  <td>
+                                                    {{#if length subSection}}
+                                                      <center><i class="fa fa-check"></i></center>
+                                                    {{/if}}
+                                                  </td>
                                                   <td class="center">
                                                     {{#if equals buttonDetail true}}
-                                                      <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                     {{/if}}
                                                     {{#if equals buttonValidate true}}
-                                                      <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                      <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="{{validateTitle}}"><i class="fa fa-thumbs-up"></i></button>
                                                     {{/if}}
-                                                    {{#if equals role.articleValidate true}}
+                                                    {{#if equals role.articleAuthorize true}}
                                                       {{#if equals buttonAuthorize true}}
-                                                        <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                        <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="{{authorizeTitle}}"><i class="fa fa-angellist"></i></button>
                                                       {{/if}}
                                                     {{/if}}
                                                     {{#if equals buttonEdit true}}
-                                                      <a type="button" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></a>
+                                                      <a type="button" class="btn btn-outline btn-primary btn-sm editAu" title="{{updateTitle}}"><i class="fa fa-pencil"></i></a>
                                                     {{/if}}
-                                                    <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                   </td>
                                               </tr>
                                             {{/each}}
@@ -319,7 +350,7 @@
   </div>
   <div class="modal inmodal" id="ArticleDetails" tabindex="-1" user="dialog" aria-hidden="false">
     <div class="modal-dialog">
-        <div class="modal-content animated bounceInRight" style="width:800px; left: -115px; top: -25px;">
+        <div class="modal-content animated bounceInRight" style="width:800px; left: -115px; top: -15px;">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -328,32 +359,44 @@
             </div>
             <div class="modal-body" >
               <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group">
-                      <label for="title" data-i18n="article.articleTitle"></label>   {{articleDetails.titlePivot}}
-                  </div>
-                  <div class="form-group">
-                    <label for="title" data-i18n="article.articleContent"></label>
-                    <textarea class="form-control" rows="6" disabled="" value="{{articleDetails.contentPivot}}"></textarea>
-                  </div>
-                  <div class="form-group">
-                      <label for="message" data-i18n="article.language"></label><br> {{articleDetails.languageSelected}}
-                  </div>
-                  <div class="form-group">
-                      <label for="message" data-i18n="article.option"></label><br> {{articleDetails.option}}
-                  </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="article.subsection"></label>   {{articleDetails.subSection}}
-                  </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="common.inputter"></label>   {{articleDetails.inputter}}
-                  </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="common.authorizer"></label>   {{articleDetails.authorizer}}
-                  </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="common.date"></label>   {{articleDetails.dateTime}}
-                  </div>
+                <div class="col-md-12">
+                  <label for="title" data-i18n="article.articleTitle"></label>   {{articleDetails.titlePivot}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="title" data-i18n="article.articleContent"></label>
+                  <textarea class="form-control" rows="6" disabled="" value="{{articleDetails.contentPivot}}"></textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="title" data-i18n="article.language"></label>  {{articleDetails.languageSelected}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="title" data-i18n="article.option"></label>  {{articleDetails.option}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="title" data-i18n="article.subsection"></label>   {{articleDetails.subSection}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="title" data-i18n="common.inputter"></label>   {{articleDetails.inputter}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="title" data-i18n="common.authorizer"></label>   {{articleDetails.authorizer}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="title" data-i18n="common.date"></label>   {{articleDetails.dateTime}}
                 </div>
               </div>
             </div>

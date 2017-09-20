@@ -34,8 +34,8 @@ function authorize(company){
     company.dateTime = getDateNow();
     Companies_Live.insert(company);
     Companies_Authorization.remove(company._id);
-    // If company authorized, the app will create a directory inside /home/akrem/sshfs/display named "code" of the company
-    //Meteor.call('createClientDirectory', client.code);
+    // If client authorized, the app will create a directory inside /home/akrem/sshfs/display named "code" of the client
+    Meteor.call('createCompanyDirectory', company.code);
   }
 }
 function verifyDelete(id){
@@ -107,7 +107,6 @@ function getValuesFromFormForAdd(){
   }else {
     var country = null;
   }
-  var currency = document.getElementById('currency').value;
   var company =
     {
       '_id': country.substring(0,3)+"-"+Random.id(13),
@@ -123,7 +122,7 @@ function getValuesFromFormForAdd(){
       'province' : province,
       'city' : city,
       'country' : country,
-      'pivotCurrency' : currency,
+      'pivotCurrency' : null,
       'logo' : '',
       'currentNumber': 0,
       'status': 'HLD',
@@ -194,11 +193,7 @@ function getValuesFromFormForEdit(){
   }else {
     var country = null;
   }
-  if (document.getElementById('currency1').value.length > 0) {
-    var currency = document.getElementById('currency1').value;
-  }else {
-    var currency = Session.get("companySelectedLive").pivotCurrencyID;
-  }
+  var currency = Session.get("companySelectedLive").pivotCurrency;
 
   var company =
     {
@@ -285,11 +280,7 @@ function getValuesFromFormForEditAu(){
   }else {
     var country = null;
   }
-  if (document.getElementById('currency2').value.length > 0) {
-    var currency = document.getElementById('currency2').value;
-  }else {
-    var currency = Session.get("companySelectedForUpdate").pivotCurrencyID;
-  }
+  var currency = Session.get("companySelectedForUpdate").pivotCurrency;
 
   var company =
     {
@@ -315,6 +306,7 @@ function getValuesFromFormForEditAu(){
     };
   return company;
 }
+// For LDAP Server
 function createCompanyAdminBranch(company){
   var d = new Date().toString();
   var res = d.split(" ");
@@ -379,7 +371,64 @@ function createCompanyEstablishmentBranch(company){
     }
   });
 }
-//
+// A function which send a capsule to delete ADMIN (who are inside COMPANY in the LDAP)
+function deleteAdminCompany(codeCompany){
+  var d = new Date().toString();
+  var res = d.split(" ");
+  var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
+  var capsule = {
+    'id_sender': 20,
+    'id_receiver': 50,
+    'sort': null,
+    'priority': 1,
+    'payload': null,
+    'type': 'PAYLOAD',
+    'sending_date': date,
+    'receiving_date': null,
+    'status_capsule': "NO",
+    'tts': 10,
+    'ACK': "NO"
+  };
+  var payload = {'dn': 'o=Admin,CpCode='+codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn' };
+  capsule.sort = "LDAP_DEL_MSG";
+  capsule.payload = payload;
+  Meteor.call('sendCapsule', capsule, function(error){
+    if(error){
+      alert('Send Capsule didnt work');
+    }else{
+      console.log("OK");
+    }
+  });
+}
+// A function which send a capsule to delete ESTABLISHEMENT (who are inside COMPANY in the LDAP)
+function deleteEstablishmentCompany(codeCompany){
+  var d = new Date().toString();
+  var res = d.split(" ");
+  var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
+  var capsule = {
+    'id_sender': 20,
+    'id_receiver': 50,
+    'sort': null,
+    'priority': 1,
+    'payload': null,
+    'type': 'PAYLOAD',
+    'sending_date': date,
+    'receiving_date': null,
+    'status_capsule': "NO",
+    'tts': 10,
+    'ACK': "NO"
+  };
+  var payload = {'dn': 'o=Establishment,CpCode='+codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn' };
+  capsule.sort = "LDAP_DEL_MSG";
+  capsule.payload = payload;
+  Meteor.call('sendCapsule', capsule, function(error){
+    if(error){
+      alert('Send Capsule didnt work');
+    }else{
+      console.log("OK");
+    }
+  });
+}
 function sendCapsule(company, state){
   // get currency name
   var currency = Currencies_Live.findOne({ "_id" : company.pivotCurrency });
@@ -451,19 +500,9 @@ function sendCapsule(company, state){
     if(error){
       alert('Send Capsule didnt work');
     }else{
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Authorization done ');
-      }else {
-        toastr.success('Avec succès','Autorisation fait !');
-      }
-
-      console.log("OK");
+      toastrAuthorizationDone();
     }
   });
-  setTimeout(function () {
-    createCompanyEstablishmentBranch(company);
-    createCompanyAdminBranch(company);
-  }, 10000);
 }
 function addAuthorised(code){
   var client = Clients_Live.findOne({ "code" : code });
@@ -503,7 +542,54 @@ function getCurrencies(id){
   });
   return arrayOfCurrencies;
 }
+// A function which returns true if the user would delete a company which still having client and users
+function verifyBeforeDeleting(code){
+  var clients = Clients_Live.find({ "codeCompany": code }).fetch();
+  var users = Users_Live.find({ "codeCompany": code, "code": null }).fetch();
+  if (clients.length > 0 || users.length > 0) {
+    return false;
+  }
+  return true;
+}
+// A function which returns the pivot currency of company
+function getPivotCurrency(codeCompany){
+  var cur = Currencies_Live.findOne({ "codeCompany": codeCompany, "isPivot": true });
+  console.log("OUTPUT ", cur);
+  if (cur == undefined) {
+    return null;
+  }
+  return cur;
+}
+// Function which insert 3 languages (french, english, deutch) for every company authorized
+function createLanguagesForCompany(companyID){
+  var french = {
+    "languageName" : "French",
+    "languageCode" : "FR",
+    "isPivot" : false,
+    "dateTime" : getDateNow(),
+    "codeCompany" : companyID
+  }
+  var english = {
+    "languageName" : "English",
+    "languageCode" : "EN",
+    "isPivot" : true,
+    "dateTime" : getDateNow(),
+    "codeCompany" : companyID
+  }
+  var deutch = {
+    "languageName" : "German",
+    "languageCode" : "GR",
+    "isPivot" : false,
+    "dateTime" : getDateNow(),
+    "codeCompany" : companyID
+  }
+  Languages_Live.insert(french);
+  Languages_Live.insert(english);
+  Languages_Live.insert(deutch);
+}
 Template.allCompanies.onRendered(function(){
+  welcomeUser();
+  checkSession();
   settingLanguage();
   // Initialize the COMPANY_NAME session
   Session.set("COMPANY_NAME", null);
@@ -534,32 +620,45 @@ Template.allCompanies.events({
   'click .btnClients'(){
     //Meteor.call('getClientsByIDCompany', this._id);
     var company = Companies_Live.findOne({ "_id" : this._id });
-    Session.set("COMPANY_ID", company._id);
     Session.set("COMPANY_NAME", company.name);
     Session.set("COMPANY_CODE", company.code);
   },
   'click .btnUsers'(){
     var company = Companies_Live.findOne({ "_id" : this._id });
-    Session.set("COMPANY_ID", company._id);
     Session.set("COMPANY_NAME", company.name);
     Session.set("COMPANY_CODE", company.code);
   },
   'click .btnContrats'(){
     var company = Companies_Live.findOne({ "_id" : this._id });
-    Session.set("COMPANY_ID", company._id);
+    Session.set("COMPANY_NAME", company.name);
+    Session.set("COMPANY_CODE", company.code);
+  },
+  'click .btnArticles'(){
+    var company = Companies_Live.findOne({ "_id" : this._id });
     Session.set("COMPANY_NAME", company.name);
     Session.set("COMPANY_CODE", company.code);
   },
   'click .btnScreens'(){
     var company = Companies_Live.findOne({ "_id" : this._id });
-    Session.set("COMPANY_ID", company._id);
-    Session.set("COMPANY_NAME", company.name);
     Session.set("COMPANY_CODE", company.code);
+    Session.set("COMPANY_NAME", company.name);
+    //$('#displayScreen').modal();
+  },
+  'click .btnSegments'(){
+    var company = Companies_Live.findOne({ "_id" : this._id });
+    Session.set("COMPANY_CODE", company.code);
+    Session.set("COMPANY_NAME", company.name);
+  },
+  'click .btnFirmwares'(){
+    var company = Companies_Live.findOne({ "_id" : this._id });
+    Session.set("COMPANY_CODE", company.code);
+    Session.set("COMPANY_NAME", company.name);
   },
   'click .btnCurrencies'(){
     var company = Companies_Live.findOne({ "_id" : this._id });
-    Session.set("COMPANY_ID", company._id);
+    Session.set("COMPANY_CODE", company.code);
     Session.set("COMPANY_NAME", company.name);
+    Session.set("CurrencyPivot", getPivotCurrency(company.code));
   },
   'click .newCompany'(){
     //Empty all inputs
@@ -583,34 +682,22 @@ Template.allCompanies.events({
     if (company.name.length == 0){
       $('#warning').show();
     }else {
+      $('#warning').hide();
       $('#newCompany').modal('hide');
       Companies_Authorization.insert(company);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Save done !');
-      }else {
-        toastr.success('Avec succès','Enregistrer fait !');
-      }
+      toastrSaveDone();
     }
-     var client =
-       {
-         'name' : "name",
-         'shortName' : "shortName"
-       };
-     _client_authorizationTable.insert(client);
   },
   'click .validate'(){
     var company = getValuesFromFormForAdd();
     if (company.name.length == 0){
       $('#warning').show();
     }else {
+      $('#warning').hide();
       $('#newCompany').modal('hide');
       company.status = "INAU";
       Companies_Authorization.insert(company);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Validation done !');
-      }else {
-        toastr.success('Avec succès','Validation fait !');
-      }
+      toastrValidatonDone();
     }
   },
   'click .btn-edit'() {
@@ -629,11 +716,7 @@ Template.allCompanies.events({
     companyUpdated._id = company._id;
     companyUpdated.currentNumber = company.currentNumber + 1;
     Companies_Authorization.insert(companyUpdated);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Update done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationSaved();
   },
   'click .validateUpdateLive'() {
     var companyUpdated = getValuesFromFormForEdit();
@@ -642,11 +725,7 @@ Template.allCompanies.events({
     companyUpdated.currentNumber = company.currentNumber + 1
     companyUpdated.status = "INAU";
     Companies_Authorization.insert(companyUpdated);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Update done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationValidated();
   },
   'click .btn-details'() {
     var company = Companies_Live.findOne({ "_id" : this._id });
@@ -654,19 +733,26 @@ Template.allCompanies.events({
     company.inputter = inputter.fname+" "+inputter.surname;
     var authorizer = Users_Live.findOne({ "_id" : company.authorizer });
     company.authorizer = authorizer.fname+" "+authorizer.surname;
-    var currency = Currencies_Live.findOne({ "_id" : company.pivotCurrency });
-    company.pivotCurrency = currency.currencyName;
+    if (company.pivotCurrency.length > 6) {
+      var currency = Currencies_Live.findOne({ "_id" : company.pivotCurrency });
+      company.pivotCurrency = currency.currencyName;
+    }
     Session.set("CompanyDetails", company);
     $('#CompanyDetails').modal();
   },
   'click .btn-delete'() {
     var company = Companies_Live.findOne({ "_id" : this._id });
-    if (verifyDelete(company._id)){
-      $('#checkDeleting').modal();
-      Session.set("CompanyForDelete", company);
-    }else{
-      $('#deletionState').modal();
+    if (verifyBeforeDeleting(company.code)) {
+      if (verifyDelete(company._id)){
+        $('#checkDeleting').modal();
+        Session.set("CompanyForDelete", company);
+      }else{
+        $('#deletionState').modal();
+      }
+    }else {
+      toastrWarningDeletingCompany();
     }
+
   },
   'click .BtnDelete'() {
     var company = Session.get("CompanyForDelete");
@@ -676,14 +762,7 @@ Template.allCompanies.events({
     company.dateTime = getDateNow();
     company.authorizer = null;
     Companies_Authorization.insert(company);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
-  },
-  'click .upload'(){
-    $('#uploadPopup').modal();
+    toastrSuppression();
   },
   //          Authorization events            //
   'click .authorizeAu'() {
@@ -699,12 +778,17 @@ Template.allCompanies.events({
       oldCompany.inputter = inputter.fname+" "+inputter.surname;
       var authorizer = Users_Live.findOne({ "_id" : oldCompany.authorizer });
       oldCompany.authorizer = authorizer.fname+" "+authorizer.surname;
-      var currency = Currencies_Live.findOne({ "_id" : oldCompany.pivotCurrency });
-      oldCompany.pivotCurrency = currency.currencyName;
+      if (oldCompany.pivotCurrency.length > 6) {
+        var currency = Currencies_Live.findOne({ "_id" : oldCompany.pivotCurrency });
+        oldCompany.pivotCurrency = currency.currencyName;
+      }else
       Session.set("OldCompany", oldCompany);
     }
-    var currency = Currencies_Live.findOne({ "_id" : newCompany.pivotCurrency });
-    newCompany.pivotCurrency = currency.currencyName;
+    // There are some companies don't have an currency pivot
+    if (newCompany.pivotCurrency.length > 6) {
+      var cur = Currencies_Live.findOne({ "_id" : newCompany.pivotCurrency });
+      newCompany.pivotCurrency = cur.currencyName;
+    }
     var inputter = Users_Live.findOne({ "_id" : newCompany.inputter });
     newCompany.inputter = inputter.fname+" "+inputter.surname;
     Session.set("NewCompany", newCompany);
@@ -717,30 +801,51 @@ Template.allCompanies.events({
     console.log("Query :", query);
     if(query != undefined){
       // Update case
-      // client exist in LIVE TABLE
       sendCapsule(company, "edit");
       console.log("edit");
     }
     var query2 = Companies_Authorization.findOne({ "_id": company._id });
     if(query == undefined && query2._id.indexOf("#D") < 0){
       sendCapsule(company, "add");
+      setTimeout(function () {
+        createCompanyEstablishmentBranch(company);
+      }, 5000);
+      setTimeout(function () {
+        createCompanyAdminBranch(company);
+      }, 5000);
       console.log("add");
     }
     if(query2._id.indexOf("#D") > 0){
-      sendCapsule(company, "delete");
+      // Delete all admin branch
+      deleteAdminCompany(company.code);
+      // Delete all Establishment branch
+      deleteEstablishmentCompany(company.code);
+      // Delete company
+      setTimeout(function () {
+        sendCapsule(company, "delete");
+      }, 3000);
       console.log("delete");
     }
+    // Insert languages (french, english and deutch)
+    createLanguagesForCompany(company.code);
     authorize(company);
   },
   'click .validateAu'() {
-    var company = Companies_Authorization.findOne({ "_id" : this._id });
-    Companies_Authorization.update({'_id' : company._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+    if (userAuthorized(company.inputter)) {
+      Companies_Authorization.update({'_id' : this._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .editAu'() {
     var company = Companies_Authorization.findOne({ "_id" : this._id });
-    Session.set("CurrenciesList", getCurrencies(company.pivotCurrency));
-    Session.set("companySelectedForUpdate", company);
-    $('#editCompanyAuthorization').modal();
+    if (userAuthorized(company.inputter)) {
+      Session.set("CurrenciesList", getCurrencies(company.pivotCurrency));
+      Session.set("companySelectedForUpdate", company);
+      $('#editCompanyAuthorization').modal();
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .saveUpdateAuthorization'() {
     var companyUpdated = getValuesFromFormForEditAu();
@@ -748,11 +853,7 @@ Template.allCompanies.events({
     companyUpdated._id = company._id;
     Companies_Authorization.remove(company._id);
     Companies_Authorization.insert(companyUpdated);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Edict done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationSaved();
   },
   'click .validateUpdateAuthorization'() {
     var companyUpdated = getValuesFromFormForEditAu();
@@ -761,32 +862,30 @@ Template.allCompanies.events({
     companyUpdated._id = company._id;
     Companies_Authorization.remove(company._id);
     Companies_Authorization.insert(companyUpdated);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Edict done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationValidated();
   },
   'click .cancelAu'() {
     var company = Companies_Authorization.findOne({ "_id" : this._id });
-    Session.set("companyDeletingAuth", company);
-    $('#checkCancel').modal();
+    if (userAuthorized(company.inputter)) {
+      Session.set("companyDeletingAuth", company);
+      $('#checkCancel').modal();
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .BtnCancel'() {
     var company = Session.get("companyDeletingAuth");
     Companies_Authorization.remove(company._id);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion operation done ');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    toastrSuppression();
   },
   'click .detailsAu'() {
     var company = Companies_Authorization.findOne({ "_id" : this._id });
     var inputter = Users_Live.findOne({ "_id" : company.inputter });
     company.inputter = inputter.fname+" "+inputter.surname;
-    var currency = Currencies_Live.findOne({ "_id" : company.pivotCurrency });
-    company.pivotCurrency = currency.currencyName;
+    if (company.pivotCurrency.length > 6) {
+      var currency = Currencies_Live.findOne({ "_id" : company.pivotCurrency });
+      company.pivotCurrency = currency.currencyName;
+    }
     Session.set("CompanyDetails", company);
     $('#CompanyDetails').modal();
   },
@@ -868,5 +967,48 @@ Template.allCompanies.helpers({
   },
   notEquals: function(v1, v2) {
     return (v1 != v2);
+  },
+  // All this functions are global functions /common/globalFunctions.js
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
+  },
+  rolesTitle(){
+    return rolesTitle();
+  },
+  usersTitle(){
+    return usersTitle();
+  },
+  clientsTitle(){
+    return clientsTitle();
+  },
+  contractsTitle(){
+    return contractsTitle();
+  },
+  articlesTitle(){
+    return articlesTitle();
+  },
+  screensTitle(){
+    return screensTitle();
+  },
+  currenciesTitle(){
+    return currenciesTitle();
+  },
+  segmentsTitle(){
+    return segmentsTitle();
+  },
+  firmwaresTitle(){
+    return firmwaresTitle();
   },
 });

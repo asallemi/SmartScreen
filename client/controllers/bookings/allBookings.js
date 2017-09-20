@@ -7,17 +7,11 @@ let handleBookingLive =  Meteor.subscribe('bookingsLive');
 // A function which return true if slot id exist in LIVE Table
 function existLive(id){
   var booking = Bookings_Live.findOne({ "segmentID" : id , "screenID": Session.get("SCREEN_ID")});
-  if(booking == undefined){
-    return false;
-  }
-  return true;
+  return booking == undefined;
 }
 function existAuthorization(id){
   var booking = Bookings_Authorization.findOne({ "segmentID" : id , "screenID": Session.get("SCREEN_ID")});
-  if(booking == undefined){
-    return false;
-  }
-  return true;
+  return booking == undefined;
 }
 function initCalender(jsonArr){
     $('#calendar').fullCalendar({
@@ -296,7 +290,7 @@ function getAllImages(){
     return null;
   }
 }
-function sendCapsule(screenIdentity, code, segmentDate, segmentStartTime, video, photo){
+function sendCapsule(screenIdentity, codeCompany, code, segmentDate, segmentStartTime, video, photo){
   var d = new Date().toString();
   var res = d.split(" ");
   var date = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
@@ -333,7 +327,7 @@ function sendCapsule(screenIdentity, code, segmentDate, segmentStartTime, video,
 
   var arrayPayload = {
     "segment_id": segment,
-    "holder": code,
+    "holder": codeCompany+"/"+code,
     "video": video,
     "photo": photo
   };
@@ -349,10 +343,9 @@ function sendCapsule(screenIdentity, code, segmentDate, segmentStartTime, video,
     }
   });
 }
-Template.allBookings.onCreated(function(){
-
-});
+Template.allBookings.onCreated(function(){ });
 Template.allBookings.rendered = function(){
+  checkSession();
   settingLanguage();
   $('.new').hide();
   $('.cancel').hide();
@@ -412,48 +405,51 @@ Template.allBookings.rendered = function(){
   Tracker.autorun(function(c){
    if(handleX.ready()){
      var screens = Screens_Live.find();
-     // set all markers in the Map
-     screens.forEach(function(doc){
-       var res = doc.clientsIDs.split(" ");
-       if(doc.clientsIDs.length > 0){
-         if( res.indexOf(Session.get("UserLogged").code) > -1 ){
-         //if( doc.clientsIDs == Session.get("UserLogged").code ){
-           var screen = new google.maps.Marker({
-             position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
-             title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
-             idScreen: doc._id,
-             id: doc.screenIdentity,
-             icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|04B486'
-           });
-          }
+     var screensArray = [];
+     screens.forEach(function(screen){
+       if( screen.clientsIDs.indexOf(Session.get("UserLogged").code) > -1 ){
+         screensArray.push(screen);
        }
-       screen.setMap(mapBooking);
-       screen.addListener('click', function() {
-         console.log("SCREEN_ID -> ", screen.idScreen);
-         Session.set("SCREEN_ID", screen.idScreen);
-         Session.set("SCREEN_IDENTITY", screen.id);
-         Session.set("ScreenINFO",doc);
-         // Initialize the calendar
-         $('#agendaPopUp').modal();
-
-         initCalender(getAllEvents(screen.idScreen));
-         $('#calendar').fullCalendar( 'removeEvents');
-         $('#calendar').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
-         $('#calendar').fullCalendar('render');
-         $('#calendar').fullCalendar( 'refetchEvents' );
-         Session.set("ALL_VIDEOS", getAllVideos());
-         Session.set("ALL_IMAGES", getAllImages());
-         Session.set("segmentStartTime","-");
-         Session.set("segmentEndTime","-");
-         Session.set("segmentDate","-");
-         Session.set("bookedDate","-");
-         Session.set("inputter","-");
-         Session.set("authorizer","-");
-         Session.set("video","-");
-         Session.set("image","-");
-       });
-
      });
+     if (screensArray.length > 0) {
+       console.log("Screens Array -> ", screensArray);
+       // set all markers in the Map
+       for (var i = 0; i < screensArray.length; i++) {
+        var screen = new google.maps.Marker({
+            position: new google.maps.LatLng(screensArray[i].screenLatitude, screensArray[i].screenLongitude),
+            title: "Size : "+screensArray[i].screenDimension+"| Address : "+screensArray[i].screenAddress,
+            idScreen: screensArray[i]._id,
+            id: screensArray[i].screenIdentity,
+            icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|04B486'
+         });
+         screen.setMap(mapBooking);
+         screen.addListener('click', function() {
+           console.log("SCREEN_ID -> ", screen.idScreen);
+           Session.set("SCREEN_ID", screen.idScreen);
+           Session.set("SCREEN_IDENTITY", screen.id);
+           Session.set("ScreenINFO", screensArray[i]);
+           // Initialize the calendar
+           $('#agendaPopUp').modal();
+
+           initCalender(getAllEvents(screen.idScreen));
+           $('#calendar').fullCalendar( 'removeEvents');
+           $('#calendar').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
+           $('#calendar').fullCalendar('render');
+           $('#calendar').fullCalendar( 'refetchEvents' );
+           Session.set("ALL_VIDEOS", getAllVideos());
+           Session.set("ALL_IMAGES", getAllImages());
+           Session.set("segmentStartTime","-");
+           Session.set("segmentEndTime","-");
+           Session.set("segmentDate","-");
+           Session.set("bookedDate","-");
+           Session.set("inputter","-");
+           Session.set("authorizer","-");
+           Session.set("video","-");
+           Session.set("image","-");
+         });
+
+       }
+     }
      c.stop();
    }
   });
@@ -476,12 +472,7 @@ Template.allBookings.events({
             Bookings_Authorization.update({ '_id' : res[0] }, {'$set':{ 'status': "INAU", 'inputter' : Session.get("UserLogged")._id, 'video': video, 'image': image, 'dateTime': new Date()}});
           }
         }
-        if(Session.get("UserLogged").language == "en"){
-          toastr.success('With success','Content assigned !');
-        }else {
-          toastr.success('Avec succès','Affectation de contenu fait !');
-        }
-
+        toastrContentAssigned();
         $('#calendar').fullCalendar( 'removeEvents');
         $('#calendar').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
         $('#calendar').fullCalendar('render');
@@ -511,22 +502,18 @@ Template.allBookings.events({
         'inputter': Session.get("inputterID"),
         'authorizer': Session.get("UserLogged")._id,
         'dateTime': new Date(),
-        'code': Session.get("UserLogged").code
+        'code': Session.get("UserLogged").code,
+        'codeCompany': Session.get("UserLogged").codeCompany
     };
     /*if(existLive(Session.get("segmentID"))){
       Bookings_Live.remove(Session.get("ID"));
     }*/
     Bookings_Live.insert(booking);
     Segments_Authorization.update({ '_id' : booking.segmentID }, {'$set':{ 'segmentAvailability' : 0 }});
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Reservation authorized !');
-    }else {
-      toastr.success('Avec succès','Réservation est autorisée !');
-    }
-
+    toastrBookingAuthorized();
     var video = Contents_Live.findOne({ '_id': booking.video});
     var image = Contents_Live.findOne({ '_id': booking.image});
-    sendCapsule(parseInt(Session.get("SCREEN_IDENTITY")), booking.code, booking.segmentDate, booking.segmentStartTime, video.contentName, image.contentName);
+    sendCapsule(parseInt(Session.get("SCREEN_IDENTITY")), booking.codeCompany, booking.code, booking.segmentDate, booking.segmentStartTime, video.contentName, image.contentName);
     $('#calendar').fullCalendar( 'removeEvents');
     $('#calendar').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
     $('#calendar').fullCalendar('render');
@@ -536,12 +523,7 @@ Template.allBookings.events({
   },
   'click .cancel'() {
     Bookings_Authorization.remove(Session.get("ID"));
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Slot edict cancled !');
-    }else {
-      toastr.success('Avec succès','Modification de créneau annulée !');
-    }
-
+    toastrSlotUpdateCancled();
     $('#calendar').fullCalendar( 'removeEvents');
     $('#calendar').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
     $('#calendar').fullCalendar('render');
@@ -571,12 +553,7 @@ Template.allBookings.events({
           'code': Session.get("UserLogged").code
       };
       Bookings_Authorization.insert(booking);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Edict done !');
-      }else {
-        toastr.success('Avec succès','Modification fait !');
-      }
-
+      toastrModificationSaved();
       $('#calendar').fullCalendar( 'removeEvents');
       $('#calendar').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
       $('#calendar').fullCalendar('render');

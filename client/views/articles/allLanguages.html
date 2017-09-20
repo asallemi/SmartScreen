@@ -1,0 +1,93 @@
+<template name="allLanguages">
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-12">
+          <br>
+          <h3 data-i18n="actions.title"></h3>
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="ibox float-e-margins">
+                  <a href="{{pathFor route='allArticles'}}" class="btn btn-primary btn-xs"><i class="fa fa-reply-all"></i>       <span data-i18n="common.btn-back"></span></a>
+                  <div class="ibox-content">
+                      <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                      <table class="footable table table-stripped" data-page-size="15" data-filter=#filter>
+                        <thead>
+                        <tr>
+                          <th data-i18n="languages.isPivot" style="width: 100px;"></th>
+                          <th data-i18n="languages.languageName"></th>
+                          <th data-i18n="languages.languageCode"></th>
+                          <th data-i18n="common.action" style="width: 150px;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {{#each languages}}
+                            <tr class="gradeX">
+                              {{#if equals isPivot true}}
+                                <td><i class="fa fa-check"></i></td>
+                              {{else}}
+                                <td></td>
+                              {{/if}}
+                              <td>{{languageName}}</td>
+                              <td>{{languageCode}}</td>
+                              <td class="center">
+                                <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit" title="{{updateTitle}}"><i class="fa fa-pencil"></i></button>
+                              </td>
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="5">
+                              <ul class="pagination pull-right"></ul>
+                            </td>
+                        </tr>
+                        </tfoot>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="editLanguage" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width:500px; left: 35px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-pencil modal-icon"></i>
+                <h2 class="modal-title" data-i18n="common.update"></h2>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="title" data-i18n="languages.languageName"></label>
+                        <input id="name" type="text" value="{{language.languageName}}" class="form-control" disabled/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="title" data-i18n="languages.isPivot"></label>
+                        {{#if equals language.isPivot true}}
+                          <div class="radio"><input type="radio" value="true" checked name="_isPivot"><label for="radio"> <strong data-i18n="article.yes"></strong></label></div>
+                          <div class="radio"><input type="radio" value="false" name="_isPivot"><label for="radio"> <strong data-i18n="article.no"></strong></label></div>
+                        {{else}}
+                          <div class="radio"><input type="radio" value="true" name="_isPivot"><label for="radio"> <strong data-i18n="article.yes"></strong></label></div>
+                          <div class="radio"><input type="radio" value="false" checked name="_isPivot"><label for="radio"> <strong data-i18n="article.no"></strong></label></div>
+                        {{/if}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="submit" class="ladda-button btn btn-primary update" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-update"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+</template>

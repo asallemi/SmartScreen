@@ -1,75 +1,3 @@
-settingLanguage = function(){
-  if(Session.get("UserLogged").language != "en" && Session.get("UserLogged").language != "fr" ){
-  // First access to the app, language will be "english"
-    $.i18n.init({
-        resGetPath: 'locales/__lng__.json',
-        load: 'unspecific',
-        fallbackLng: false,
-        lng: 'en'
-    }, function (t){
-        $('.i18container').i18n();
-        $('#side-menu').i18n();
-        $('.navbar-top-links').i18n();
-        $('.wrapper').i18n();
-        $('.modal').i18n();
-        $('.center').i18n();
-        $('.modal-body').i18n();
-        $('.radio').i18n();
-        $('.checkbox').i18n();
-    });
-  }else {
-    $.i18n.init({
-        resGetPath: 'locales/__lng__.json',
-        load: 'unspecific',
-        fallbackLng: false,
-        lng: Session.get("UserLogged").language
-    }, function (t){
-        $('.i18container').i18n();
-        $('#side-menu').i18n();
-        $('.navbar-top-links').i18n();
-        $('.wrapper').i18n();
-        $('.modal').i18n();
-        $('.center').i18n();
-        $('.modal-body').i18n();
-        $('.radio').i18n();
-        $('.checkbox').i18n();
-    });
-  }
-  $('.set_en').on('click', function (){
-      i18n.setLng('en', function(){
-          $('.i18container').i18n();
-          $('#side-menu').i18n();
-          $('.navbar-top-links').i18n();
-          $('.wrapper').i18n();
-          $('.modal').i18n();
-          $('.center').i18n();
-          $('.modal-body').i18n();
-          $('.radio').i18n();
-          $('.checkbox').i18n();
-
-          $('.set_en').addClass('active');
-          $('.set_fr').removeClass('active');
-      });
-  });
-
-  $('.set_fr').on('click', function (){
-      i18n.setLng('fr', function(){
-          $('.i18container').i18n();
-          $('#side-menu').i18n();
-          $('.navbar-top-links').i18n();
-          $('.wrapper').i18n();
-          $('.modal').i18n();
-          $('.center').i18n();
-          $('.modal-body').i18n();
-          $('.radio').i18n();
-          $('.checkbox').i18n();
-
-          $('.set_fr').addClass('active');
-          $('.set_en').removeClass('active');
-      });
-  });
-
-}
 Template.topNavbar.rendered = function(){
   if(Session.get("UserLogged").language != "en" && Session.get("UserLogged").language != "fr" ){
     $.i18n.init({
@@ -169,5 +97,9 @@ Template.topNavbar.events({
     // Toggle right sidebar
     'click .right-sidebar-toggle': function(){
         $('#right-sidebar').toggleClass('sidebar-open');
-    }
+    },
+    'click .logout'() {
+      localStorage.removeItem('User');
+      Session.set("SESSION_LOGIN", null);
+    },
 });

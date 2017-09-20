@@ -1,50 +1,83 @@
-Meteor.subscribe('articlesOptionsLive');
-Meteor.subscribe('articlesOptionsAuthorization');
+Meteor.subscribe('contractsTypeLive');
+Meteor.subscribe('contractsTypeAuthorization');
 
 function getValuesFromForm(){
-  if (document.getElementById('optionTitle') != null) {
-    var optionTitle = document.getElementById("optionTitle").value;
+  if (document.getElementById('name') != null) {
+    var name = document.getElementById("name").value;
   }else {
-    var optionTitle = null;
+    var name = null;
   }
-  var type = "";
-  if(document.getElementById('amount').checked) {
-    type = "Amount";
-    if (document.getElementById('value1') != null) {
-      var optionValue = document.getElementById("value1").value;
-    }else {
-      var optionValue = null;
-    }
+  if (document.getElementById('description') != null) {
+    var description = document.getElementById("description").value;
   }else {
-    type = "Percent";
-    if (document.getElementById('value2') != null) {
-      var optionValue = document.getElementById("value2").value;
-    }else {
-      var optionValue = null;
-    }
+    var description = null;
   }
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
-  var option =
+  var type =
     {
-      'title' : optionTitle,
-      'type': type,
-      'value' : optionValue,
+      'name' : name,
+      'description': description,
       'currentNumber': 0,
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': getDateNow()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
-  return option;
+  return type;
 }
-
+function getValuesFromFormForEdit(){
+  if (document.getElementById('name1') != null) {
+    var name = document.getElementById("name1").value;
+  }else {
+    var name = null;
+  }
+  if (document.getElementById('description1') != null) {
+    var description = document.getElementById("description1").value;
+  }else {
+    var description = null;
+  }
+  var type =
+    {
+      'name' : name,
+      'description': description,
+      'currentNumber': 0,
+      'status': 'HLD',
+      'inputter': Session.get("UserLogged")._id,
+      'authorizer': null,
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
+    };
+  return type;
+}
+function getValuesFromFormForEditAu(){
+  if (document.getElementById('name2') != null) {
+    var name = document.getElementById("name2").value;
+  }else {
+    var name = null;
+  }
+  if (document.getElementById('description2') != null) {
+    var description = document.getElementById("description2").value;
+  }else {
+    var description = null;
+  }
+  var type =
+    {
+      'name' : name,
+      'description': description,
+      'currentNumber': 0,
+      'status': 'HLD',
+      'inputter': Session.get("UserLogged")._id,
+      'authorizer': null,
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
+    };
+  return type;
+}
 function authorize(option){
   if(option._id.indexOf("#") > 0){
     option._id = option._id.replace("#D", "");
   }
-  var optionX = Articles_Options_Live.findOne({ "_id" : option._id });
+  var optionX = Contracts_Type_Live.findOne({ "_id" : option._id });
   var d = new Date().toString();
   var res = d.split(" ");
   var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
@@ -57,267 +90,228 @@ function authorize(option){
     optionX.dateTime = getDateNow();
     optionX.currentNumber = option.currentNumber;
     optionX._id = option._id+"#"+(option.currentNumber-1);
-    Articles_Options_History.insert(optionX);
-    Articles_Options_Live.remove(option._id);
-    Articles_Options_Live.insert(option);
-    Articles_Options_Authorization.remove(option._id);
-  // Authorise deleting option
+    Contracts_Type_History.insert(optionX);
+    Contracts_Type_Live.remove(option._id);
+    Contracts_Type_Live.insert(option);
+    Contracts_Type_Authorization.remove(option._id);
+  // Authorise deleting type
   }else if(optionX !== undefined && option.status == "RNAU"){
     option.authorizer= Session.get("UserLogged")._id;
     option.status = 'DEL';
     option.dateTime = getDateNow();
-    Articles_Options_History.insert(option);
-    Articles_Options_Live.remove(optionX._id);
-    Articles_Options_Authorization.remove(option._id);
-    Articles_Options_Authorization.remove(option._id+"#D");
+    Contracts_Type_History.insert(option);
+    Contracts_Type_Live.remove(optionX._id);
+    Contracts_Type_Authorization.remove(option._id);
+    Contracts_Type_Authorization.remove(option._id+"#D");
   }else{
     option.status = "LIVE";
     option.authorizer = Session.get("UserLogged")._id;
     option.dateTime = getDateNow();
-    Articles_Options_Live.insert(option);
-    Articles_Options_Authorization.remove(option._id);
+    Contracts_Type_Live.insert(option);
+    Contracts_Type_Authorization.remove(option._id);
   }
 }
 function verifyDelete(id){
-  var article = Articles_Authorization.findOne({ "_id" : id+"#D" });
-  if( article == undefined ){
-    return true;
-  }
-  return false;
+  var type = Contracts_Type_Authorization.findOne({ "_id" : id+"#D" });
+  return type == undefined;
 }
 function verifyEdit(id){
-  var article = Articles_Authorization.findOne({ "_id" : id });
-  if(article == undefined){
-    return true;
-  }
-  return false;
+  var type = Contracts_Type_Authorization.findOne({ "_id" : id });
+  return type == undefined;
 }
-
 Template.contractsType.rendered = function(){
+  checkSession();
   settingLanguage();
   $('.footable').footable();
   $('.footable2').footable();
   $('#warning').hide();
-  $(".touchspin2").TouchSpin({
-      min: 0,
-      max: 100,
-      step: 0.1,
-      decimals: 2,
-      boostat: 5,
-      maxboostedstep: 10,
-      postfix: '%',
-      buttondown_class: 'btn btn-white',
-      buttonup_class: 'btn btn-white'
-  });
-  $(".touchspin1").TouchSpin({
-      min: 0,
-      max: 100000000000,
-      step: 1,
-      postfix: '€'
-  });
-  $('#percentValue').hide();
+  $('#warning1').hide();
+  $('#warning2').hide();
 };
 Template.contractsType.events({
-  'click #amount' : function () {
-    $('#percentValue').hide();
-    $('#amountValue').show();
-  },
-  'click #percent' : function () {
-    $('#amountValue').hide();
-    $('#percentValue').show();
-  },
-  'click .newOption'() {
-    $('#optionTitle').val("");
-    $('#value1').val("");
-    $('#value2').val("");
-    $('#newOption').modal();
+  'click .newType'() {
+    $('#name').val("");
+    $('#description').val("");
+    $('#newContractType').modal();
   },
   'click .save'() {
-    var option = getValuesFromForm();
-    if (option.title.length == 0){
+    var type = getValuesFromForm();
+    if (type.name.length == 0){
       $('#warning').show();
     }else {
-      $('#newOption').modal('hide');
-      Articles_Options_Authorization.insert(option);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Saving done !');
-      }else {
-        toastr.success('Avec succès','Enregistrement fait !');
-      }
+      $('#newContractType').modal('hide');
+      Contracts_Type_Authorization.insert(type);
+      toastrSaveDone();
     }
   },
   'click .validate'() {
-    var option = getValuesFromForm();
-    if (option.title.length == 0){
+    var type = getValuesFromForm();
+    if (type.name.length == 0){
       $('#warning').show();
     }else {
-      $('#newOption').modal('hide');
-      option.status = "INAU";
-      Articles_Options_Authorization.insert(option);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Validating done !');
-      }else {
-        toastr.success('Avec succès','Validation fait !');
-      }
+      $('#newContractType').modal('hide');
+      type.status = "INAU";
+      Contracts_Type_Authorization.insert(type);
+      toastrValidatonDone();
+    }
+  },
+  'click .saveUpdateLive'() {
+    var typeUpdated = getValuesFromFormForEdit();
+    if (typeUpdated.name.length == 0){
+      $('#warning1').show();
+    }else {
+      var type = Session.get("typeSelected");
+      typeUpdated._id = type._id;
+      typeUpdated.currentNumber = type.currentNumber + 1;
+      Contracts_Type_Authorization.insert(typeUpdated);
+      toastrModificationSaved();
+    }
+  },
+  'click .validateUpdateLive'() {
+    var typeUpdated = getValuesFromFormForEdit();
+    if (typeUpdated.name.length == 0){
+      $('#warning1').show();
+    }else {
+      $('#editTypeLive').modal('hide');
+      var type = Session.get("typeSelected");
+      typeUpdated._id = type._id;
+      typeUpdated.currentNumber = type.currentNumber + 1
+      typeUpdated.status = "INAU";
+      Contracts_Type_Authorization.insert(typeUpdated);
+      toastrModificationValidated();
+    }
+  },
+  'click .saveUpdateAu'() {
+    var typeUpdated = getValuesFromFormForEditAu();
+    if (typeUpdated.name.length == 0){
+      $('#warning1').show();
+    }else {
+      var type = Session.get("typeSelected");
+      typeUpdated._id = type._id;
+      Contracts_Type_Authorization.remove(type._id);
+      Contracts_Type_Authorization.insert(typeUpdated);
+      toastrModificationSaved();
+    }
+  },
+  'click .validateUpdateAu'() {
+    var typeUpdated = getValuesFromFormForEditAu();
+    if (typeUpdated.name.length == 0){
+      $('#warning1').show();
+    }else {
+      $('#editTypeAu').modal('hide');
+      var type = Session.get("typeSelected");
+      typeUpdated._id = type._id;
+      typeUpdated.status = "INAU";
+      Contracts_Type_Authorization.remove(type._id);
+      Contracts_Type_Authorization.insert(typeUpdated);
+      toastrModificationValidated();
     }
   },
   'click .validateAu'() {
-    var option = Articles_Options_Authorization.findOne({ "_id" : this._id });
-    Articles_Options_Authorization.update({'_id' : option._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : new Date() }});
+    var type = Contracts_Type_Authorization.findOne({ "_id" : this._id });
+    Contracts_Type_Authorization.update({'_id' : type._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
   },
   'click .authorizeAu'() {
-    var oldOption = Articles_Options_Live.findOne({ "_id" : this._id });
-    var newOption = Articles_Options_Authorization.findOne({ "_id" : this._id });
-    if(oldOption == undefined){
-      Session.set("OldOption",null);
+    settingLanguage();
+    var oldType = Contracts_Type_Live.findOne({ "_id" : this._id });
+    var newType = Contracts_Type_Authorization.findOne({ "_id" : this._id });
+    Session.set("TypeAuthorized", newType);
+    if(oldType == undefined){
+      Session.set("OldType", null);
     }else {
-      Session.set("OldOption", oldOption);
+      var inputter = Users_Live.findOne({ "_id" : oldType.inputter });
+      oldType.inputter = inputter.fname+" "+inputter.surname;
+      var authorizer = Users_Live.findOne({ "_id" : oldType.authorizer });
+      oldType.authorizer = authorizer.fname+" "+authorizer.surname;
+      Session.set("OldType", oldType);
     }
-    Session.set("NewOption", newOption);
+    var inputter = Users_Live.findOne({ "_id" : newType.inputter });
+    newType.inputter = inputter.fname+" "+inputter.surname;
+    Session.set("NewType", newType);
     $('#checkAuthorising').modal();
   },
   'click .BtnAuthorize'() {
-    authorize(Session.get("NewOption"));
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Authorization done !');
-    }else {
-      toastr.success('Avec succès','Autorisation fait !');
-    }
+    authorize(Session.get("TypeAuthorized"));
+    toastrAuthorizationDone();
   },
   'click .btn-delete'() {
-    var article = Articles_Live.findOne({ "_id" : this._id });
-    if (verifyDelete(article._id)){
+    var type = Contracts_Type_Live.findOne({ "_id" : this._id });
+    if (verifyDelete(type._id)){
       $('#checkDeleting').modal();
-      Session.set("ArticleForDelete", article);
+      Session.set("TypeForDelete", type);
     }else{
       $('#deletionState').modal();
     }
   },
+  'click .BtnDelete'() {
+    var type = Session.get("TypeForDelete");
+    type._id = type._id+"#D"
+    type.status = "RNAU";
+    type.inputter = Session.get("UserLogged")._id;
+    type.dateTime = getDateNow();
+    type.authorizer = null;
+    Contracts_Type_Authorization.insert(type);
+    toastrSuppression();
+  },
   'click .btn-edit'() {
-    Session.set("LIVE_OR_AUTH", "LIVE");
-    getOnlyArticles(this._id);
-    var article = Articles_Live.findOne({ "_id" : this._id });
+    var type = Contracts_Type_Live.findOne({ "_id" : this._id });
     if (verifyEdit(this._id)){
-      var subSectionTitle = null;
-      if(article.subSection.length > 0){
-        var art = Articles_Live.findOne({ "_id" : article.subSection });
-        subSectionTitle = art.title;
-      }
-      article.subSection = subSectionTitle;
-      Session.set("articleSelected", article);
-      Router.go('editArticle');
+      Session.set("typeSelected", type);
+      $('#editTypeLive').modal();
     }else{
       $('#edictState').modal();
     }
   },
   'click .detailsAu'() {
-    var article = Articles_Authorization.findOne({ "_id" : this._id });
-    var artTitle = "";
-    if(this.subSection.length > 0){
-      var optionX = Articles_Live.findOne({ "_id" : this.subSection });
-      artTitle = optionX.title;
-    }
-    var usr1 = Users_Live.findOne({ "_id" : this.inputter });
-    var art =
-      {
-        'title' : article.title,
-        'content' : article.content,
-        'language' : article.language,
-        'option' : article.option,
-        'subSection': artTitle,
-        'inputter': usr1.fname+" "+usr1.surname,
-        'authorizer': " ",
-        'dateTime': article.dateTime
-      };
-    Session.set("ArticleDetails", art);
-    $('#ArticleDetails').modal();
+    var type = Contracts_Type_Authorization.findOne({ "_id" : this._id });
+    var usr = Users_Live.findOne({ "_id" : type.inputter });
+    type.inputter = usr.fname+" "+usr.surname;
+    Session.set("TypeDetails", type);
+    $('#TypeDetailsAu').modal();
   },
   'click .editAu'() {
-    Session.set("LIVE_OR_AUTH", "AUTH");
-    getOnlyArticles(this._id);
-    var article = Articles_Authorization.findOne({ "_id" : this._id });
-    var subSectionTitle = null;
-    if(article.subSection.length > 0){
-      var art = Articles_Live.findOne({ "_id" : article.subSection });
-      subSectionTitle = art.title;
-    }
-    article.subSection = subSectionTitle;
-    Session.set("articleSelected", article);
-    Router.go('editArticle');
+    Session.set("typeSelected", Contracts_Type_Authorization.findOne({ "_id" : this._id }));
+    $('#editTypeAu').modal();
   },
   'click .cancelAu'() {
-    var option = Articles_Options_Authorization.findOne({ "_id" : this._id });
-    Session.set("optionDeletingAuth", option);
+    var type = Contracts_Type_Authorization.findOne({ "_id" : this._id });
+    Session.set("typeDeletingAuth", type);
     $('#checkCancel').modal();
   },
   'click .BtnCancel'() {
-    var option = Session.get("optionDeletingAuth");
-    Articles_Options_Authorization.remove(option._id);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion operation done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    var type = Session.get("typeDeletingAuth");
+    Contracts_Type_Authorization.remove(type._id);
+    toastrSuppression();
   },
   'click .btn-details'() {
-    var article = Articles_Live.findOne({ "_id" : this._id });
-    var artTitle = null;
-    if(article.subSection.length > 0){
-      var optionX = Articles_Live.findOne({ "_id" : this.subSection });
-      artTitle = optionX.title;
-    }
-    var usr1 = Users_Live.findOne({ "_id" : this.inputter });
-    var usr2 = Users_Live.findOne({ "_id" : this.authorizer });
-    var art =
-      {
-        'title' : article.title,
-        'content' : article.content,
-        'language' : article.language,
-        'option' : article.option,
-        'subSection': artTitle,
-        'inputter': usr1.fname+" "+usr1.surname,
-        'authorizer': usr2.fname+" "+usr2.surname,
-        'dateTime': article.dateTime
-      };
-    Session.set("ArticleDetails", art);
-    $('#ArticleDetails').modal();
-  },
-  'click .BtnDelete'() {
-    var article = Session.get("ArticleForDelete");
-    article._id = article._id+"#D"
-    article.status = "RNAU";
-    article.inputter = Session.get("UserLogged")._id;
-    article.dateTime = new Date();
-    article.authorizer = null;
-    Articles_Authorization.insert(article);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    var type = Contracts_Type_Live.findOne({ "_id" : this._id });
+    var usr = Users_Live.findOne({ "_id" : type.inputter });
+    type.inputter = usr.fname+" "+usr.surname;
+    var usr_ = Users_Live.findOne({ "_id" : type.authorizer });
+    type.authorizer = usr_.fname+" "+usr_.surname;
+    Session.set("TypeDetails", type);
+    $('#TypeDetailsLive').modal();
   },
 });
 Template.contractsType.helpers({
-  optionsLive (){
-    return Articles_Options_Live.find();
+  typesLive (){
+    return Contracts_Type_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   },
-  optionsAuthorization (){
-    var options = Articles_Options_Authorization.find();
-    var optionsAuthorization = [];
-    options.forEach(function(doc){
+  typesAuthorization (){
+    var types = Contracts_Type_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany });
+    var typesAuthorization = [];
+    types.forEach(function(doc){
       var buttonDetails = true;
       if (doc._id.indexOf("#D") == -1){
         var buttonDetails = false;
       }
       var array = nextState(doc.status);
       var button = getButtonsAu(array);
-
-      var option =
+      var type =
         {
           '_id' : doc._id,
-          'title': doc.title,
-          'type': doc.type,
-          'value': doc.value,
+          'name': doc.name,
+          'description': doc.description,
           'currentNumber': doc.currentNumber,
           'status': doc.status,
           'inputter': doc.inputter,
@@ -328,18 +322,24 @@ Template.contractsType.helpers({
           'buttonAuthorize' : button.authorizeAu,
           'buttonDetail' : buttonDetails
         };
-      optionsAuthorization.push(option);
+      typesAuthorization.push(type);
     });
-    return optionsAuthorization;
+    return typesAuthorization;
   },
-  articleDetails(){
-    return Session.get("ArticleDetails");
+  typeSelectedLive(){
+    return Session.get("typeSelected");
   },
-  newOption() {
-    return Session.get("NewOption");
+  typeSelectedAu(){
+    return Session.get("typeSelected");
   },
-  oldOption() {
-    return Session.get("OldOption");;
+  typeDetails(){
+    return Session.get("TypeDetails");
+  },
+  newType() {
+    return Session.get("NewType");
+  },
+  oldType() {
+    return Session.get("OldType");;
   },
   role(){
     return Session.get("USER_ROLE_XX");
@@ -349,5 +349,20 @@ Template.contractsType.helpers({
   },
   notEquals: function(v1, v2) {
     return (v1 != v2);
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

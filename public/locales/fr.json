@@ -45,6 +45,7 @@
     "editArticle": "Modification de l'article",
     "btn-newArticle": "Nouveau article",
     "btn-options": "Options",
+    "btn-languages": "Langages",
     "selectLanguages": "Les langues à utiliser",
     "onglet1": "Articles authorisés",
     "onglet2": "Articles non authorisés",
@@ -55,6 +56,7 @@
     "articleTitle": "Titre",
     "articleContent": "Contenu de l'article",
     "activateArticle": "Article activé ?",
+    "activated": "Activé",
     "yes": "Oui",
     "no": "Non",
     "pivot": "* la langue désactivée est la langue pivot",
@@ -74,9 +76,9 @@
     "requiredTitle": "Le titre de l'article est requise",
     "requiredContent": "Le contenu de l'article est requise",
     "requiredOption": "L'option est requise",
-    "french": "Français",
-    "english": "Anglais",
-    "german": "Allemande"
+    "French": "Français",
+    "English": "Anglais",
+    "German": "Allemande"
   },
   "optionsArticle":{
     "title": "Liste des options d'articles",
@@ -89,6 +91,7 @@
     "optionValue": "Valeur de l'option",
     "typeOption": "Type",
     "option": "Option",
+    "listOfArticles": "Liste des articles",
     "oldOption": "Old option",
     "language": "Language of the article",
     "subsection": "Subsection",
@@ -111,6 +114,12 @@
     "french": "French",
     "english": "English",
     "german": "German"
+  },
+  "languages":{
+    "title": "Liste des langues",
+    "languageName": "Nom",
+    "languageCode": "Code",
+    "isPivot": "Pivot ?"
   },
   "contract":{
     "title": "Liste des contrats",
@@ -150,12 +159,13 @@
 
   },
   "contractType":{
-    "title": "Contracts Type",
-    "newType": "New type",
+    "title": "Type des contrats",
+    "newType": "Nouveau type",
     "onglet1": "Types authorized",
     "onglet2": "Types not authorized",
     "name": "Nom de type",
-    "description": "Description"
+    "description": "Description",
+    "requiredTypeName": "Nom de type est requise."
   },
   "currencies":{
     "title": "Liste de devises",
@@ -384,6 +394,7 @@
     "listPCK": "Affectation des paquets",
     "onglet1": "Paquets attribués",
     "onglet2": "Paquets non attribués",
+    "tabularForm": "Forme tabulaire",
     "existingPCK": "Voici la liste des paquets existants",
     "selectPCK": "There is a package already assigned. Please check your list of assignment!"
   },

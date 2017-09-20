@@ -1,30 +1,8 @@
 // Create handlers and subscribers
 let handle = Meteor.subscribe('screensLive');
 let handleSegment = Meteor.subscribe('segments');
-function getButtonsAu(array){
-  var button = {
-    'editAu' :false,
-    'validateAu' :false,
-    'authorizeAu' :false
-  };
-  if (array.indexOf("HLD") >= 0 ){
-    button.editAu = true;
-  }
-  if (array.indexOf("INAU") >= 0 ){
-    button.validateAu = true;
-  }
-  if (array.indexOf("LIVE") >= 0 ){
-    button.authorizeAu = true;
-  }
-  if (array.indexOf("RNAU") >= 0 ){
-    button.authorizeAu = true;
-  }
-  if (array.indexOf("HIS") >= 0 ){
-    button.authorizeAu = true;
-  }
-  return button;
-}
-function getValuesFromForm(){
+
+function getValuesFromForm (){
   if (document.getElementById('startDate') != null) {
     var x = document.getElementById("startDate").value;
     var array_X = x.split("/");
@@ -51,10 +29,10 @@ function getValuesFromForm(){
     'slot': slot,
     'currentNumber': 1,
     'status': 'HLD',
-    'inputter': 'Xxxx',
+    'inputter': Session.get("UserLogged")._id,
     'authorizer': null,
-    'dateTime': new Date(),
-    'code': "0000"
+    'dateTime': getDateNow(),
+    'codeCompany': Session.get("UserLogged").codeCompany
   }
   return plan;
 }
@@ -295,58 +273,61 @@ Template.segment.rendered = function(){
      //console.log("Rows number :"+ screens.count())
      // set all markers in the Map
      screens.forEach(function(doc){
-       //console.log("Doc id"+doc._id);
-           if( doc.screenStatus == 0){
-             var marker = new google.maps.Marker({
-               position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
-               title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
-               address: doc.screenAddress,
-               id: doc.screenIdentity,
-               idScreen: doc._id,
-               icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FE7569'
-             });
-            }else{
-             var marker = new google.maps.Marker({
-               position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
-               title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
-               address: doc.screenAddress,
-               id: doc.screenIdentity,
-               idScreen: doc._id,
-               icon:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-             });
-           }
-           marker.setMap(map);
-           marker.addListener('click', function() {
-                Session.set("SCREEN_ID", marker.idScreen);
-                Session.set("SCREEN_IDENTITY", marker.id);
-                Session.set("SCREEN_ADDRESS", marker.address);
-                console.log("SCREEN_ID", marker.idScreen);
-                $('.footable').footable();
-                $('.footable2').footable();
-                $('#addSegmentPopUp').modal();
-                var array = getDaysNotAvailable();
-                $('#data_1 .input-group.date').datepicker({
-                  format: "dd/mm/yyyy",
-                   autoclose: true,
-                   minDate: '01/01/2017',
-                   todayHighlight: true,
-                   beforeShowDay: function(date){
-                     var active_dates = array;
-                       var d = date;
-                       var curr_date = d.getDate();
-                       var curr_month = d.getMonth() + 1; //Months are zero based
-                       var curr_year = d.getFullYear();
-                       var formattedDate = curr_date + "/" + curr_month + "/" + curr_year
-
-                         if ($.inArray(formattedDate, active_dates) != -1){
-                             return {
-                                classes: 'activeClass'
-                             };
-                         }
-                        return;
-                    }
-                });
+       // Verify if the COMPANY_CODE exist in the list of companies code
+       if( doc.codeCompanies.indexOf(Session.get("UserLogged").codeCompany) > -1 ){
+         if( doc.screenStatus == 0){
+           var marker = new google.maps.Marker({
+             position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
+             title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
+             address: doc.screenAddress,
+             id: doc.screenIdentity,
+             idScreen: doc._id,
+             icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FE7569'
            });
+          }else{
+           var marker = new google.maps.Marker({
+             position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
+             title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
+             address: doc.screenAddress,
+             id: doc.screenIdentity,
+             idScreen: doc._id,
+             icon:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+           });
+         }
+         marker.setMap(map);
+         marker.addListener('click', function() {
+              Session.set("SCREEN_ID", marker.idScreen);
+              Session.set("SCREEN_IDENTITY", marker.id);
+              Session.set("SCREEN_ADDRESS", marker.address);
+              console.log("SCREEN_ID", marker.idScreen);
+              $('.footable').footable();
+              $('.footable2').footable();
+              $('#addSegmentPopUp').modal();
+              var array = getDaysNotAvailable();
+              $('#data_1 .input-group.date').datepicker({
+                format: "dd/mm/yyyy",
+                 autoclose: true,
+                 minDate: '01/01/2017',
+                 todayHighlight: true,
+                 beforeShowDay: function(date){
+                   var active_dates = array;
+                     var d = date;
+                     var curr_date = d.getDate();
+                     var curr_month = d.getMonth() + 1; //Months are zero based
+                     var curr_year = d.getFullYear();
+                     var formattedDate = curr_date + "/" + curr_month + "/" + curr_year
+
+                       if ($.inArray(formattedDate, active_dates) != -1){
+                           return {
+                              classes: 'activeClass'
+                           };
+                       }
+                      return;
+                  }
+              });
+         });
+       }
+
       });
      c.stop()
    }
@@ -385,11 +366,7 @@ Template.segment.events({
       var plan = getValuesFromForm();
         if(validateDate(plan.startDate) && validateDate(plan.endDate) ){
           Plans_Authorization.insert(plan);
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Addition done !');
-          }else {
-            toastr.success('Avec succès','Ajout fait !');
-          }
+          toastrSaveDone();
         }else{
           $('#verifyPlan').modal();
         }
@@ -399,11 +376,7 @@ Template.segment.events({
         if(validateDate(plan.startDate) && validateDate(plan.endDate) ){
           plan.status = "INAU";
           Plans_Authorization.insert(plan);
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Addition done !');
-          }else {
-            toastr.success('Avec succès','Ajout fait !');
-          }
+          toastrValidatonDone();
         }else{
           $('#verifyPlan').modal();
         }
@@ -411,21 +384,25 @@ Template.segment.events({
     //        Authorization events       //
     'click .cancelAu'() {
       var plan = Plans_Authorization.findOne({ "_id" : this._id });
-      Session.set("deletePlanAu",plan);
-      $('#checkCancel').modal();
+      if (userAuthorized(plan.inputter)) {
+        Session.set("deletePlanAu",plan);
+        $('#checkCancel').modal();
+      }else {
+        toastrWarningAccessDenied();
+      }
     },
     'click .BtnCancel'() {
       var plan = Session.get("deletePlanAu");
       Plans_Authorization.remove(plan._id);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Deletion operation done ');
-      }else {
-        toastr.success('Avec succès','Suppression fait !');
-      }
+      toastrSuppression();
     },
     'click .validateAu'() {
       var plan = Plans_Authorization.findOne({ "_id" : this._id });
-      Plans_Authorization.update({'_id' : plan._id }, {'$set':{ 'status' : 'INAU', 'inputter' : 'Cccc' , 'dateTime' : new Date() }});
+      if (userAuthorized(plan.inputter)) {
+        Plans_Authorization.update({'_id' : plan._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+      }else {
+        toastrWarningAccessDenied();
+      }
     },
     'click .authorizeAu'() {
       var newPlan = Plans_Authorization.findOne({ "_id" : this._id });
@@ -435,25 +412,21 @@ Template.segment.events({
     'click .BtnAuthorize'() {
       var plan = Session.get("NewPlan");
       plan.status = "LIVE";
-      plan.authorizer = "Akrem Sallemi";
-      plan.dateTime = new Date();
+      plan.authorizer = Session.get("UserLogged")._id;
+      plan.dateTime = getDateNow();
       Plans_Live.insert(plan);
       Plans_Authorization.remove(plan._id);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Authorization done ');
-      }else {
-        toastr.success('Avec succès','Autorisation fait !');
-      }
+      toastrAuthorizationDone();
       createSegments(plan.startDate,plan.endDate, plan.slot);
       sendCapsule(plan.startDate,plan.endDate, plan.slot);
     },
 });
 Template.segment.helpers({
   plansLive (){
-    return Plans_Live.find({ 'screensID': Session.get("SCREEN_ID") });
+    return Plans_Live.find({ 'codeCompany': Session.get("UserLogged").codeCompany, 'screensID': Session.get("SCREEN_ID") });
   },
   plansAuthorization (){
-    var plans = Plans_Authorization.find({ 'screensID': Session.get("SCREEN_ID") });
+    var plans = Plans_Authorization.find({ 'codeCompany': Session.get("UserLogged").codeCompany, 'screensID': Session.get("SCREEN_ID") });
     var plansAuthorization = [];
     plans.forEach(function(doc){
       var buttonDetails = true;
@@ -489,7 +462,28 @@ Template.segment.helpers({
   screenAdr(){
     return Session.get("SCREEN_ADDRESS");
   },
+  company(){
+    return Session.get("COMPANY_NAME");
+  },
   equals: function(v1, v2) {
     return (v1 === v2);
+  },
+  notEquals: function(v1, v2) {
+    return (v1 != v2);
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

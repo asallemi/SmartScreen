@@ -10,14 +10,14 @@
           <div class="col-lg-12">
                   <div class="ibox-tools">
                     <a href="{{pathFor route='allContracts'}}" class="btn btn-primary btn-xs"><i class="fa fa-reply-all"></i>       <span data-i18n="common.btn-back"></span></a>
-                    <a class="btn btn-primary btn-xs newOption"><i class="fa fa-cog"></i>   <span data-i18n="optionsArticle.btn-newOption"></span></a>
+                    <a class="btn btn-primary btn-xs newType"><i class="fa fa-cog"></i>   <span data-i18n="contractType.newType"></span></a>
                   </div>
                   <br>
                   <div class="ibox-content">
                     <div class="clients-list">
                         <ul class="nav nav-tabs">
-                          <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="optionsArticle.onglet1"></span></a></li>
-                          <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="optionsArticle.onglet2"></span></a></li>
+                          <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-star"></i> <span data-i18n="contractType.onglet1"></span></a></li>
+                          <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-star-half-empty"></i> <span data-i18n="contractType.onglet2"></span></a></li>
                         </ul>
                         <div class="tab-content">
                             <div id="tab-1" class="tab-pane active">
@@ -30,26 +30,18 @@
                                           <table class="footable table table-stripped" data-page-size="8" data-filter=#filter>
                                             <thead>
                                               <tr>
-                                                <th data-i18n="optionsArticle.optionTitle"></th>
-                                                <th data-i18n="optionsArticle.optionValue"></th>
-                                                <th data-i18n="optionsArticle.typeOption"></th>
+                                                <th data-i18n="contractType.name"></th>
                                                 <th data-i18n="common.action" style="width: 200px;"></th>
                                               </tr>
                                             </thead>
                                             <tbody>
-                                              {{#each optionsLive}}
+                                              {{#each typesLive}}
                                                 <tr class="gradeX">
-                                                    <td>{{title}}</td>
-                                                    <td>{{value}}</td>
-                                                    <td>{{type}}</td>
+                                                    <td>{{name}}</td>
                                                     <td class="center">
-                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
-                                                      {{#if equals role.firmwareUpdate true}}
-                                                        <a type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></a>
-                                                      {{/if}}
-                                                      {{#if equals role.firmwareDelete true}}
-                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
-                                                      {{/if}}
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
+                                                      <a type="button" class="btn btn-outline btn-primary btn-sm btn-edit" title="{{updateTitle}}"><i class="fa fa-pencil"></i></a>
+                                                      <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                     </td>
                                                 </tr>
                                               {{/each}}
@@ -77,34 +69,28 @@
                                         <table class="footable2 table table-stripped" data-page-size="8" data-filter=#filter1>
                                           <thead>
                                             <tr>
-                                              <th data-i18n="optionsArticle.optionTitle"></th>
-                                              <th data-i18n="optionsArticle.optionValue"></th>
-                                              <th data-i18n="optionsArticle.typeOption"></th>
+                                              <th data-i18n="contractType.name"></th>
                                               <th data-i18n="common.action" style="width: 200px;"></th>
                                             </tr>
                                           </thead>
                                           <tbody>
-                                            {{#each optionsAuthorization}}
+                                            {{#each typesAuthorization}}
                                               <tr>
-                                                <td>{{title}}</td>
-                                                <td>{{value}}</td>
-                                                <td>{{type}}</td>
+                                                <td>{{name}}</td>
                                                 <td class="center">
                                                   {{#if equals buttonDetail true}}
-                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                   {{/if}}
                                                   {{#if equals buttonValidate true}}
-                                                    <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="{{validateTitle}}"><i class="fa fa-thumbs-up"></i></button>
                                                   {{/if}}
-                                                  {{#if equals role.articleValidate true}}
-                                                    {{#if equals buttonAuthorize true}}
-                                                      <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
-                                                    {{/if}}
+                                                  {{#if equals buttonAuthorize true}}
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="{{authorizeTitle}}"><i class="fa fa-angellist"></i></button>
                                                   {{/if}}
                                                   {{#if equals buttonEdit true}}
-                                                    <a href="{{pathFor route='firmware'}}" type="button" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></a>
+                                                    <button type="button" class="btn btn-outline btn-primary btn-sm editAu" title="{{updateTitle}}"><i class="fa fa-pencil"></i></button>
                                                   {{/if}}
-                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                 </td>
                                               </tr>
                                             {{/each}}
@@ -128,47 +114,32 @@
           </div>
       </div>
   </div>
-  <div class="modal inmodal" id="newOption" tabindex="-1" user="dialog" aria-hidden="false">
+  <div class="modal inmodal" id="newContractType" tabindex="-1" user="dialog" aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content animated bounceInRight" style="width:550px;">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
               <i class="fa fa-sliders modal-icon"></i>
-              <h4 class="modal-title" data-i18n="optionsArticle.newTitle"></h4>
+              <h4 class="modal-title" data-i18n="contractType.newType"></h4>
             </div>
             <div class="modal-body" >
               <div class="row">
                 <div class="col-lg-12">
                   <div id="warning" class="alert alert-danger alert-dismissable" >
-                      <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="optionsArticle.requiredTitle"></span>
+                      <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="contractType.requiredTypeName"></span>
                   </div>
                   <div class="form-group">
-                      <label for="title" data-i18n="optionsArticle.optionTitle"></label>
-                      <input id="optionTitle" type="text" class="form-control"/>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group">
-                      <label for="message" data-i18n="optionsArticle.optionValue"></label>
-                      <div class="radio"><input type="radio" id="amount" value="true" checked name="typeOption"><label for="radio"> <strong data-i18n="optionsArticle.amount"></strong></label></div>
-                      <div class="radio"><input type="radio" id="percent" value="false" name="typeOption"><label for="radio"> <strong data-i18n="optionsArticle.percent"></strong></label></div>
+                      <label for="title" data-i18n="contractType.name"></label>
+                      <input id="name" type="text" class="form-control"/>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-lg-12">
                   <div class="form-group">
-                      <label for="message" data-i18n="optionsArticle.optionValue"></label>
-                      <div id="amountValue">
-                        <input id="value1" type="text" class="touchspin1"/>
-                      </div>
-                      <div id="percentValue">
-                        <input id="value2" class="touchspin2" type="text" value="10" name="demo2">
-                      </div>
-
+                      <label for="message" data-i18n="contractType.description"></label>
+                      <textarea class="form-control" id="description" rows="5"></textarea>
                   </div>
                 </div>
               </div>
@@ -181,71 +152,208 @@
         </div>
     </div>
   </div>
+  <div class="modal inmodal" id="editTypeLive" tabindex="-1" user="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight" style="width:550px;">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="fa fa-pencil modal-icon"></i>
+              <h4 class="modal-title" data-i18n="common.update"></h4>
+            </div>
+            <div class="modal-body" >
+              <div class="row">
+                <div class="col-lg-12">
+                  <div id="warning1" class="alert alert-danger alert-dismissable" >
+                      <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="contractType.requiredTypeName"></span>
+                  </div>
+                  <div class="form-group">
+                      <label for="title" data-i18n="contractType.name"></label>
+                      <input id="name1" value="{{typeSelectedLive.name}}" type="text" class="form-control"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                      <label for="message" data-i18n="contractType.description"></label>
+                      <textarea class="form-control" value="{{typeSelectedLive.description}}" id="description1" rows="5"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+              <button type="submit" class="ladda-button btn btn-primary validateUpdateLive" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+              <button type="submit" class="ladda-button btn btn-danger saveUpdateLive" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="editTypeAu" tabindex="-1" user="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight" style="width:550px;">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="fa fa-pencil modal-icon"></i>
+              <h4 class="modal-title" data-i18n="common.update"></h4>
+            </div>
+            <div class="modal-body" >
+              <div class="row">
+                <div class="col-lg-12">
+                  <div id="warning2" class="alert alert-danger alert-dismissable" >
+                      <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="contractType.requiredTypeName"></span>
+                  </div>
+                  <div class="form-group">
+                      <label for="title" data-i18n="contractType.name"></label>
+                      <input id="name2" value="{{typeSelectedAu.name}}" type="text" class="form-control"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                      <label for="message" data-i18n="contractType.description"></label>
+                      <textarea class="form-control" value="{{typeSelectedAu.description}}" id="description2" rows="5"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+              <button type="submit" class="ladda-button btn btn-primary validateUpdateAu" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+              <button type="submit" class="ladda-button btn btn-danger saveUpdateAu" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+            </div>
+        </div>
+    </div>
+  </div>
   <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
-          <div class="modal-content animated flipInY" style="top: -35px;">
-              <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                  <h4 class="modal-title" data-i18n="common.authorization"></h4>
-              </div>
-              <div class="modal-body" style="height: 420px;">
-                {{#if equals oldOption null}}
-                  <div class="col-lg-12">
-                      <div class="ibox">
-                          <div class="ibox-content text-left">
-                              <div>
-                                <h3 for="title" data-i18n="optionsArticle.optionTitle"></h3>
-                                  {{newOption.title}}
-                              </div>
-                              <h3 for="message" data-i18n="optionsArticle.optionValue"></h3><br>
-                              <div>
-                                  {{newOption.value}}
-                              </div>
-                          </div>
+        {{#if equals oldType null}}
+        <div class="modal-content animated flipInY" style="width: 600px;top:-25px;left: -25px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-i18n="common.authorization"></h4>
+            </div>
+            <div class="modal-body" style="height: 340px;">
+                <div class="col-lg-12">
+                    <div class="ibox">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contractType.name"></label>  {{newType.name}}
                         </div>
-                  </div>
-                {{else}}
-                  <div class="col-lg-6">
-                      <div class="ibox">
-                          <div class="ibox-content text-left">
-                              <div>
-                                <h3 for="title" data-i18n="optionsArticle.optionTitle"></h3>
-                                  {{newOption.title}}
-                              </div>
-                              <h3 for="message" data-i18n="optionsArticle.optionValue"></h3><br>
-                              <div>
-                                  {{newOption.value}}
-                              </div>
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <label for="title" data-i18n="contractType.description"></label>
+                          <textarea class="form-control" value="{{newType.description}}" rows="6" disabled></textarea>
                         </div>
-                  </div>
-                  <div class="col-lg-6">
-                      <div class="ibox">
-                          <div class="ibox-content text-left">
-                              <div>
-                                <h3 for="title" data-i18n="optionsArticle.optionTitle"></h3>
-                                  {{oldOption.title}}
-                              </div>
-                              <h3 for="message" data-i18n="optionsArticle.optionValue"></h3><br>
-                              <div>
-                                  {{oldOption.value}}
-                              </div>
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{newType.inputter}}
                         </div>
-                  </div>
-                {{/if}}
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.date"></label>  {{newType.dateTime}}
+                        </div>
+                      </div>
+                    </div>
+                </div>
               </div>
               <div class="modal-footer">
                 <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
                   <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
-                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
+                  <button type="button" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
               </div>
           </div>
+        {{else}}
+          <div class="modal-content animated flipInY" style="width: 1110px;top:-25px;left: -270px;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" data-i18n="common.authorization"></h4>
+              </div>
+              <div class="modal-body" style="height: 350px;">
+                <div class="col-lg-6">
+                  <div class="ibox">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h2 data-i18n="common.newInfo"></h2>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="contractType.name"></label>  {{newType.name}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="contractType.description"></label>
+                        <textarea class="form-control" value="{{newType.description}}" rows="6" disabled></textarea>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="common.inputter"></label>  {{newType.inputter}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="common.date"></label>  {{newType.dateTime}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="ibox">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h2 data-i18n="common.oldInfo"></h2>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="contractType.name"></label>  {{oldType.name}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="contractType.description"></label>
+                        <textarea class="form-control" value="{{oldType.description}}" rows="6" disabled></textarea>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="common.authorizer"></label>  {{oldType.authorizer}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="common.inputter"></label>  {{oldType.inputter}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="title" data-i18n="common.date"></label>  {{oldType.dateTime}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                  <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
+                </div>
+            </div>
+        {{/if}}
       </div>
   </div>
-  <div class="modal inmodal" id="ArticleDetails" tabindex="-1" user="dialog" aria-hidden="false">
+  <div class="modal inmodal" id="TypeDetailsAu" tabindex="-1" user="dialog" aria-hidden="false">
     <div class="modal-dialog">
-        <div class="modal-content animated bounceInRight" style="width:800px; left: -115px; top: -25px;">
+        <div class="modal-content animated bounceInRight" style="width:600px; left: -20px; top: -25px;">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -255,41 +363,73 @@
             <div class="modal-body" >
               <div class="row">
                 <div class="col-lg-12">
-                  <div class="form-group">
-                      <label for="title" data-i18n="article.articleTitle"></label>   {{articleDetails.title}}
-                  </div>
-                  <div class="form-group">
-                      <label for="message" data-i18n="article.articleContent"></label><br> {{articleDetails.content}}
-                  </div>
-                  {{#if equals articleDetails.language "fr"}}
-                    <div class="form-group">
-                        <label for="message" data-i18n="article.language"></label><br> <span data-i18n="article.french"></span>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="contractType.name"></label>  {{typeDetails.name}}
                     </div>
-                  {{/if}}
-                  {{#if equals articleDetails.language "en"}}
-                    <div class="form-group">
-                        <label for="message" data-i18n="article.language"></label><br> <span data-i18n="article.english"></span>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label for="title" data-i18n="contractType.description"></label>
+                      <textarea class="form-control" value="{{typeDetails.description}}" rows="6" disabled></textarea>
                     </div>
-                  {{/if}}
-                  {{#if equals articleDetails.language "gr"}}
-                    <div class="form-group">
-                        <label for="message" data-i18n="article.language"></label><br> <span data-i18n="article.german"></span>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label for="title" data-i18n="common.inputter"></label>  {{typeDetails.inputter}}
                     </div>
-                  {{/if}}
-                  <div class="form-group">
-                      <label for="message" data-i18n="article.option"></label><br> {{articleDetails.option}}
                   </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="article.subsection"></label>   {{articleDetails.subSection}}
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label for="title" data-i18n="common.date"></label>  {{typeDetails.dateTime}}
+                    </div>
                   </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="common.inputter"></label>   {{articleDetails.inputter}}
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-close"></span></button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal inmodal" id="TypeDetailsLive" tabindex="-1" user="dialog" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight" style="width:600px; left: -20px; top: -25px;">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="fa fa-list-alt modal-icon"></i>
+              <h2 class="modal-title" data-i18n="common.details"></h2>
+            </div>
+            <div class="modal-body" >
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="contractType.name"></label>  {{typeDetails.name}}
+                    </div>
                   </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="common.authorizer"></label>   {{articleDetails.authorizer}}
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label for="title" data-i18n="contractType.description"></label>
+                      <textarea class="form-control" value="{{typeDetails.description}}" rows="6" disabled></textarea>
+                    </div>
                   </div>
-                  <div class="form-group">
-                      <label for="title" data-i18n="common.date"></label>   {{articleDetails.dateTime}}
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label for="title" data-i18n="common.inputter"></label>  {{typeDetails.inputter}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label for="title" data-i18n="common.authorizer"></label>  {{typeDetails.authorizer}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label for="title" data-i18n="common.date"></label>  {{typeDetails.dateTime}}
+                    </div>
                   </div>
                 </div>
               </div>

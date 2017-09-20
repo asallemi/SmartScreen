@@ -13,12 +13,20 @@
         <br>
         <div class="row">
             <div class="col-lg-12">
-                  <div class="row">
-                    <div class="col-lg-6">
-                      <div class="alert alert-info">
-                        <label data-i18n="contract.parametersChoosen"></label> <br>
-                        <label data-i18n="contract.language"></label>  {{configuration.languageName}} <br>
-                        <label data-i18n="currencies.currencyName"></label>  {{configuration.currency}} <br>
+                  <div class="alert alert-info">
+                    <div class="row">
+                      <div class="col-lg-3">
+                        <label data-i18n="contract.parametersChoosen"></label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-3">
+                        <label data-i18n="contract.language"></label>  {{configuration.languageName}}
+                      </div>
+                      <div class="col-lg-3">
+                        <label data-i18n="currencies.currencyName"></label>  {{configuration.currency}}
+                      </div>
+                      <div class="col-lg-36">
                         <label data-i18n="currencies.rate"></label>  {{configuration.rate}}
                       </div>
                     </div>
@@ -49,6 +57,7 @@
                             <label for="message" data-i18n="contract.contractType"></label>
                             <div id="select">
                               <select id="typeContract" class="select2_demo_1 form-control" style="width: 400px;">
+                                <option value="">Select one</option>
                                 <option value="Type1">Type1</option>
                                 <option value="Type2">Type2</option>
                                 <option value="Type3">Type3</option>

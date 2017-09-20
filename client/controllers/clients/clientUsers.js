@@ -41,6 +41,7 @@ function getValuesFromFormForAdd(){
   }else {
     var address = null;
   }
+  //console.log(" rolesID :",rolesID);
   if (document.getElementById('mail') != null) {
     var email = document.getElementById("mail").value;
   }else {
@@ -51,7 +52,12 @@ function getValuesFromFormForAdd(){
   }else {
     var pass1 = null;
   }
-  //console.log(" rolesID :",rolesID);
+  var code = Session.get("CLIENT_CODE");
+  if(Session.get("UserLogged").codeCompany == "swallow-labs"){ // swallow-labs or company user
+    var codeCompany = Session.get("COMPANY_CODE");
+  }else {
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }
   var user =
     {
       'fname' : fname,
@@ -61,15 +67,97 @@ function getValuesFromFormForAdd(){
       'phone' : phone,
       'address' : address,
       'email' : email,
-      'password' : encryptPassword(pass1),
+      'password' : pass1,
       'photo' : '/public/upload/users/1001',
       'roles': rolesID.slice(0, rolesID.length-1),
+      'code': code,
+      'codeCompany': codeCompany,
       'currentNumber': 0,
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': new Date(),
-      'code': Session.get("CLIENT_CODE")
+      'dateTime': getDateNow()
+    };
+  return user;
+}
+function getValuesFromFormForEditAu(){
+  var roles = Roles_Live.find({ "code" : Session.get("CLIENT_CODE") });
+  var arrayIDs = [];
+  roles.forEach(function(doc){
+    arrayIDs.push(doc._id);
+  });
+  var rolesID = '';
+  for( var i=0; i < arrayIDs.length; i++){
+    var x = arrayIDs[i];
+    if( document.getElementById(x+"##").checked ) {
+      rolesID = rolesID + arrayIDs[i]+"*";
+    }
+  }
+  if (document.getElementById('fnameEdit1') != null) {
+    var fname = document.getElementById("fnameEdit1").value;
+  }else {
+    var fname = null;
+  }
+  if (document.getElementById('surnameEdit1') != null) {
+    var surname = document.getElementById("surnameEdit1").value;
+  }else {
+    var surname = null;
+  }
+  if (document.getElementById('legalIdentifierEdit1') != null) {
+    var legalIdentifier = document.getElementById("legalIdentifierEdit1").value;
+  }else {
+    var legalIdentifier = null;
+  }
+  if (document.getElementById('dateOfBirthEdit1') != null) {
+    var dateOfBirth = document.getElementById("dateOfBirthEdit1").value;
+  }else {
+    var dateOfBirth = null;
+  }
+  if (document.getElementById('phoneEdit1') != null) {
+    var phone = document.getElementById("phoneEdit1").value;
+  }else {
+    var phone = null;
+  }
+  if (document.getElementById('addressEdit1') != null) {
+    var address = document.getElementById("addressEdit1").value;
+  }else {
+    var address = null;
+  }
+  if (document.getElementById('mailEdit1') != null) {
+    var email = document.getElementById("mailEdit1").value;
+  }else {
+    var email = null;
+  }
+  if (document.getElementById('newPassword1') != null) {
+    var newPassword = document.getElementById("newPassword1").value;
+  }else {
+    var newPassword = null;
+  }
+  var code = Session.get("CLIENT_CODE");
+  if(Session.get("UserLogged").codeCompany == "swallow-labs"){ // swallow-labs or company user
+    var codeCompany = Session.get("COMPANY_CODE");
+  }else {
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }
+  var user =
+    {
+      'fname' : fname,
+      'surname' : surname,
+      'legalIdentifier' : legalIdentifier,
+      'dateOfBirth' : dateOfBirth,
+      'phone' : phone,
+      'address' : address,
+      'email' : email,
+      'password' : newPassword,
+      'photo' : '/public/upload/users/',
+      'roles': rolesID.slice(0, rolesID.length-1),
+      'code': code,
+      'codeCompany': codeCompany,
+      'currentNumber': 0,
+      'status': 'HLD',
+      'inputter': Session.get("UserLogged")._id,
+      'authorizer': null,
+      'dateTime': getDateNow()
     };
   return user;
 }
@@ -126,6 +214,12 @@ function getValuesFromFormForEdit(){
   }else {
     var newPassword = null;
   }
+  var code = Session.get("CLIENT_CODE");
+  if(Session.get("UserLogged").codeCompany == "swallow-labs"){ // swallow-labs or company user
+    var codeCompany = Session.get("COMPANY_CODE");
+  }else {
+    var codeCompany = Session.get("UserLogged").codeCompany;
+  }
   var user =
     {
       'fname' : fname,
@@ -138,102 +232,58 @@ function getValuesFromFormForEdit(){
       'password' : newPassword,
       'photo' : '/public/upload/users/1001',
       'roles': rolesID.slice(0, rolesID.length-1),
+      'code': code,
+      'codeCompany': codeCompany,
       'currentNumber': 0,
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': new Date(),
-      'code': Session.get("CLIENT_CODE")
-    };
-  return user;
-}
-function getValuesFromFormForEditAu(){
-  var roles = Roles_Live.find({ "code": Session.get("CLIENT_CODE") });
-  var arrayIDs = [];
-  roles.forEach(function(doc){
-    arrayIDs.push(doc._id);
-  });
-  var rolesID = '';
-  for( var i=0; i < arrayIDs.length; i++){
-    var x = arrayIDs[i];
-    if( document.getElementById(x+"##").checked ) {
-      rolesID = rolesID + arrayIDs[i]+"*";
-    }
-  }
-  if (document.getElementById('fnameEdit1') != null) {
-    var fname = document.getElementById("fnameEdit1").value;
-  }else {
-    var fname = null;
-  }
-  if (document.getElementById('surnameEdit1') != null) {
-    var surname = document.getElementById("surnameEdit1").value;
-  }else {
-    var surname = null;
-  }
-  if (document.getElementById('legalIdentifierEdit1') != null) {
-    var legalIdentifier = document.getElementById("legalIdentifierEdit1").value;
-  }else {
-    var legalIdentifier = null;
-  }
-  if (document.getElementById('dateOfBirthEdit1') != null) {
-    var dateOfBirth = document.getElementById("dateOfBirthEdit1").value;
-  }else {
-    var dateOfBirth = null;
-  }
-  if (document.getElementById('phoneEdit1') != null) {
-    var phone = document.getElementById("phoneEdit1").value;
-  }else {
-    var phone = null;
-  }
-  if (document.getElementById('addressEdit1') != null) {
-    var address = document.getElementById("addressEdit1").value;
-  }else {
-    var address = null;
-  }
-  if (document.getElementById('mailEdit1') != null) {
-    var email = document.getElementById("mailEdit1").value;
-  }else {
-    var email = null;
-  }
-  if (document.getElementById('newPassword1') != null) {
-    var newPassword = document.getElementById("newPassword1").value;
-  }else {
-    var newPassword = null;
-  }
-  var user =
-    {
-      'fname' : fname,
-      'surname' : surname,
-      'legalIdentifier' : legalIdentifier,
-      'dateOfBirth' : dateOfBirth,
-      'phone' : phone,
-      'address' : address,
-      'email' : email,
-      'password' : newPassword,
-      'photo' : '/public/upload/users/',
-      'roles': rolesID.slice(0, rolesID.length-1),
-      'currentNumber': 0,
-      'status': 'HLD',
-      'inputter': Session.get("UserLogged")._id,
-      'authorizer': null,
-      'dateTime': new Date(),
-      'code': Session.get("CLIENT_CODE")
+      'dateTime': getDateNow()
     };
   return user;
 }
 function verifyEdit(id){
   var user = Users_Authorization.findOne({ "_id" : id });
-  if(user == undefined){
-    return true;
-  }
-  return false;
+  return user == undefined;
 }
 function verifyDelete(id){
   var user = Users_Authorization.findOne({ "_id" : id+"#D" });
-  if( user == undefined ){
-    return true;
+  return user == undefined;
+}
+function authorize(user){
+  if(user._id.indexOf("#") > 0){
+    user._id = user._id.replace("#D", "");
   }
-  return false;
+  var userX = Users_Live.findOne({ "_id" : user._id });
+  // entry validated and new entry
+  if(userX !== undefined && user.status == "INAU"){
+    user.status = "LIVE";
+    user.authorizer = Session.get("UserLogged")._id;
+    user.dateTime = getDateNow();
+    userX.status = 'HIS';
+    userX.dateTime = getDateNow();
+    userX.currentNumber = user.currentNumber;
+    userX._id = user._id+"#"+(user.currentNumber-1);
+    Users_History.insert(userX);
+    Users_Live.remove(user._id);
+    Users_Live.insert(user);
+    Users_Authorization.remove(user._id);
+  // Authorise deleting user
+  }else if(userX !== undefined && user.status == "RNAU"){
+    user.authorizer= Session.get("UserLogged")._id;
+    user.status = 'DEL';
+    user.dateTime = getDateNow();
+    Users_History.insert(user);
+    Users_Live.remove(userX._id);
+    Users_Authorization.remove(user._id);
+    Users_Authorization.remove(user._id+"#D");
+  }else{
+    user.status = "LIVE";
+    user.authorizer = Session.get("UserLogged")._id;
+    user.dateTime = getDateNow();
+    Users_Live.insert(user);
+    Users_Authorization.remove(user._id);
+  }
 }
 function sendCapsule(user, state){
   var d = new Date().toString();
@@ -252,164 +302,163 @@ function sendCapsule(user, state){
     'tts': 10,
     'ACK': "NO"
   };
-  if(state == "add" ){
-    var res = user.roles.split("*");
-    var role;
-    if( res.length == 1){
-      role = Roles_Live.findOne({ "_id" : user.roles });
-    }else{
-      var listRoles = [];
-      for(var i=0; i < res.length; i++){
-        var role = Roles_Live.findOne({ "_id" : res[i] });
-        listRoles.push(role);
-      }
-      role = getFinalRole(listRoles);
+  var res = user.roles.split("*");
+  var role;
+  if( res.length == 1){
+    role = Roles_Live.findOne({ "_id" : user.roles });
+  }else{
+    var listRoles = [];
+    for(var i=0; i < res.length; i++){
+      var role = Roles_Live.findOne({ "_id" : res[i] });
+      listRoles.push(role);
     }
-    var payload = {'att': ['dn', 'objectClass', 'CUserFirstName', 'CUserLastName', 'pwd', 'CUserAddress',
-      'CUserEmail', 'CUserCin', 'CUserDateOfBirth', 'CUserPhoneNumber', 'CUserPicture',
-      'ContractAdd', 'ContractUpdate', 'ContractDelete', 'ContractDisplay', 'ContractPrint', 'ContractSign', 'ContractValidator',
-      'AccountAdd', 'AccountUpdate', 'AccountDelete',
-      'AccountDisplay', 'AccountPrint', 'AccountValidator', 'InvoiceAdd',
-      'InvoiceUpdate', 'InvoiceDelete', 'InvoiceDisplay', 'InvoicePrint', 'InvoiceSign', 'InvoiceValidator',
-      'BookingAdd', 'BookingUpdate', 'BookingDelete', 'BookingDisplay', 'BookingPrint', 'BookingValidator',
-      'ContentAdd', 'ContentDelete', 'ContentDisplay', 'ContentValidator',
-      'RoleAdd', 'RoleDelete', 'RoleUpdate', 'RoleDisplay', 'RolePrint', 'RoleValidator',
-      'SignatureAdd', 'SignatureValidator'],
-      'dn': 'CUserEmail='+user.email+',ECode='+Session.get("CLIENT_CODE")+',o=Establishments,o=WebApp,dc=swallow,dc=tn',
-      'objectClass': ['top', 'ClientUserAccount', 'ContractManagment', 'AccountManagment','InvoiceManagment', 'BookingManagment',
-      'ContentManagment', 'RoleManagment', 'SignatureManagment'],
-      'CUserFirstName': user.fname,
-      'CUserLastName': user.surname,
-      'CUserAddress': user.address,
+    role = getFinalRole(listRoles);
+  }
+  if(state == "add" ){
+    var payload = {
+      'att': ['dn', 'objectClass', 'AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+      'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+      'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+      'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+      'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+      'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+      'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+      'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint'],
+      'dn': 'AEmail='+user.email+',ECode='+user.code+',o=Establishment,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn',
+      'objectClass':['top','AppAdministrator', 'ContractManagment', 'AccountManagment','InvoiceManagment', 'BookingManagment', 'ContentManagment', 'RoleManagment', 'SignatureManagment'],
+      'AFirstName': user.fname,
+      'ALastName': user.surname,
+      'AAdress': user.address,
       'pwd': user.password,
-      'CUserEmail': user.email,
-      'CUserPhoneNumber': user.phone,
-      'CUserDateOfBirth': user.dateOfBirth,
-      'CUserPicture': user.photo,
-      'CUserCin': user.legalIdentifier,
+      'AEmail': user.email,
+      'APhone': user.phone,
+      'ADateOfBirth': user.dateOfBirth,
+      'APicture': user.photo,
+      'ACIN': user.legalIdentifier,
       'ContractAdd': role.contractAdd,
       'ContractUpdate': role.contractUpdate,
       'ContractDelete': role.contractDelete,
       'ContractDisplay': role.contractDisplay,
       'ContractPrint': role.contractPrint,
-      'ContractSign': role.contractSign,
-      'ContractValidator': role.contractValidate,
+      'ContractAuthorize': role.contractAuthorize,
+      'ContractDetail': role.contractDetails,
       'AccountAdd': role.accountAdd,
       'AccountUpdate': role.accountUpdate,
       'AccountDelete': role.accountDelete,
       'AccountDisplay': role.accountDisplay,
       'AccountPrint': role.accountPrint,
-      'AccountValidator': role.accountValidate,
+      'AccountAuthorize': role.accountAuthorize,
+      'AccountDetail': role.accountDetails,
       'InvoiceAdd': role.invoiceAdd,
       'InvoiceUpdate': role.invoiceUpdate,
       'InvoiceDelete': role.invoiceDelete,
       'InvoiceDisplay': role.invoiceDisplay,
       'InvoicePrint': role.invoicePrint,
-      'InvoiceSign': role.invoiceSign,
-      'InvoiceValidator': role.invoiceValidate,
+      'InvoiceAuthorize': role.invoiceAuthorize,
+      'InvoiceDetail': role.invoiceDetails,
       'BookingAdd': role.bookingAdd,
       'BookingUpdate': role.bookingUpdate,
       'BookingDelete': role.bookingDelete,
       'BookingDisplay': role.bookingDisplay,
       'BookingPrint': role.bookingPrint,
-      'BookingValidator': role.bookingValidate,
+      'BookingAuthorize': role.bookingAuthorize,
+      'BookingDetail': role.bookingDetails,
       'ContentAdd': role.contentAdd,
       'ContentDelete': role.contentDelete,
+      'ContentPrint': role.contentPrint,
       'ContentDisplay': role.contentDisplay,
-      'ContentValidator': role.contentValidate,
+      'ContentAuthorize': role.contentAuthorize,
+      'ContentDetail': role.contentDetails,
       'RoleAdd': role.roleAdd,
       'RoleDelete': role.roleDelete,
       'RoleUpdate': role.roleUpdate,
       'RoleDisplay': role.roleDisplay,
       'RolePrint': role.rolePrint,
-      'RoleValidator': role.roleValidate,
+      'RoleAuthorize': role.roleAuthorize,
+      'Roledetail': role.roleDetails,
       'SignatureAdd': role.signatureAdd,
-      'SignatureValidator': role.signatureValidate
+      'SignatureDelete': role.signatureDelete,
+      'SignatureDisplay': role.signatureDisplay,
+      'SignaturePrint': role.signaturePrint
     };
     capsule.sort = "LDAP_ADD_MSG";
     capsule.payload = payload;
     }else if( state == "edit"){
-      var res = user.roles.split("*");
-      var role;
-      if( res.length == 1){
-        role = Roles_Live.findOne({ "_id" : user.roles });
-      }else{
-        var listRoles = [];
-        for(var i=0; i < res.length; i++){
-          var role = Roles_Live.findOne({ "_id" : res[i] });
-          listRoles.push(role);
-        }
-        role = getFinalRole(listRoles);
-      }
       var payload = {
-        'att':['dn','changetype','replace'],'dn': 'CUserEmail='+user.email+',ECode='+Session.get("CLIENT_CODE")+',o=Establishments,o=WebApp,dc=swallow,dc=tn','changetype': 'modify',
-        'replace': ['CUserFirstName', 'CUserLastName', 'pwd', 'CUserAddress',
-          'CUserEmail', 'CUserCin', 'CUserDateOfBirth', 'CUserPhoneNumber', 'CUserPicture',
-          'ContractAdd', 'ContractUpdate', 'ContractDelete', 'ContractDisplay', 'ContractPrint', 'ContractSign', 'ContractValidator',
-          'AccountAdd', 'AccountUpdate', 'AccountDelete',
-          'AccountDisplay', 'AccountPrint', 'AccountValidator', 'InvoiceAdd',
-          'InvoiceUpdate', 'InvoiceDelete', 'InvoiceDisplay', 'InvoicePrint', 'InvoiceSign', 'InvoiceValidator',
-          'BookingAdd', 'BookingUpdate', 'BookingDelete', 'BookingDisplay', 'BookingPrint', 'BookingValidator',
-          'ContentAdd', 'ContentDelete', 'ContentDisplay', 'ContentValidator',
-          'RoleAdd', 'RoleDelete', 'RoleUpdate', 'RoleDisplay', 'RolePrint', 'RoleValidator',
-          'SignatureAdd', 'SignatureValidator'] ,
-          'CUserFirstName': user.fname,
-          'CUserLastName': user.surname,
-          'CUserAddress': user.address,
+          'att':['dn','changetype','replace'],
+          'dn': 'AEmail='+user.email+',ECode='+user.code+',o=Establishment,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn',
+          'changetype': 'modify',
+          'replace': ['AFirstName', 'ALastName', 'AAdress', 'pwd', 'AEmail','APhone', 'ADateOfBirth', 'ACIN',
+          'ContractAdd','ContractUpdate','ContractDelete','ContractDisplay','ContractPrint','ContractAuthorize','ContractDetail',
+          'AccountAdd','AccountUpdate','AccountDelete','AccountDisplay','AccountPrint','AccountAuthorize','AccountDetail',
+          'InvoiceAdd','InvoiceUpdate','InvoiceDelete','InvoiceDisplay','InvoicePrint','InvoiceAuthorize','InvoiceDetail',
+          'BookingAdd','BookingUpdate','BookingDelete','BookingDisplay','BookingPrint','BookingAuthorize','BookingDetail',
+          'ContentAdd','ContentDelete','ContentPrint','ContentDisplay','ContentAuthorize','ContentDetail',
+          'RoleAdd','RoleDelete','RoleUpdate','RoleDisplay','RolePrint','RoleAuthorize','Roledetail',
+          'SignatureAdd','SignatureDelete','SignatureDisplay','SignaturePrint'],
+          'AFirstName': user.fname,
+          'ALastName': user.surname,
+          'AAdress': user.address,
           'pwd': user.password,
-          'CUserEmail': user.email,
-          'CUserPhoneNumber': user.phone,
-          'CUserDateOfBirth': user.dateOfBirth,
-          'CUserPicture': user.photo,
-          'CUserCin': user.legalIdentifier,
+          'AEmail': user.email,
+          'APhone': user.phone,
+          'ADateOfBirth': user.dateOfBirth,
+          'APicture': user.photo,
+          'ACIN': user.legalIdentifier,
           'ContractAdd': role.contractAdd,
           'ContractUpdate': role.contractUpdate,
           'ContractDelete': role.contractDelete,
           'ContractDisplay': role.contractDisplay,
           'ContractPrint': role.contractPrint,
-          'ContractSign': role.contractSign,
-          'ContractValidator': role.contractValidate,
+          'ContractAuthorize': role.contractAuthorize,
+          'ContractDetail': role.contractDetails,
           'AccountAdd': role.accountAdd,
           'AccountUpdate': role.accountUpdate,
           'AccountDelete': role.accountDelete,
           'AccountDisplay': role.accountDisplay,
           'AccountPrint': role.accountPrint,
-          'AccountValidator': role.accountValidate,
+          'AccountAuthorize': role.accountAuthorize,
+          'AccountDetail': role.accountDetails,
           'InvoiceAdd': role.invoiceAdd,
           'InvoiceUpdate': role.invoiceUpdate,
           'InvoiceDelete': role.invoiceDelete,
           'InvoiceDisplay': role.invoiceDisplay,
           'InvoicePrint': role.invoicePrint,
-          'InvoiceSign': role.invoiceSign,
-          'InvoiceValidator': role.invoiceValidate,
+          'InvoiceAuthorize': role.invoiceAuthorize,
+          'InvoiceDetail': role.invoiceDetails,
           'BookingAdd': role.bookingAdd,
           'BookingUpdate': role.bookingUpdate,
           'BookingDelete': role.bookingDelete,
           'BookingDisplay': role.bookingDisplay,
           'BookingPrint': role.bookingPrint,
-          'BookingValidator': role.bookingValidate,
+          'BookingAuthorize': role.bookingAuthorize,
+          'BookingDetail': role.bookingDetails,
           'ContentAdd': role.contentAdd,
           'ContentDelete': role.contentDelete,
+          'ContentPrint': role.contentPrint,
           'ContentDisplay': role.contentDisplay,
-          'ContentValidator': role.contentValidate,
+          'ContentAuthorize': role.contentAuthorize,
+          'ContentDetail': role.contentDetails,
           'RoleAdd': role.roleAdd,
           'RoleDelete': role.roleDelete,
           'RoleUpdate': role.roleUpdate,
           'RoleDisplay': role.roleDisplay,
           'RolePrint': role.rolePrint,
-          'RoleValidator': role.roleValidate,
+          'RoleAuthorize': role.roleAuthorize,
+          'Roledetail': role.roleDetails,
           'SignatureAdd': role.signatureAdd,
-          'SignatureValidator': role.signatureValidate
+          'SignatureDelete': role.signatureDelete,
+          'SignatureDisplay': role.signatureDisplay,
+          'SignaturePrint': role.signaturePrint
       };
       capsule.sort = "LDAP_MOD_MSG";
       capsule.payload = payload;
     }else{
       //case "delete"
-      var payload = {'dn': 'CUserEmail='+user.email+',ECode='+Session.get("CLIENT_CODE")+',o=Establishments,o=WebApp,dc=swallow,dc=tn' };
+      var payload = {'dn': 'AEmail='+user.email+',ECode='+user.code+',o=Establishment,CpCode='+user.codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn' };
       capsule.sort = "LDAP_DEL_MSG";
       capsule.payload = payload;
     }
-
   Meteor.call('sendCapsule', capsule, function(error){
     if(error){
       alert('Error');
@@ -419,31 +468,212 @@ function sendCapsule(user, state){
   });
 }
 Template.allClientsUsers.rendered = function(){
-    var userLogged = Session.get("UserLogged");
+  checkSession();
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
-    $('.dataTables-example').DataTable();
+    console.log("USER ROLE : ", Session.get("USER_ROLE_XX"));
+    console.log(Session.get("UserLogged").language);
+    settingLanguage();
+    $("[data-toggle=tooltip]").tooltip();
+    $('#warning').hide();
+    $('#confirmPasword').hide();
 };
 Template.allClientsUsers.events({
-  'click .newUser'() {
-    $('#newUserPopup').modal();
-  },
-  'click .saveAdd'() {
-    var userAdded = getValuesFromFormForAdd();
-    Users_Authorization.insert(userAdded);
-    toastr.success('With success','Save done !');
-  },
-  'click .validateAdd'() {
-    var userAdded = getValuesFromFormForAdd();
-    userAdded.status = "INAU";
-    Users_Authorization.insert(userAdded);
-    toastr.success('With success','Validation done !');
-  },
-  //         LIVE events         //
-  'click .btn-edit'() {
-    var user = Users_Live.findOne({ "_id" : this._id });
-    if (verifyEdit(user._id)){
+    'click .newUser'() {
+      $('#newUserPopup').modal();
+    },
+    'click .saveAdd'() {
+      var userAdded = getValuesFromFormForAdd();
+      console.log(userAdded.password.length);
+      if(userAdded.password.length == 0 || userAdded.email.length == 0){
+        $('#warning').show();
+      }else {
+        $('#warning').hide();
+        $('#newUserPopup').modal('hide');
+        userAdded.password = encryptPassword(userAdded.password);
+        Users_Authorization.insert(userAdded);
+        toastrSaveDone();
+      }
+    },
+    'click .validateAdd'() {
+      var userAdded = getValuesFromFormForAdd();
+      if(userAdded.password.length == 0 || userAdded.email.length == 0){
+        $('#warning').show();
+      }else {
+        $('#warning').hide();
+        $('#newUserPopup').modal('hide');
+        userAdded.status = "INAU";
+        userAdded.password = encryptPassword(userAdded.password);
+        Users_Authorization.insert(userAdded);
+        toastrValidatonDone();
+      }
+    },
+    //         LIVE events         //
+    'click .btn-edit'() {
+      var user = Users_Live.findOne({ "_id" : this._id });
+      //sendCapsule(user);
+      if (verifyEdit(user._id)){
+        Session.set("userSelected", user);
+        var res = user.roles.split("*");
+        var roles = Roles_Live.find({ "code": Session.get("CLIENT_CODE") });
+        var rolesList = [];
+        roles.forEach(function(doc){
+          var obj = {};
+          if( res.indexOf(doc._id) > -1 ){
+            obj.id = doc._id;
+            obj.roleName = doc.roleName;
+            obj.status = true;
+            rolesList.push(obj);
+          }else{
+            obj.id = doc._id;
+            obj.roleName = doc.roleName;
+            obj.status = false;
+            rolesList.push(obj);
+          }
+        });
+        Session.set("RoleList", rolesList);
+        $('#editUserPopUp').modal();
+      }else{
+        $('#edictState').modal();
+      }
+    },
+    'click .saveEditLive'() {
+      var userUpdated = getValuesFromFormForEdit();
+      var user = Session.get("userSelected");
+      if( document.getElementById("newPassword").value != ""){
+        if ( checkConfirmPassword() ){
+          if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
+            userUpdated._id = user._id;
+            userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
+            userUpdated.currentNumber = user.currentNumber + 1;
+            Users_Authorization.remove(user._id);
+            Users_Authorization.insert(userUpdated);
+            toastrModificationSaved();
+          }else{
+            $('#rightOldPwd').modal();
+          }
+        }else{
+          $('#samePasswordTwice').modal();
+        }
+      }else{
+        userUpdated._id = user._id;
+        userUpdated.password = user.password;
+        userUpdated.currentNumber = user.currentNumber + 1;
+        Users_Authorization.insert(userUpdated);
+        toastrModificationSaved();
+      }
+    },
+    'click .validateEditLive'() {
+      var userUpdated = getValuesFromFormForEdit();
+      var user = Session.get("userSelected");
+      if( document.getElementById("newPassword").value != ""){
+        if ( checkConfirmPassword() ){
+          if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
+            userUpdated._id = user._id;
+            userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
+            userUpdated.currentNumber = user.currentNumber + 1;
+            userUpdated.status = "INAU";
+            Users_Authorization.remove(user._id);
+            Users_Authorization.insert(userUpdated);
+            toastrModificationValidated();
+          }else{
+            $('#rightOldPwd').modal();
+          }
+        }else{
+          $('#samePasswordTwice').modal();
+        }
+      }else{
+        userUpdated._id = user._id;
+        userUpdated.password = user.password;
+        userUpdated.status = "INAU";
+        userUpdated.currentNumber = user.currentNumber + 1;
+        Users_Authorization.insert(userUpdated);
+        toastrModificationValidated();
+      }
+    },
+    'click .btn-details'() {
+      var user = Users_Live.findOne({ "_id" : this._id });
+      var inputter = Users_Live.findOne({ "_id" : user.inputter });
+      user.inputter = inputter.fname+" "+inputter.surname;
+      var authorizer = Users_Live.findOne({ "_id" : user.authorizer });
+      user.authorizer = authorizer.fname+" "+authorizer.surname;
+      Session.set("UserDetails",user);
+      var roles = user.roles.split("*");
+      Session.set("RoleList", roles);
+      $('#userDetailsPopUp').modal();
+    },
+    'click .btn-delete'() {
+      var user = Users_Live.findOne({ "_id" : this._id });
+      if (verifyDelete(user._id)){
+        $('#checkDeleting').modal();
+        Session.set("deleteUserLive",user);
+      }else{
+        $('#deletionState').modal();
+      }
+    },
+    'click .BtnDelete'() {
+      var user = Session.get("deleteUserLive");
+      user._id = user._id+"#D"
+      user.status = "RNAU";
+      user.inputter = "HEDI";
+      user.dateTime = getDateNow();
+      user.authorizer = null;
+      Users_Authorization.insert(user);
+    },
+    //        Authorization events        //
+    'click .authorizeAu'() {
+      var oldUser = Users_Live.findOne({ "_id" : this._id });
+      var newUser = Users_Authorization.findOne({ "_id" : this._id });
+      // test User have minimum one role
+      if(newUser.roles.length > 0 ){
+        Session.set("UserAuthorized", newUser);
+        if(oldUser == undefined){
+          Session.set("OldUser", null);
+        }else {
+          var inputter = Users_Live.findOne({ "_id" : oldUser.inputter });
+          oldUser.inputter = inputter.fname+" "+inputter.surname;
+          var authorizer = Users_Live.findOne({ "_id" : oldUser.authorizer });
+          oldUser.authorizer = authorizer.fname+" "+authorizer.surname;
+          Session.set("OldUser", oldUser);
+        }
+        var inputter = Users_Live.findOne({ "_id" : newUser.inputter });
+        newUser.inputter = inputter.fname+" "+inputter.surname;
+        Session.set("NewUser", newUser);
+        settingLanguage();
+        $('#checkAuthorising').modal();
+      }else{
+        $('#minOneRole').modal();
+      }
+    },
+    'click .BtnAuthorize'() {
+      var user = Session.get("UserAuthorized");
+      var query = Users_Live.findOne({ "_id": user._id });
+      console.log("Query :", query);
+      if(query != undefined){
+        // Update case
+        // USer exist in LIVE TABLE
+        sendCapsule(user, "edit");
+        console.log("edit");
+      }
+      var query2 = Users_Authorization.findOne({ "_id": user._id });
+      if(query == undefined && query2._id.indexOf("#D") < 0){
+        sendCapsule(user, "add");
+        console.log("add");
+      }
+      if(query2._id.indexOf("#D") > 0){
+        sendCapsule(user, "delete");
+        console.log("delete");
+      }
+      authorize(user);
+    },
+    'click .validateAu'() {
+      var user = Users_Authorization.findOne({ "_id" : this._id });
+      Users_Authorization.update({'_id' : user._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+    },
+
+    'click .editAu'() {
+      var user = Users_Authorization.findOne({ "_id" : this._id });
       Session.set("userSelected", user);
       var res = user.roles.split("*");
       var roles = Roles_Live.find({ "code": Session.get("CLIENT_CODE") });
@@ -463,235 +693,87 @@ Template.allClientsUsers.events({
         }
       });
       Session.set("RoleList", rolesList);
-      $('#editUserPopUp').modal();
-    }else{
-      swal({
-        title: "Access denied",
-        text: "Edit operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
-      });
-    }
-  },
-  'click .saveEditLive'() {
-    var userUpdated = getValuesFromFormForEdit();
-    var user = Session.get("userSelected");
-    if( document.getElementById("newPassword").value != ""){
-      if ( checkConfirmPassword() ){
-        if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
-          userUpdated._id = user._id;
-          userUpdated.currentNumber = userUpdated.currentNumber + 1 ;
-          userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
-          Users_Authorization.remove(user._id);
-          Users_Authorization.insert(userUpdated);
-          toastr.success('With success','Edict done !');
+      $('#editUserPopUpAu').modal();
+    },
+    'click .saveEditAu'() {
+      var userUpdated = getValuesFromFormForEditAu();
+      var user = Session.get("userSelected");
+      if( document.getElementById("newPassword1").value != ""){
+        if ( checkConfirmPassword() ){
+          if ( checkOldPassword(user._id, document.getElementById("oldPassword1").value )) {
+            userUpdated._id = user._id;
+            userUpdated.password = encryptPassword(document.getElementById("newPassword1").value);
+            Users_Authorization.remove(user._id);
+            Users_Authorization.insert(userUpdated);
+            toastrModificationSaved();
+          }else{
+            $('#rightOldPwd').modal();
+          }
         }else{
-          swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
+          $('#samePasswordTwice').modal();
         }
       }else{
-        swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
+        userUpdated._id = user._id;
+        userUpdated.password = user.password;
+        Users_Authorization.remove(user._id);
+        Users_Authorization.insert(userUpdated);
+        toastrModificationSaved();
       }
-    }else{
-      userUpdated._id = user._id;
-      userUpdated.password = user.password;
-      Users_Authorization.insert(userUpdated);
-      toastr.success('With success','Edict done !');
-    }
-  },
-  'click .validateEditLive'() {
-    var userUpdated = getValuesFromFormForEdit();
-    var user = Session.get("userSelected");
-    if( document.getElementById("newPassword").value != ""){
-      if ( checkConfirmPassword() ){
-        if ( checkOldPassword(user._id, document.getElementById("oldPassword").value )) {
-          userUpdated._id = user._id;
-          userUpdated.currentNumber = userUpdated.currentNumber + 1 ;
-          userUpdated.password = encryptPassword(document.getElementById("newPassword").value);
-          userUpdated.status = "INAU";
-          Users_Authorization.remove(user._id);
-          Users_Authorization.insert(userUpdated);
-          toastr.success('With success','Edict done !');
+    },
+    'click .validateEditAu'() {
+      var userUpdated = getValuesFromFormForEditAu();
+      var user = Session.get("userSelected");
+      if( document.getElementById("newPassword1").value != ""){
+        if ( checkConfirmPassword() ){
+          if ( checkOldPassword(user._id, document.getElementById("oldPassword1").value )) {
+            userUpdated._id = user._id;
+            userUpdated.password = encryptPassword(document.getElementById("newPassword1").value);
+            userUpdated.status = "INAU";
+            Users_Authorization.remove(user._id);
+            Users_Authorization.insert(userUpdated);
+            toastrModificationValidated();
+          }else{
+            $('#rightOldPwd').modal();
+          }
         }else{
-          swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
+          $('#samePasswordTwice').modal();
         }
       }else{
-        swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
+        userUpdated._id = user._id;
+        userUpdated.password = user.password;
+        userUpdated.status = "INAU";
+        Users_Authorization.remove(user._id);
+        Users_Authorization.insert(userUpdated);
+        toastrModificationValidated();
       }
-    }else{
-      userUpdated._id = user._id;
-      userUpdated.password = user.password;
-      userUpdated.status = "INAU";
-      Users_Authorization.insert(userUpdated);
-      toastr.success('With success','Edict done !');
-    }
-  },
-  'click .btn-details'() {
-    var user = Users_Live.findOne({ "_id" : this._id });
-    Session.set("UserDetails",user);
-    var roles = user.roles.split("*");
-    Session.set("RoleList", roles);
-    $('#userDetailsPopUp').modal();
-  },
-  'click .btn-delete'() {
-    var user = Users_Live.findOne({ "_id" : this._id });
-    if (verifyDelete(user._id)){
-      $('#checkDeleting').modal();
-      Session.set("deleteUserLive",user);
-    }else{
-      swal({
-        title: "Access denied",
-        text: "Delete operation is already in authorization state !",
-        type: "warning",
-        closeOnConfirm: true
-      });
-    }
-  },
-  'click .BtnDelete'() {
-    var user = Session.get("deleteUserLive");
-    user._id = user._id+"#D"
-    user.status = "RNAU";
-    user.inputter = Session.get("UserLogged")._id;
-    user.dateTime = new Date();
-    user.authorizer = Session.get("UserLogged")._id;
-    Users_Authorization.insert(user);
-  },
-  //        Authorization events        //
-  'click .authorizeAu'() {
-    var oldUser = Users_Live.findOne({ "_id" : this._id });
-    var newUser = Users_Authorization.findOne({ "_id" : this._id });
-    if(newUser.roles.length > 0 ){
-      Session.set("OldUser",oldUser);
-      Session.set("NewUser",newUser);
-      $('#checkAuthorising').modal();
+    },
+    'click .cancelAu'() {
       var user = Users_Authorization.findOne({ "_id" : this._id });
-      Session.set("UserAuthorized",user);
-    }else{
-      swal({ title: "Alert !",text: "You need to assign minimum one role for this user before authorization  !",type: "warning",closeOnConfirm: true});
-    }
-  },
-  'click .BtnAuthorize'() {
-    var user = Session.get("UserAuthorized");
-    var query = Users_Live.findOne({ "_id": user._id });
-    console.log("Query :", query);
-    if(query != undefined){
-      // Update case
-      // USer exist in LIVE TABLE
-      sendCapsule(user, "edit");
-      console.log("edit");
-    }
-    var query2 = Users_Authorization.findOne({ "_id": user._id });
-    if(query == undefined && query2._id.indexOf("#D") < 0){
-      sendCapsule(user, "add");
-      console.log("add");
-    }
-    if(query2._id.indexOf("#D") > 0){
-      sendCapsule(user, "delete");
-      console.log("delete");
-    }
-    authorize(user);
-  },
-  'click .validateAu'() {
-    var user = Users_Authorization.findOne({ "_id" : this._id });
-    Users_Authorization.update({'_id' : user._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : new Date() }});
-  },
-
-  'click .editAu'() {
-    var user = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("userSelected", user);
-    var res = user.roles.split("*");
-    var roles = Roles_Live.find({ "code": Session.get("CLIENT_CODE") });
-    var rolesList = [];
-    roles.forEach(function(doc){
-      var obj = {};
-      if( res.indexOf(doc._id) > -1 ){
-        obj.id = doc._id;
-        obj.roleName = doc.roleName;
-        obj.status = true;
-        rolesList.push(obj);
-      }else{
-        obj.id = doc._id;
-        obj.roleName = doc.roleName;
-        obj.status = false;
-        rolesList.push(obj);
-      }
-    });
-    Session.set("RoleList", rolesList);
-    $('#editUserPopUpAu').modal();
-  },
-  'click .saveEditAu'() {
-    var userUpdated = getValuesFromFormForEditAu();
-    var user = Session.get("userSelected");
-    if( document.getElementById("newPassword1").value != ""){
-      if ( checkConfirmPassword() ){
-        if ( checkOldPassword(user._id, document.getElementById("oldPassword1").value )) {
-          userUpdated._id = user._id;
-          userUpdated.password = encryptPassword(document.getElementById("newPassword1").value);
-          Users_Authorization.remove(user._id);
-          Users_Authorization.insert(userUpdated);
-          toastr.success('With success','Edict done !');
-        }else{
-          swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
-        }
-      }else{
-        swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
-      }
-    }else{
-      userUpdated._id = user._id;
-      userUpdated.password = user.password;
+      Session.set("deleteUserAu",user);
+      $('#checkCancel').modal();
+    },
+    'click .BtnCancel'() {
+      var user = Session.get("deleteUserAu");
       Users_Authorization.remove(user._id);
-      Users_Authorization.insert(userUpdated);
-      toastr.success('With success','Edict done !');
-    }
-  },
-  'click .validateEditAu'() {
-    var userUpdated = getValuesFromFormForEditAu();
-    var user = Session.get("userSelected");
-    if( document.getElementById("newPassword1").value != ""){
-      if ( checkConfirmPassword() ){
-        if ( checkOldPassword(user._id, document.getElementById("oldPassword1").value )) {
-          userUpdated._id = user._id;
-          userUpdated.password = encryptPassword(document.getElementById("newPassword1").value);
-          userUpdated.status = "INAU";
-          Users_Authorization.remove(user._id);
-          Users_Authorization.insert(userUpdated);
-          toastr.success('With success','Edict done !');
-        }else{
-          swal({ title: "Alert !",text: "You need to enter the right old password !",type: "warning",closeOnConfirm: true });
-        }
-      }else{
-        swal({ title: "Alert !",text: "You need to enter the same password twice !",type: "warning",closeOnConfirm: true});
-      }
-    }else{
-      userUpdated._id = user._id;
-      userUpdated.password = user.password;
-      userUpdated.status = "INAU";
-      Users_Authorization.remove(user._id);
-      Users_Authorization.insert(userUpdated);
-      toastr.success('With success','Edict done !');
-    }
-  },
-  'click .cancelAu'() {
-    var user = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("deleteUserAu",user);
-    $('#checkCancel').modal();
-  },
-  'click .BtnCancel'() {
-    var user = Session.get("deleteUserAu");
-    Users_Authorization.remove(user._id);
-    toastr.success('With success','Deleting operation done ');
-  },
-  'click .detailsAu'() {
-    var user = Users_Authorization.findOne({ "_id" : this._id });
-    Session.set("UserDetails",user);
-    var roles = user.roles.split("*");
-    Session.set("RoleList", roles);
-    $('#userDetailsPopUp').modal();
-  },
-
+      toastrSuppression();
+    },
+    'click .detailsAu'() {
+      var user = Users_Live.findOne({ "_id" : this._id });
+      var inputter = Users_Live.findOne({ "_id" : user.inputter });
+      user.inputter = inputter.fname+" "+inputter.surname;
+      var authorizer = Users_Live.findOne({ "_id" : user.authorizer });
+      user.authorizer = authorizer.fname+" "+authorizer.surname;
+      Session.set("UserDetails",user);
+      var roles = user.roles.split("*");
+      Session.set("RoleList", roles);
+      $('#userDetailsPopUp').modal();
+    },
 });
 Template.allClientsUsers.helpers({
+  role(){
+    return Session.get("USER_ROLE_XX");
+  },
   userLive(){
-    console.log("Live users : ", Users_Live.find({ "code" : Session.get("CLIENT_CODE") }).count());
     return Users_Live.find({ "code" : Session.get("CLIENT_CODE") });
   },
   userAuthorization(){
@@ -773,5 +855,20 @@ Template.allClientsUsers.helpers({
       }
       return true;
     }
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

@@ -39,7 +39,7 @@
                               <i class="fa fa-file-photo-o"></i>   {{image}}<br>
                               <i class="fa fa-pencil"></i>   {{inputter}}<br>
                               <i class="fa fa-gavel"></i>   {{authorizer}}<br>
-                              {{#if equals role.bookingValidate true}}
+                              {{#if equals role.bookingAuthorize true}}
                                 <button id="authorize" type="button" class="btn btn-danger btn-xs pull-right authorize"><span data-i18n="common.btn-auth"></span></button>&nbsp;
                               {{/if}}
                               {{#if equals role.bookingDelete true}}

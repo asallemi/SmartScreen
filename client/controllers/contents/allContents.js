@@ -8,12 +8,11 @@ function authorize(content){
   var contentX = Contents_Live.findOne({ "_id" : content._id });
   // entry validated and new entry
   if(contentX != undefined && content.status == "INAU"){
-    console.log("HERE 1");
     content.status = "LIVE";
     content.authorizer = Session.get("UserLogged")._id;
-    content.dateTime = new Date();
+    content.dateTime = getDateNow();
     contentX.status = 'HIS';
-    contentX.dateTime = new Date();
+    contentX.dateTime = getDateNow();
     contentX.currentNumber = content.currentNumber;
     contentX._id = content._id+"#"+(content.currentNumber-1);
     Contents_History.insert(contentX);
@@ -22,39 +21,34 @@ function authorize(content){
     Contents_Authorization.remove(content._id);
   // Authorise deleting content
   }else if(contentX != undefined && content.status == "RNAU"){
-    console.log("HERE 2");
     content.authorizer = Session.get("UserLogged")._id;
     content.status = 'DEL';
-    content.dateTime = new Date();
+    content.dateTime = getDateNow();
     Contents_History.insert(content);
     Contents_Live.remove(contentX._id);
     Contents_Authorization.remove(content._id);
     Contents_Authorization.remove(content._id+"#D");
     Meteor.call('deleteFile', Session.get("UserLogged").code, content.contentName, function(error, result){
       if(result == 1){
-        toastr.success('With success','Content deleted!');
+        toastrContentDeleted();
       }
     });
   }else{
-    console.log("HERE3");
     content.status = "LIVE";
     content.authorizer = Session.get("UserLogged")._id;
-    content.dateTime = new Date();
+    content.dateTime = getDateNow();
     Contents_Live.insert(content);
     Contents_Authorization.remove(content._id);
-    Meteor.call('moveContent', content.contentName, content.code, function(error, result){
+    Meteor.call('moveContent', content.contentName, content.code, content.codeCompany, function(error, result){
       if(result == 1){
-        toastr.success('With success','Content authorized!');
+        toastrContentAuthorized();
       }
     });
   }
 }
 function verifyDelete(id){
   var content = Contents_Authorization.findOne({ "_id" : id+"#D" });
-  if( content == undefined ){
-    return true;
-  }
-  return false;
+  return content == undefined;
 }
 // A function which test if the content wanted deleting is assigned to any reservation
 function checkContent(id){
@@ -67,13 +61,7 @@ function checkContent(id){
   }
   return true;
 }
-/*function getAllContentsCount()(id){
-
-}*/
 Template.allContents.onCreated(function() {
-
-  $('.dataTables-example').DataTable();
-  $('.dataTables-example2').DataTable();
     Session.set("URL", "/home/akrem/sshfs/tmp/");
     var self = this;
     self.autorun(function() {
@@ -82,17 +70,17 @@ Template.allContents.onCreated(function() {
     });
 });
 Template.allContents.rendered = function(){
-  settingLanguage();
+    checkSession();
+    settingLanguage();
     console.log(Session.get("UserLogged").language);
     // Initialize fooTable
     $('.footable').footable();
     $('.footable2').footable();
-
 };
 Template.allContents.events({
   'click .newContent'() {
     $('#upload').modal();
-    Meteor.call('newContent', Session.get("URL"), Session.get("UserLogged").code, Session.get("UserLogged")._id);
+    Meteor.call('newContent', Session.get("URL"), Session.get("UserLogged").code, Session.get("UserLogged").codeCompany, Session.get("UserLogged")._id);
 
   },
   'click .authorizeAu'() {
@@ -105,22 +93,26 @@ Template.allContents.events({
   },
   'click .validateAu'() {
     var content = Contents_Authorization.findOne({ "_id" : this._id });
-    Contents_Authorization.update({'_id' : content._id }, {'$set':{ 'status' : 'INAU', 'inputter' : 'Ali Tounsi' , 'dateTime' : new Date() }});
+    if (userAuthorized(content.inputter)) {
+      Contents_Authorization.update({'_id' : content._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .cancelAu'() {
-    if(this._id.indexOf("#D") > 0){
-      Contents_Authorization.remove(this._id);
-    }else {
-      Contents_Authorization.remove(this._id);
-      Meteor.call('deleteFileTmp', Session.get("UserLogged").code+"#"+this.contentName, this.code, function(error, result){
-        if(result == 1){
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Content deleted !');
-          }else {
-            toastr.success('Avec succès','Suppression fait !');
+    if (userAuthorized(content.inputter)) {
+      if(this._id.indexOf("#D") > 0){
+        Contents_Authorization.remove(this._id);
+      }else {
+        Contents_Authorization.remove(this._id);
+        Meteor.call('deleteFileTmp', Session.get("UserLogged").code+"#"+this.contentName, this.code, function(error, result){
+          if(result == 1){
+            toastrSuppression();
           }
-        }
-      });
+        });
+      }
+    }else {
+      toastrWarningAccessDenied();
     }
   },
   'click .btn-delete'() {
@@ -144,11 +136,7 @@ Template.allContents.events({
     content.dateTime = new Date();
     content.authorizer = null;
     Contents_Authorization.insert(content);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    toastrSuppression();
     Meteor.call('synchronizeContents');
   },
 });
@@ -198,5 +186,20 @@ Template.allContents.helpers({
   },
   notEquals: function(v1, v2) {
     return (v1 !== v2);
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

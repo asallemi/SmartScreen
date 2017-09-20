@@ -18,7 +18,7 @@ function change(x){
   return 0;
 }
 Meteor.methods({
-    'sendLoginInfo': function(login, password, code){
+    'sendLoginInfo': function(login, password, codeCompany, code){
       var name   = login.substring(0, login.lastIndexOf("@"));
       var domain = login.substring(login.lastIndexOf("@") +1);
       var entreprise = domain.substring(0, domain.lastIndexOf("."));
@@ -41,9 +41,10 @@ Meteor.methods({
           scope: 'sub',
           //attributes: ['dn', 'sn', 'cn', 'uid']
         };
+        //  Company case
         if(entreprise.indexOf("company") > -1 ){
           console.log("Company case");
-          client.search('AEmail='+login+',o=Admin,'+'CpCode='+code+',o=Company,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
+          client.search('AEmail='+login+',o=Admin,'+'CpCode='+codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
             res.on('error', function(err) {
               result = 0;
               myFuture.return(result);
@@ -68,6 +69,7 @@ Meteor.methods({
             });
           });
         }
+        // Swallow Labs Administrator
         if(entreprise == "administration"){
           console.log("Admin case");
           client.search('AEmail='+login+',o=Administrators,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
@@ -95,11 +97,12 @@ Meteor.methods({
             });
           });
         }
+        // Client of company case
         if(entreprise != "administration" && entreprise.indexOf("company") < 0 ){
-          console.log("Establishments case");
+          console.log("Client of company case");
           if(code != null){
             console.log("Code != null");
-            client.search('CUserEmail='+login+',ECode='+code+',o=Establishments,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
+            client.search('AEmail='+login+',ECode='+code+',o=Establishment,CpCode='+codeCompany+',o=Company,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
               res.on('error', function(err) {
                 result = 0;
                 myFuture.return(result);
@@ -108,11 +111,11 @@ Meteor.methods({
               res.on('searchEntry', function(entry) {
                 var jsonEntry = JSON.parse(JSON.stringify(entry.object));
                 console.log('Json entry: ' + JSON.stringify(entry.object));
-                console.log('Json entry email : ' + jsonEntry.CUserEmail);
+                console.log('Json entry email : ' + jsonEntry.AEmail);
                 console.log('Json entry Password : ' + jsonEntry.pwd);
                 var pwd = CryptoJS.AES.decrypt(jsonEntry.pwd, 'SmartScreen').toString(CryptoJS.enc.Utf8);
                 console.log("Compared password :", pwd);
-                if( login == jsonEntry.CUserEmail && pwd == password ){
+                if( login == jsonEntry.AEmail && pwd == password ){
                   console.log("Success");
                   result = 1;
                   myFuture.return(result);
@@ -129,106 +132,6 @@ Meteor.methods({
         }
       });
       console.log("result :"+myFuture.wait());
-      return myFuture.wait();
-    },
-    'getAdminUsers': function(){
-      //console.log("Get all accounts button clicked");
-      var ldap = Npm.require('ldapjs');
-      var ssha = Npm.require("ssha");
-      Future = Npm.require('fibers/future');
-      var myFuture = new Future();
-      var secondFuture = new Future();
-
-      var client = ldap.createClient({
-        url: 'ldap://'+json.ldap.address+':'+json.ldap.port
-      });
-
-      client.bind('cn=directory manager', 'salmenF03', function(err) {
-        //console.log("BINDING DONE");
-        var opts = {
-          //filter: '(objectclass='AppAdministrators')',
-          scope: 'sub',
-          attributes: ['AEmail','AFirstName','ALastName','AAdress','userPassword','APhone','ADateOfBirth','APicture','ACIN','AAssigningContent','ADashboradGA','AInvoiceGA','AContartGA','AClientGA','AScreensGA','ASegmentGA','ABookingGA','AAccountGA']
-        };
-        var allUsers = [];
-        var id = 0;
-        client.search('o=Administrators,o=WebApp,dc=swallow,dc=tn', opts, function(err, res) {
-              res.on('error', function(err) {
-                console.error('error: ' + err.message);
-              });
-              //console.log("Get all accounts button clicked");
-              res.on('searchEntry', function(entry) {
-                jsonEntry = JSON.parse(JSON.stringify(entry.object));
-                //console.log('entry: ' + JSON.stringify(entry.object));
-                if( typeof entry.object.AEmail != 'undefined'){
-                  //console.log('Json entry email: ' + JSON.stringify(entry.object.AEmail));
-                  id = id + 1;
-                  allUsers.push({
-                    'userId' : id,
-                    'userEmail' : entry.object.AEmail,
-                    'userPassword' : entry.object.userPassword,
-                    'userLastName' : entry.object.ALastName,
-                    'userFirstName' : entry.object.AFirstName,
-                    'userAddress' : entry.object.AAdress,
-                    'userPhone' : entry.object.APhone,
-                    'userDateOfBirth' : entry.object.ADateOfBirth,
-                    'userPicture' : entry.object.APicture,
-                    'userCIN' : entry.object.ACIN,
-                    'assigningContentMenu' : change(entry.object.AAssigningContent),
-                    'dashboradMenu' : change(entry.object.ADashboradGA),
-                    'invoicesMenu' : change(entry.object.AInvoiceGA),
-                    'contartsMenu' : change(entry.object.AContartGA),
-                    'screensMenu' : change(entry.object.AScreensGA),
-                    'segmentsMenu' : change(entry.object.ASegmentGA),
-                    'bookingsMenu' : change(entry.object.ABookingGA),
-                    'accountsMenu' : change(entry.object.AAccountGA),
-                    'clientsMenu' : change(entry.object.AClientGA)
-                  });
-                  //console.log('USER PUSHED in the ARRAY');
-                }
-              });
-              res.on('end', function(result) {
-                //console.log("Array length :"+ allUsers.length);
-                myFuture.return(allUsers);
-              });
-        }); //end clent.search
-      });
-      //console.log("Array length :"+ myFuture.wait().length);
-      return myFuture.wait();
-    },
-    'addUser': function(dn, userType, email, password, fname, surname, cin, dateOfBirth, phone, address, AAssigningContent, ADashboradGA, AInvoiceGA, AContartGA, AClientGA, AScreensGA, ASegmentGA, ABookingGA, AAccountGA){
-      const child_process = Npm.require('child_process');
-      const exec = child_process.exec;
-      Future = Npm.require('fibers/future');
-      var myFuture = new Future();
-      // We passed by a problem when we sent a string(for exemple address) "Rue de tunis km4.5"
-      // the object received by the script pushCapsuleLDAP contains just "Rue" it ignore the rest of the string sented even there is other data after the address
-      var payload = "add*"+dn+"*"+userType+"*"+AAssigningContent+"*"+ADashboradGA+"*"+AInvoiceGA+"*"+AContartGA+"*"+AClientGA+"*"+AScreensGA+"*"+ASegmentGA+"*"+ABookingGA+"*"+AAccountGA+"*"+email+"*"+password+"*"+fname.split(' ').join('-')+"*"+surname.split(' ').join('-')+"*"+cin+"*"+dateOfBirth+"*"+phone+"*"+address.split(' ').join('-');
-      exec('python3.5 /home/akrem/Akrem/Projects/ChanelProjectMeteor/org/swallow_labs/test/pushCapsuleLDAP.py '+payload+' ', function (error, stdout, stderr) {
-          //console.log("STDOUT"+stdout);
-          //console.log("ERROR"+error);
-          if(error){
-            myFuture.return(0);
-          }else{
-            myFuture.return(1);
-          }
-      });
-      return myFuture.wait();
-    },
-    'sendCapsuleLDAP': function(dn){
-      const child_process = Npm.require('child_process');
-      const exec = child_process.exec;
-      Future = Npm.require('fibers/future');
-      var myFuture = new Future();
-      exec('python3.5 /home/akrem/Akrem/Projects/ChanelProjectMeteor/org/swallow_labs/test/pushCapsuleLDAP.py '+dn+' ', function (error, stdout, stderr) {
-          //console.log("STDOUT"+stdout);
-          //console.log("ERROR"+error);
-          if(error){
-            myFuture.return(0);
-          }else{
-            myFuture.return(1);
-          }
-      });
       return myFuture.wait();
     },
     'getScreenGeolocation': function(){

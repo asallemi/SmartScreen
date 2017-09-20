@@ -13,7 +13,7 @@ function checkExistingNauList(element){
 }
 // get all Not Assigned Packages
 function getNotAssignedPackages(){
-  var firmwares = Firmwares_Screens_Authorization.find({ "screenID": Session.get("SCREEN_ID") });
+  var firmwares = Firmwares_Screens_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany, "screenID": Session.get("SCREEN_ID") });
   var firmwaresList = [];
   firmwares.forEach(function(doc){
     var pckg = Firmwares_Live.findOne({ "_id": doc.firmwareID });
@@ -27,7 +27,7 @@ function getNotAssignedPackages(){
 }
 // get all Assigned Firmwares
 function getAssignedPackages(){
-  var firmwaresLive = Firmwares_Screens_Live.find({ "screenID": Session.get("SCREEN_ID") });
+  var firmwaresLive = Firmwares_Screens_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "screenID": Session.get("SCREEN_ID") });
   var list = [];
   firmwaresLive.forEach(function(doc){
     var pckg = Firmwares_Live.findOne({ "_id": doc.firmwareID });
@@ -42,7 +42,7 @@ function getAssignedPackages(){
 // get list of package for selected screen
 function getListPackages(){
   var packages = [];
-  var pckgs = Firmwares_Live.find();
+  var pckgs = Firmwares_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   pckgs.forEach(function(doc){
     if(doc.screensID.indexOf(Session.get("SCREEN_ADDRESS")) > -1){
       var package = {
@@ -90,17 +90,9 @@ function sendCapsule(packageName, action){
   capsule.payload = payload;
   Meteor.call('sendCapsule', capsule, function(error){
     if(error){
-      if(Session.get("UserLogged").language == "en"){
-        toastr.error('Not authorized', pckg.name);
-      }else {
-        toastr.error('Non attribué !', pckg.name);
-      }
+      toastrPackageNotAuthorized(pckg.name);
     }else{
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('Authorized with success !', packageName);
-      }else {
-        toastr.success('Attribué avec succès !', packageName);
-      }
+      toastrPackageAuthorized(packageName);
     }
   });
 }
@@ -153,6 +145,7 @@ function authorize(association){
 Template.allScreens.rendered = function(){
   $('.warningClause').hide();
   settingLanguage();
+  $('.chosen-select').chosen({width: "100%"});
   $('.footable').footable();
   $('.footable2').footable();
   var mapOptions = {
@@ -208,7 +201,8 @@ Template.allScreens.rendered = function(){
      //console.log("Rows number :"+ screens.count())
      // set all markers in the Map
      screens.forEach(function(doc){
-       //console.log("Doc id"+doc._id);
+       // Verify if the COMPANY_CODE exist in the list of companies code
+       if( doc.codeCompanies.indexOf(Session.get("UserLogged").codeCompany) > -1 ){
            if( doc.screenStatus == 0){
              var marker = new google.maps.Marker({
                position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
@@ -235,6 +229,7 @@ Template.allScreens.rendered = function(){
                 Session.set("SCREEN_IDENTITY", marker.id);
                 $('#listOfConfigurations').modal();
            });
+         }
       });
      c.stop()
    }
@@ -257,9 +252,6 @@ Template.allScreens.events({
     for(var i=0; i<IDs.length; i++){
       var pckg = Firmwares_Live.findOne({ "_id": IDs[i] });
       if(testExist(IDs[i])){
-        var d = new Date().toString();
-        var res = d.split(" ");
-        var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
         var association =
           {
             'firmwareID' : IDs[i],
@@ -268,21 +260,14 @@ Template.allScreens.events({
             'status': 'HLD',
             'inputter': Session.get("UserLogged")._id,
             'authorizer': null,
-            'dateTime': dat.toString()
+            'dateTime': getDateNow(),
+            'codeCompany': Session.get("UserLogged").codeCompany
           };
         Firmwares_Screens_Authorization.insert(association);
         getNotAssignedPackages();
-        if(Session.get("UserLogged").language == "en"){
-          toastr.success('Assigned with success !',pckg.name);
-        }else {
-          toastr.success('Attribué avec succès !', pckg.name);
-        }
+        toastrPackageAssigned(pckg.name);
       }else {
-        if(Session.get("UserLogged").language == "en"){
-          toastr.error('Already assigned !', pckg.name);
-        }else {
-          toastr.error('Est déja attribué !', pckg.name);
-        }
+        toastrPackageAlreadyAssigned(pckg.name);
       }
     }
   },
@@ -313,6 +298,9 @@ Template.allScreens.events({
     getNotAssignedPackages();
     getAssignedPackages();
   },
+  'click .deleteAu'() {
+    Firmwares_Screens_Authorization.remove(this._id);
+  },
 });
 Template.allScreens.helpers({
   packagesNotAssigned (){
@@ -332,5 +320,20 @@ Template.allScreens.helpers({
   },
   firmwares (){
     return Session.get("FirmwaresList");
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

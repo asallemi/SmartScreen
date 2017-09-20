@@ -23,13 +23,20 @@ function getValuesFromForm(){
     var amount = 0;
   }
   // Convert the JSON to an array and concatenate all selected articles IDs
-  var array = JSON.parse(Session.get("SELECTED"));
-  var articlesID = "";
-  if (array.length > 0) {
-    for (var i = 0; i < array.length; i++) {
-      articlesID = articlesID + array[i]+"#";
+  if (Session.get("SELECTED") != undefined) {
+    var array = JSON.parse(Session.get("SELECTED"));
+    var amount = 0;
+    var articlesID = "";
+    if (array.length > 0) {
+      amount = calculAmount(array, Session.get("contractSelected").currency, Session.get("contractSelected").rateExchange, Session.get("UserLogged").codeCompany);
+      for (var i = 0; i < array.length; i++) {
+        articlesID = articlesID + array[i]+"#";
+      }
     }
+  }else {
+    var amount = Session.get("contractSelected").amount;
   }
+
   var d = new Date().toString();
   var res = d.split(" ");
   var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
@@ -37,6 +44,7 @@ function getValuesFromForm(){
     {
       '_id': Session.get("contractSelected")._id,
       'client' : Session.get("contractSelected").client,
+      'responsibles' : Session.get("contractSelected").responsibles,
       'typeContract' : typeContractID,
       'startDate': startDate,
       'endDate': endDate,
@@ -44,18 +52,33 @@ function getValuesFromForm(){
       'language': Session.get("contractSelected").language,
       'amount': amount,
       'currency': Session.get("contractSelected").currency,
+      'rateExchange': Session.get("contractSelected").rateExchange,
       'clientNumber': Session.get("contractSelected").clientNumber,
       'currentNumber': 0,
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': dat.toString()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return contract;
 }
-
+// A function wich fills "SELECT" session (to get all articles selected by the user)
+function getSelectedArticles(){
+  var notSelected = [];
+  var selected = [];
+  $("#notSelected, #selected").sortable({
+      connectWith: ".connectList",
+      update: function( event, ui ) {
+          notSelected = $( "#notSelected" ).sortable( "toArray" );
+          selected = $( "#selected" ).sortable( "toArray" );
+          $('.output').html("ToDo: " + window.JSON.stringify(notSelected) + "<br/>" + "In Progress: " + window.JSON.stringify(selected) + "<br/>");
+          Session.set("SELECTED", window.JSON.stringify(selected));
+      }
+  }).disableSelection();
+}
 Template.editContract.rendered = function(){
-  console.log(Session.get("contractSelected").client);
+  checkSession();
   settingLanguage();
   $('#warning1').hide();
   $('#select2').hide();
@@ -70,17 +93,7 @@ Template.editContract.rendered = function(){
   //$(".select2_demo_2").select2();
   $(".select2_demo_2").select2();
   $(".select2_demo_1").select2();
-  var notSelected = [];
-  var selected = [];
-  $("#notSelected, #selected").sortable({
-      connectWith: ".connectList",
-      update: function( event, ui ) {
-          notSelected = $( "#notSelected" ).sortable( "toArray" );
-          selected = $( "#selected" ).sortable( "toArray" );
-          $('.output').html("ToDo: " + window.JSON.stringify(notSelected) + "<br/>" + "In Progress: " + window.JSON.stringify(selected) + "<br/>");
-          Session.set("SELECTED", window.JSON.stringify(selected));
-      }
-  }).disableSelection();
+  getSelectedArticles();
 };
 Template.editContract.events({
   'click .articleDetails'() {
@@ -90,11 +103,7 @@ Template.editContract.events({
     var contract = getValuesFromForm();
     Contracts_Authorization.remove(contract._id);
     Contracts_Authorization.insert(contract);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Saving done !');
-    }else {
-      toastr.success('Avec succès','Sauvegarde fait !');
-    }
+    toastrSaveDone();
     Router.go('allContracts');
   },
   'click .validate'() {
@@ -102,11 +111,7 @@ Template.editContract.events({
     Contracts_Authorization.remove(contract._id);
     contract.status = "INAU";
     Contracts_Authorization.insert(contract);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Saving done !');
-    }else {
-      toastr.success('Avec succès','Sauvegarde fait !');
-    }
+    toastrValidatonDone();
     Router.go('allContracts');
   },
 });

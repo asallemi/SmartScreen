@@ -16,12 +16,12 @@ function getValuesFromForm(){
 
     }else {
       var title = "null";
-      if (document.getElementById('title'+array[i]._id).value !== null) {
+      if (document.getElementById('title'+array[i]._id).value != null) {
         title = document.getElementById("title"+array[i]._id).value;
       }
       listOfTitles = title+"#"+listOfTitles;
       var content = "null";
-      if (document.getElementById('content'+array[i]._id).value !== null) {
+      if (document.getElementById('content'+array[i]._id).value != null) {
         content = document.getElementById("content"+array[i]._id).value;
       }
       listOfContents = content+"#"+listOfContents;
@@ -42,7 +42,7 @@ function getValuesFromForm(){
   }else {
     var optionArticle = Session.get("articleSelected").option;
   }
-  var activated = $('input[name="activation"]:checked').val();
+  var activated = $('input[name="activation"]:checked').val() == "true";
   var article =
     {
       'languagePivot': Session.get("articleSelected").languagePivot,
@@ -58,12 +58,14 @@ function getValuesFromForm(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': getDateNow()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("articleSelected").codeCompany
     };
   return article;
 }
 
 Template.editArticle.rendered = function(){
+  checkSession();
   settingLanguage();
   $('#select').hide();
   $('#warning1').hide();
@@ -97,11 +99,7 @@ Template.editArticle.events({
         article._id = art._id;
         article.currentNumber = art.currentNumber+1;
         Articles_Authorization.insert(article);
-        if(Session.get("UserLogged").language == "en"){
-          toastr.success('With success','Edict done !');
-        }else {
-          toastr.success('Avec succès','Modification fait !');
-        }
+        toastrModificationSaved();
         Router.go('allArticles');
       }
     }
@@ -116,11 +114,7 @@ Template.editArticle.events({
         article.currentNumber = art.currentNumber+1;
         Articles_Authorization.remove(art._id);
         Articles_Authorization.insert(article);
-        if(Session.get("UserLogged").language == "en"){
-          toastr.success('With success','Edict done !');
-        }else {
-          toastr.success('Avec succès','Modification fait !');
-        }
+        toastrModificationSaved();
         Router.go('allArticles');
       }
     }
@@ -138,11 +132,7 @@ Template.editArticle.events({
         article.status = "INAU";
         article.currentNumber = art.currentNumber+1;
         Articles_Authorization.insert(article);
-        if(Session.get("UserLogged").language == "en"){
-          toastr.success('With success','Edict done !');
-        }else {
-          toastr.success('Avec succès','Modification fait !');
-        }
+        toastrModificationValidated();
         Router.go('allArticles');
       }
     }
@@ -158,11 +148,7 @@ Template.editArticle.events({
         article.currentNumber = art.currentNumber+1;
         Articles_Authorization.remove(art._id);
         Articles_Authorization.insert(article);
-        if(Session.get("UserLogged").language == "en"){
-          toastr.success('With success','Edict done !');
-        }else {
-          toastr.success('Avec succès','Modification fait !');
-        }
+        toastrModificationValidated();
         Router.go('allArticles');
       }
     }
@@ -171,7 +157,18 @@ Template.editArticle.events({
 Template.editArticle.helpers({
   articles(){
     // list of articles without subSection (just article list, subsection not included)
-    return Session.get("Articles");
+    var articles = Articles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany }).fetch();
+    var articlesLive = [];
+    for (var i = 0; i < articles.length; i++) {
+      if (articles[i].subSection.length == 0 && articles[i].activated == true){
+        var article = {
+            '_id' : articles[i]._id,
+            'title': articles[i].titlePivot,
+          };
+        articlesLive.push(article);
+      }
+    }
+    return articlesLive;
   },
   articleEdit (){
     return Session.get("articleSelected");

@@ -50,9 +50,9 @@
                                                           <td>{{contentSize}}</td>
                                                           <td>{{contentDuration}}</td>
                                                             <td class="center">
-                                                              <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i> </button>
+                                                              <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="{{detailsTitle}}"><i class="fa fa-eye"></i> </button>
                                                               {{#if equals role.contentDelete true}}
-                                                                <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i> </button>
+                                                                <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="{{deleteTitle}}"><i class="fa fa-trash"></i> </button>
                                                               {{/if}}
                                                             </td>
                                                         </tr>
@@ -97,17 +97,17 @@
                                                           <td>{{contentDuration}}</td>
                                                             <td>
                                                               {{#if equals buttonDetail true}}
-                                                                <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                                <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                               {{/if}}
                                                               {{#if equals buttonValidate true}}
-                                                                <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                                <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="{{validateTitle}}"><i class="fa fa-thumbs-up"></i></button>
                                                               {{/if}}
-                                                              {{#if equals role.accountValidate true}}
+                                                              {{#if equals role.contentAuthorize true}}
                                                                 {{#if equals buttonAuthorize true}}
-                                                                  <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                                  <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="{{authorizeTitle}}"><i class="fa fa-angellist"></i></button>
                                                                 {{/if}}
                                                               {{/if}}
-                                                              <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                              <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                             </td>
                                                         </tr>
                                                       {{/each}}
@@ -173,7 +173,7 @@
             </div>
         </div>
     </div>
-  
+
     <div class="modal inmodal" id="deletionState" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content animated flipInY" style="top:120px;">

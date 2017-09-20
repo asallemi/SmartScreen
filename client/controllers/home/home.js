@@ -2,99 +2,127 @@
 let handle = Meteor.subscribe('screensLive');
 let handleSegment = Meteor.subscribe('segmentsAuthorization');
 let handleBooking =  Meteor.subscribe('bookingsAuthorization');
-
-function getAllEvents(screenID){
-  if(handleSegment.ready()){
-    var segments = Segments_Authorization.find({ "segmentScreenID" : screenID });
-    console.log("Segments count -> ", segments.count());
-    var jsonArr = [];
-    segments.forEach(function(doc){
-      // edit strat day
-      var result = doc.segmentDate.split("/"); //--> doc.segmentDate return date : MM/DD/YYYY
-      var day = result[0];
-      var month = result[1];
-      var year = result[2];
-      var result = doc.segmentStartTime.split(":");
-      var hour = result[0];
-      var min = result[1];
-      var result = doc.segmentEndTime.split(":");
-      var h = result[0];
-      var m = result[1];
-      var seg1 = Bookings_Authorization.findOne({ "segmentID" : doc._id });
-      var seg2 = Bookings_Live.findOne({ "segmentID" : doc._id });
-      if(seg1 != undefined){
-        var client = Clients_Live.findOne({ "code": seg1.code});
-      }
-      if(seg2 !=undefined){
-        var client = Clients_Live.findOne({ "code": seg2.code});
-      }
-      if (doc.segmentAvailability == 1){
-        if(client != undefined){
-          jsonArr.push({
-              title: client.name,
-              id: doc._id,// Segment ID
-              start: new Date(year, month-1, day, hour, min),
-              end: new Date(year, month-1, day, h, m), //We supposed the max slot is 10 minutes
-              color: '#1ab394',//green -> slot not booked
-              segmentDate: doc.segmentDate,
-              segmentStartTime: doc.segmentStartTime,
-              segmentEndTime: doc.segmentEndTime,
-              allDay: false
-          });
-        }else {
-          jsonArr.push({
-              id: doc._id,// Segment ID
-              start: new Date(year, month-1, day, hour, min),
-              end: new Date(year, month-1, day, h, m), //We supposed the max slot is 10 minutes
-              color: '#1ab394',//green -> slot not booked
-              segmentDate: doc.segmentDate,
-              segmentStartTime: doc.segmentStartTime,
-              segmentEndTime: doc.segmentEndTime,
-              allDay: false
-          });
-        }
-      }else if(doc.segmentAvailability == 0) {
-        if(client != undefined){
-          jsonArr.push({
-              title: client.name,
-              id: doc._id,
-              start: new Date(year, month-1, day, hour, min),
-              end: new Date(year, month-1, day, h, m),
-              color: '#f23120',//red -> slot booked
-              allDay: false
-          });
-        }else {
-          jsonArr.push({
-              id: doc._id,
-              start: new Date(year, month-1, day, hour, min),
-              end: new Date(year, month-1, day, h, m),
-              color: '#f23120',//red -> slot booked
-              allDay: false
-          });
-        }
-      }else{
-        if(client != undefined){
-          jsonArr.push({
-              title: client.name,
-              id: doc._id,
-              start: new Date(year, month-1, day, hour, min),
-              end: new Date(year, month-1, day, h, m),
-              color: '#FF8C00',//orange -> slot booked but still not authorized
-              allDay: false
-          });
-        }else {
-          jsonArr.push({
-              id: doc._id,
-              start: new Date(year, month-1, day, hour, min),
-              end: new Date(year, month-1, day, h, m),
-              color: '#FF8C00',//orange -> slot booked but still not authorized
-              allDay: false
-          });
-        }
-      }
-    });
+// This function return true if the slot date is lower than the day date (now)
+function isValidatedDate(segmentDate){
+  var dateOfNow = getDateNow(); // return is : 2017-07-20 14:43:00
+  var array = dateOfNow.split(" ");
+  //Format the date (exp : segmentDate == 20/7/2017 )
+  var x = segmentDate.split("/");
+  var date = x[2]+"-"+x[1]+"-"+x[0];
+  var date1 = new Date(date);
+  var date2 = new Date(array[0]);
+  console.log("Date 1 (segmentDate) -> ", date);
+  console.log("Date 2 -> ", array[0]);
+  if(date1 <= date2){
+    return false;
+  }else {
+    return true;
   }
-  return jsonArr;
+}
+// A function which returns a jsonarray, it's the input of the calendar to display segments corresponds
+function getAllEvents(screenID){
+  Tracker.autorun(function(c){
+    if(handleSegment.ready()){
+      //console.log("Code Company > ", Session.get("UserLogged").codeCompany);
+      //var segments = Segments_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany , "segmentScreenID" : screenID });
+      var segments = Segments_Authorization.find({ "segmentScreenID" : screenID });
+      console.log("Segments count -> ", segments.count());
+      var jsonArr = [];
+      segments.forEach(function(doc){
+        // test if segmentDate is lower than date now
+        console.log("testDate ->>>> ", isValidatedDate(doc.segmentDate));
+        //if (isValidatedDate(doc.segmentDate)) {
+          // edit strat day
+          var result = doc.segmentDate.split("/"); //--> doc.segmentDate return date : MM/DD/YYYY
+          var day = result[0];
+          var month = result[1];
+          var year = result[2];
+          var result = doc.segmentStartTime.split(":");
+          var hour = result[0];
+          var min = result[1];
+          var result = doc.segmentEndTime.split(":");
+          var h = result[0];
+          var m = result[1];
+          var seg1 = Bookings_Authorization.findOne({ "segmentID" : doc._id });
+          var seg2 = Bookings_Live.findOne({ "segmentID" : doc._id });
+          if(seg1 != undefined){
+            var client = Clients_Live.findOne({ "code": seg1.code});
+          }
+          if(seg2 !=undefined){
+            var client = Clients_Live.findOne({ "code": seg2.code});
+          }
+          //Test if the segment is available
+          if (doc.segmentAvailability == 1){
+            if(client != undefined){
+              jsonArr.push({
+                  title: client.name,
+                  id: doc._id,// Segment ID
+                  start: new Date(year, month-1, day, hour, min),
+                  end: new Date(year, month-1, day, h, m), //We supposed the max slot is 10 minutes
+                  color: '#1ab394',//green -> slot not booked
+                  segmentDate: doc.segmentDate,
+                  segmentStartTime: doc.segmentStartTime,
+                  segmentEndTime: doc.segmentEndTime,
+                  allDay: false
+              });
+            }else {
+              jsonArr.push({
+                  id: doc._id,// Segment ID
+                  start: new Date(year, month-1, day, hour, min),
+                  end: new Date(year, month-1, day, h, m), //We supposed the max slot is 10 minutes
+                  color: '#1ab394',//green -> slot not booked
+                  segmentDate: doc.segmentDate,
+                  segmentStartTime: doc.segmentStartTime,
+                  segmentEndTime: doc.segmentEndTime,
+                  allDay: false
+              });
+            }
+          }else if(doc.segmentAvailability == 0) {
+            if(client != undefined){
+              jsonArr.push({
+                  title: client.name,
+                  id: doc._id,
+                  start: new Date(year, month-1, day, hour, min),
+                  end: new Date(year, month-1, day, h, m),
+                  color: '#f23120',//red -> slot booked
+                  allDay: false
+              });
+            }else {
+              jsonArr.push({
+                  id: doc._id,
+                  start: new Date(year, month-1, day, hour, min),
+                  end: new Date(year, month-1, day, h, m),
+                  color: '#f23120',//red -> slot booked
+                  allDay: false
+              });
+            }
+          }else{
+            if(client != undefined){
+              jsonArr.push({
+                  title: client.name,
+                  id: doc._id,
+                  start: new Date(year, month-1, day, hour, min),
+                  end: new Date(year, month-1, day, h, m),
+                  color: '#FF8C00',//orange -> slot booked but still not authorized
+                  allDay: false
+              });
+            }else {
+              jsonArr.push({
+                  id: doc._id,
+                  start: new Date(year, month-1, day, hour, min),
+                  end: new Date(year, month-1, day, h, m),
+                  color: '#FF8C00',//orange -> slot booked but still not authorized
+                  allDay: false
+              });
+            }
+          }
+        //}
+
+      });
+      c.stop();
+      Session.set("EVENTS_ARRAY", jsonArr);
+    }
+  });// End Tracker.autorun
 }
 /*function displayMapByDate(){
       var mapOptions1 = {
@@ -221,17 +249,20 @@ function displayMap(){
      var screens = Screens_Live.find();
      // set all markers in the Map
      screens.forEach(function(doc){
+       var array = doc.codeCompanies.split("#");
+       // Verify if the COMPANY_CODE exist in the list of companies code
+       if( array.indexOf(Session.get("UserLogged").codeCompany) > -1 ){
            if( doc.screenStatus == 0){
              var marker = new google.maps.Marker({
                position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
-               title: "Size : "+doc.screenDimension+"| Address : "+doc.screenAddress,
+               title: "Size : "+doc.screenDimension+" | Address : "+doc.screenAddress,
                idScreen: doc._id,
                icon:'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FE7569'
              });
             }else{
              var marker = new google.maps.Marker({
                position: new google.maps.LatLng(doc.screenLatitude, doc.screenLongitude),
-               title: doc.screenDimension+" "+doc.screenAddress,
+               title: "Size : "+doc.screenDimension+" | Address : "+doc.screenAddress,
                idScreen: doc._id,
                icon:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
              });
@@ -244,6 +275,7 @@ function displayMap(){
              // Initialize the calendar
              $('#screenDetailsPopup').modal();
            });
+        }
       });
      c.stop();
    }
@@ -262,7 +294,18 @@ function codeCltExistScreen(code){
   }
   return screen.clientsIDs;
 }
+// Function returns false if the user didn't select a slot to book
+function testSelection(checkboxes){
+  for(var i=0; i<checkboxes.length; i++){
+    if(checkboxes[i].checked){
+      return true;
+    }
+  }
+  return false;
+}
 Template.home.rendered = function () {
+    checkSession();
+    welcomeUser();
     settingLanguage();
     $('#calendar2').fullCalendar({
       theme: true,
@@ -287,14 +330,6 @@ Template.home.rendered = function () {
         }
       },
     });
-    /*if(Session.get("LOGIN") != "ok"){
-      Router.go('login');
-    }*/
-    console.log("User : ",Session.get("UserLogged"));
-    if(Session.get("Welcome") != null){
-      toastr.success(Session.get("UserLogged").fname+" "+Session.get("UserLogged").surname,'Welcome to Smart Screen solution');
-      Session.set("Welcome", null);
-    }
     displayMap();
     $('#agendaPopUp').on('shown.bs.modal', function () {
       $("#calendar2").fullCalendar('render');
@@ -305,13 +340,14 @@ Template.home.rendered = function () {
       format: "dd/mm/yyyy",
       todayBtn: "linked"
    });
-
 };// end Template.home.rendered = function ()
 Template.home.events({
     'click .btn-bookingAgenda'() {
       $('#agendaPopUp').modal();
+      // Call the function to set in the session "EVENTS_ARRAY" events
+      getAllEvents(Session.get("SCREEN_ID"));
       $('#calendar2').fullCalendar( 'removeEvents');
-      $('#calendar2').fullCalendar( 'addEventSource', getAllEvents(Session.get("SCREEN_ID")));
+      $('#calendar2').fullCalendar( 'addEventSource', Session.get("EVENTS_ARRAY"));
       $('#calendar2').fullCalendar('render');
       $('#calendar2').fullCalendar( 'refetchEvents' );
     },
@@ -333,10 +369,9 @@ Template.home.events({
     },
     'click .validateBooking'() {
       var checkboxes = document.getElementsByClassName('slots');
-      if(checkboxes.length > -1){
+      if(testSelection(checkboxes)){
         $('#loadingBooking').modal();
         //var checkedValues = [];
-
         for(var i=0; i<checkboxes.length; i++){
           if(checkboxes[i].checked){
             //checkedValues.push(checkboxes[i].value); // inputElements[i].value === segment ID === event (fullcalendar)
@@ -350,13 +385,14 @@ Template.home.events({
                 'video': "No video",
                 'image': "No image",
                 'screenID': Session.get("SCREEN_ID"),
-                'bookedDate': new Date(),
+                'bookedDate': getDateNow(),
                 'currentNumber': 1,
                 'status': 'HLD',
                 'inputter': Session.get("UserLogged")._id,
                 'authorizer': null,
-                'dateTime': new Date(),
-                'code': Session.get("UserLogged").code
+                'dateTime': getDateNow(),
+                'code': Session.get("UserLogged").code,
+                'codeCompany': Session.get("UserLogged").codeCompany
               };
             if (handleBooking.ready()){
               var cursor = Bookings_Authorization.findOne({ 'segmentID': booking.segmentID });
@@ -365,18 +401,17 @@ Template.home.events({
                 if(handleSegment.ready()){
                    Segments_Authorization.update({ '_id' : res[0] }, {'$set':{ 'segmentAvailability' : -1 }});
                 }
-                console.log("OK0");
-                console.log(Session.get("UserLogged").code);
                 // Test if client code not exist in clientId of the screen -> if exist don't add it
                 if(codeCltExistScreen(Session.get("UserLogged").code) != null){
                   console.log("OK1");
                   var result = codeCltExistScreen(Session.get("UserLogged").code);
-                  var newClientsIDs = result+" "+Session.get("UserLogged").code;
+                  var newClientsIDs = result+"#"+Session.get("UserLogged").code;
                   Screens_Live.update({ '_id' : Session.get("SCREEN_ID") }, {'$set':{ 'clientsIDs' : newClientsIDs }});
                 }
               }else{
-                //$('#slotHasBeenBooked').modal();
-                swal({ title: "Alert !",text: "This slot has been booked few seconds ago !",type: "warning",closeOnConfirm: true });
+                $('#agendaPopUp').modal('hide');
+                $('#slotHasBeenBooked').modal();
+                //swal({ title: "Alert !",text: "This slot has been booked few seconds ago !",type: "warning",closeOnConfirm: true });
               }
             }
           }
@@ -389,18 +424,12 @@ Template.home.events({
         $('#calendar2').fullCalendar( 'refetchEvents' );
         setTimeout(function () {
           $('#loadingBooking').modal('hide');
-          if(Session.get("UserLogged").language == "en"){
-            toastr.success('With success','Your slots are booked now!');
-          }else {
-            toastr.success('Avec succès','Votre créneaux ont réservés maintenant !');
-          }
-
-          //displayMap();
+          toastrSlotBooked();
         }, 3000);
+        $('#agendaPopUp').modal('hide');
       }else{
-        $('#slotHasBeenBooked').modal();
+        toastrNoSlotSelected();
       }
-
     },
 });
 Template.home.helpers({

@@ -13,7 +13,7 @@ Template.login.events({
       if(user != undefined){
         codeCompany = user.codeCompany;
         // CODE : help us to know from which company (go to /server/ldap.js file for more details)
-        Meteor.call('sendLoginInfo', email, password, codeCompany, function(error, result){
+        Meteor.call('sendLoginInfo', email, password, codeCompany, user.code, function(error, result){
           console.log("Res " ,result);
           if(result == 1){
             if (codeCompany == "swallow-labs") {
@@ -21,8 +21,7 @@ Template.login.events({
             }else {
               Router.go('home');
             }
-
-            //Session.set("UserLogged",user);
+            // Set user information in local Storage
             localStorage.setItem("User", JSON.stringify(user));
             if(user.roles.indexOf("*").length > 0){
               var listOfRoles = getListOfRoles(user.roles);
@@ -30,11 +29,11 @@ Template.login.events({
             }else {
                 var role = Roles_Live.findOne({ '_id': user.roles });
             }
+            console.log(role);
+            console.log(JSON.stringify(role));
             localStorage.setItem("Role", JSON.stringify(role));
-
-            Session.set("LOGIN", "ok");
+            Session.set("SESSION_LOGIN", "ok");
             Session.set("Welcome", "ok");
-
           }else{
             $('#error').show();
             target.email.value = '';

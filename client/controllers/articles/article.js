@@ -40,7 +40,7 @@ function getValuesFromForm(){
   }else {
     var optionArticle = "";
   }
-  var activated = $('input[name="activation"]:checked').val();
+  var activated = $('input[name="activation"]:checked').val() == "true";
   var article =
     {
       'languagePivot': Session.get("LANGUAGE_PIVOT"),
@@ -56,12 +56,14 @@ function getValuesFromForm(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': getDateNow()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return article;
 }
 
 Template.article.rendered = function(){
+  checkSession();
   settingLanguage();
   $('#select').hide();
   $('#warning1').hide();
@@ -95,11 +97,7 @@ Template.article.events({
       $('#warning1').show();
     }else {
       Articles_Authorization.insert(article);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Saving done !');
-      }else {
-        toastr.success('Avec succès','Sauvegarde fait !');
-      }
+      toastrSaveDone();
       Router.go('allArticles');
     }
   },
@@ -111,11 +109,7 @@ Template.article.events({
     }else {
       article.status = "INAU";
       Articles_Authorization.insert(article);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Saving done !');
-      }else {
-        toastr.success('Avec succès','Sauvegarde fait !');
-      }
+      toastrValidatonDone();
       Router.go('allArticles');
     }
   },
@@ -123,13 +117,24 @@ Template.article.events({
 Template.article.helpers({
   articles(){
     // list of articles without subSection (just article list, subsection not included)
-    return Session.get("Articles");
+    var articles = Articles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany }).fetch();
+    var articlesLive = [];
+    for (var i = 0; i < articles.length; i++) {
+      if (articles[i].subSection.length == 0 && articles[i].activated == true){
+        var article = {
+            '_id' : articles[i]._id,
+            'title': articles[i].titlePivot,
+          };
+        articlesLive.push(article);
+      }
+    }
+    return articlesLive;
   },
   languages (){
     return Session.get("LANGUAGES_SELECTED");
   },
   options (){
-    return Articles_Options_Live.find();
+    return Articles_Options_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   },
   equals: function(v1, v2) {
     return (v1 == v2);

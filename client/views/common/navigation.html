@@ -42,70 +42,114 @@
                           <a href="{{pathFor route='allContracts'}}"><i class="fa fa-clipboard"></i> <span class="nav-label" data-i18n="nav.contracts"></span> </a>
                       </li>
                     {{/if}}
-                {{else}}
-                    <li>
-                        <a href="{{pathFor route='home'}}"><i class="fa fa-home fa-lg"></i> <span class="nav-label" data-i18n="nav.home"></span> </a>
-                    </li>
-                    {{#if equals role.accountDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='allAccounts'}}"><i class="glyphicon glyphicon-user"></i> <span class="nav-label" data-i18n="nav.users"></span> </a>
-                      </li>
-                    {{/if}}
-                    {{#if equals role.roleDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='allRoles'}}"><i class="fa fa-key"></i> <span class="nav-label" data-i18n="nav.roles"></span> </a>
-                      </li>
-                    {{/if}}
-                    {{#if equals role.invoiceDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='#'}}"><i class="fa fa-files-o"></i> <span class="nav-label" data-i18n="nav.invoices"></span> </a>
-                      </li>
-                    {{/if}}
-                    {{#if equals role.contractDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='allContracts'}}"><i class="fa fa-clipboard"></i> <span class="nav-label" data-i18n="nav.contracts"></span> </a>
-                      </li>
-                    {{/if}}
-                    {{#if equals role.articleDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='allArticles'}}"><i class="fa fa-list"></i> <span class="nav-label" data-i18n="nav.articles"></span> </a>
-                      </li>
-                    {{/if}}
-                    <li>
-                        <a href="{{pathFor route='currencies'}}"><i class="fa fa-money"></i> <span class="nav-label" data-i18n="nav.currency"></span> </a>
-                    </li>
-                    {{#if equals role.clientDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='allClients'}}"><i class="fa fa-users"></i> <span class="nav-label" data-i18n="nav.clients"></span></a>
-                      </li>
-                    {{/if}}
                     {{#if equals role.screenDisplay true}}
                       <li>
                           <a href="{{pathFor route='allScreens'}}"><i class="fa fa-desktop"></i> <span class="nav-label" data-i18n="nav.screens"></span> </a>
                       </li>
                     {{/if}}
-                    {{#if equals role.firmwareDisplay true}}
+                    <!--
+                    {{#if equals role.moduleDisplay true}}
                       <li>
-                          <a href="{{pathFor route='allFirmwares'}}"><i class="fa fa-archive"></i> <span class="nav-label" data-i18n="nav.firmware"></span></a>
+                          <a href="{{pathFor route='allModules'}}"><i class="fa fa-sliders"></i> <span class="nav-label" data-i18n="nav.modules"></span> </a>
                       </li>
                     {{/if}}
-                    {{#if equals role.segmentDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='segment'}}"><i class="fa fa-history"></i> <span class="nav-label" data-i18n="nav.segments"></span> </a>
-                      </li>
-                    {{/if}}
-                    {{#if equals role.bookingDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='allBookings'}}"><i class="fa fa-shopping-cart"></i> <span class="nav-label" data-i18n="nav.bookings"></span> </a>
-                      </li>
-                    {{/if}}
-                    {{#if equals role.contentDisplay true}}
-                      <li>
-                          <a href="{{pathFor route='allContents'}}"><i class="fa fa-file-movie-o"></i> <span class="nav-label" data-i18n="nav.contents"></span> </a>
-                      </li>
-                    {{/if}}
+                    -->
                 {{/if}}
-
+                {{#if equals status "company"}}
+                  <li>
+                      <a href="{{pathFor route='home'}}"><i class="fa fa-home fa-lg"></i> <span class="nav-label" data-i18n="nav.home"></span> </a>
+                  </li>
+                  {{#if equals role.accountDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allAccounts'}}"><i class="glyphicon glyphicon-user"></i> <span class="nav-label" data-i18n="nav.users"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.roleDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allRoles'}}"><i class="fa fa-key"></i> <span class="nav-label" data-i18n="nav.roles"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.invoiceDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='#'}}"><i class="fa fa-files-o"></i> <span class="nav-label" data-i18n="nav.invoices"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.articleDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allArticles'}}"><i class="fa fa-list"></i> <span class="nav-label" data-i18n="nav.articles"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.contractDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allContracts'}}"><i class="fa fa-clipboard"></i> <span class="nav-label" data-i18n="nav.contracts"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.currencyDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='currencies'}}"><i class="fa fa-money"></i> <span class="nav-label" data-i18n="nav.currency"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.clientDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allClients'}}"><i class="fa fa-users"></i> <span class="nav-label" data-i18n="nav.clients"></span></a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.screenDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allScreens'}}"><i class="fa fa-desktop"></i> <span class="nav-label" data-i18n="nav.screens"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.firmwareDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allFirmwares'}}"><i class="fa fa-archive"></i> <span class="nav-label" data-i18n="nav.firmware"></span></a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.segmentDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='segment'}}"><i class="fa fa-history"></i> <span class="nav-label" data-i18n="nav.segments"></span> </a>
+                    </li>
+                  {{/if}}
+                {{/if}}
+                {{#if equals status "client"}}
+                  <li>
+                      <a href="{{pathFor route='home'}}"><i class="fa fa-home fa-lg"></i> <span class="nav-label" data-i18n="nav.home"></span> </a>
+                  </li>
+                  {{#if equals role.accountDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allAccounts'}}"><i class="glyphicon glyphicon-user"></i> <span class="nav-label" data-i18n="nav.users"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.roleDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allRoles'}}"><i class="fa fa-key"></i> <span class="nav-label" data-i18n="nav.roles"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.invoiceDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='#'}}"><i class="fa fa-files-o"></i> <span class="nav-label" data-i18n="nav.invoices"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.contractDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allContracts'}}"><i class="fa fa-clipboard"></i> <span class="nav-label" data-i18n="nav.contracts"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.clientDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allClients'}}"><i class="fa fa-users"></i> <span class="nav-label" data-i18n="nav.clients"></span></a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.bookingDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allBookings'}}"><i class="fa fa-shopping-cart"></i> <span class="nav-label" data-i18n="nav.bookings"></span> </a>
+                    </li>
+                  {{/if}}
+                  {{#if equals role.contentDisplay true}}
+                    <li>
+                        <a href="{{pathFor route='allContents'}}"><i class="fa fa-video-camera"></i> <span class="nav-label" data-i18n="nav.contents"></span> </a>
+                    </li>
+                  {{/if}}
+                {{/if}}
             </ul>
 
         </div>

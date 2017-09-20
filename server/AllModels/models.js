@@ -62,5 +62,12 @@ Currencies_Live = new Mongo.Collection('currencies_live');
 Currencies_Authorization = new Mongo.Collection('currencies_authorization');
 Currencies_History = new Mongo.Collection('currencies_history');
 
+Modules_Live = new Mongo.Collection('modules_live');
+Modules_Authorization = new Mongo.Collection('modules_authorization');
+Modules_History = new Mongo.Collection('modules_history');
+
+Actions = new Mongo.Collection('actions');
+
 Matrix = new Mongo.Collection('matrix');
+
 Languages_Live = new Mongo.Collection('languages_live');

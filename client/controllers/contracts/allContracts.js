@@ -39,36 +39,33 @@ function authorize(contract){
     Contracts_Authorization.remove(contract._id);
   }
 }
+
 function verifyDelete(id){
   var contract = Contracts_Authorization.findOne({ "_id" : id+"#D" });
-  if( contract == undefined ){
-    return true;
-  }
-  return false;
+  return contract == undefined;
 }
+
 function verifyEdit(id){
   var contract = Contracts_Authorization.findOne({ "_id" : id });
-  if(contract == undefined){
-    return true;
-  }
-  return false;
+  return contract == undefined;
 }
+
 // A function which return true if the param existing in all Languages_Live.languagePivot
 function verifyPivotLanguage(idLanguage){
   var art = Articles_Live.find({ "languagePivot": idLanguage });
   return art == undefined;
 }
+
 // A function which returns a list of articles without subSection (just article list, subsection not included) with a filter languageID
 function getAllArticles(idLanguageChoosed){
-
   /*if (verifyPivotLanguage(idLanguageChoosed)) {
     var art = Articles_Live.find({ "languagePivot": idLanguageChoosed });
   }*/
-  var articles = Articles_Live.find();
+  var articles = Articles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   var articlesLive = [];
   articles.forEach(function(doc){
     // In case the language choosed is equal to the languagePivot ID
-    if (idLanguageChoosed == doc.languagePivot && doc.subSection.length == 0 && doc.activated == "true" ) {
+    if (idLanguageChoosed == doc.languagePivot && doc.subSection.length == 0 && doc.activated == true ) {
       var article =
         {
           '_id' : doc._id,
@@ -97,6 +94,7 @@ function getAllArticles(idLanguageChoosed){
   });
   return articlesLive;
 }
+
 function getSelectedArticles(contract){
   // Set into session list of selected articles
   var artsId = contract.articlesList.split("#");
@@ -115,6 +113,7 @@ function getSelectedArticles(contract){
   }
   return articlesSelected;
 }
+
 function getNotSelectedArticles(contract){
   // Set into session list of not selected articles
   var artsId = contract.articlesList.split("#");
@@ -133,20 +132,23 @@ function getNotSelectedArticles(contract){
   }
   return articlesNotSelected;
 }
+
 function getListOfArticles(list, languageID){
-  // Return an array of articles(id + titles)
+  // Return an array of articles(id + titles + content article)
   var res = list.split("#"); // res contains now list of articles ID
-  var articles = Articles_Live.find();
+  var articles = Articles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   var arts = [];
   var i = 0;
   articles.forEach(function(doc){
     if (res.indexOf(doc._id) > -1 ){
       i = i+1;
       // In case the language choosed is equal to the languagePivot ID
-      if (languageID == doc.languagePivot && doc.subSection.length == 0 && doc.activated == "true" ) {
+      if (languageID == doc.languagePivot && doc.subSection.length == 0 && doc.activated == true ) {
         var article = {
             '_id' : i,
-            'title': doc.titlePivot
+            'idArticle': doc._id,
+            'title': doc.titlePivot,
+            'contentPivot': doc.contentPivot
         };
         arts.push(article);
       }
@@ -161,7 +163,9 @@ function getListOfArticles(list, languageID){
           var article =
             {
               '_id' : i,
-              'title': arrayTitles[index]
+              'idArticle': doc._id,
+              'title': arrayTitles[index],
+              'contentPivot': doc.contentPivot
             };
           arts.push(article);
         }
@@ -171,8 +175,87 @@ function getListOfArticles(list, languageID){
   return arts;
 }
 
+function getListOfArticlesWithSubsections(arts){
+  // arts is an array of articles(id + title+ content)
+  var articlesLive = [];
+  var subSections = [];
+  for (var i = 0; i < arts.length; i++) {
+    // Prepare all fields of article object
+    var id = arts[i]._id;
+    var idArticle = arts[i].idArticle;
+    var title = arts[i].title;
+    var content = arts[i].contentPivot;
+    var subSection = null;
+    var articles = Articles_Live.find({ "subSection": arts[i].idArticle }).fetch();
+    console.log(articles.length);
+    if (articles.length > 0) {
+      for (var i = 0; i < articles.length; i++) {
+        var subSection = {
+          '_id': articles[i]._id,
+          'title': articles[i].titlePivot,
+          'content': articles[i].contentPivot
+        }
+        subSections.push(subSection);
+        var article = {
+            '_id': id,
+            'idArticle': idArticle,
+            'title': title,
+            'content': content,
+            'subSections': subSection
+        };
+        articlesLive.push(article);
+      }
+    }else {
+      var article = {
+          '_id': id,
+          'idArticle': idArticle,
+          'title': title,
+          'content': content,
+          'subSections': subSection
+      };
+      articlesLive.push(article);
+    }
+  }
+  return articlesLive;
+}
+
+//Function return all missed information before authorize the contract
+function verify(contract){
+  if (contract.typeContract.length == 0) {
+    toastrContractTypeRequired();
+    return false;
+  }
+  if (contract.startDate.length == 0 || contract.endDate.length == 0) {
+    toastrContractDatesRequired();
+    return false;
+  }
+  if (!checkDate(contract.startDate)) {
+    toastrContractDatesInvalid();
+    return false;
+  }
+  var array = contract.endDate.split("/");
+  var date = array[2]+"-"+array[1]+"-"+array[0];
+  if (!checkDate(date)) {
+    toastrContractDatesInvalid();
+    return false;
+  }
+  if (!checkTwoDates(contract.startDate, contract.endDate)) {
+    toastrContractStartDateAndEndDateInvalid();
+    return false;
+  }
+  if (contract.articlesList.length == 0) {
+    toastrContractAtLeastOneArticles();
+    return false;
+  }
+  return true;
+}
+
 Template.allContracts.rendered = function(){
+  checkSession();
   settingLanguage();
+  toastr.options = {
+    "closeButton": true
+  };
   $('.footable').footable();
   $('.footable2').footable();
   $(".touchspin3").TouchSpin({
@@ -203,7 +286,7 @@ Template.allContracts.events({
     Session.set("LANGUAGE", configuration.language);
     Session.set("CURRENCY", configuration.currency);
     var array = getAllArticles(configuration.language);
-    
+
     console.log("ARRAY -> " ,array);
     Session.set("Articles", array);
     Session.set("NumberOfArticles", array.length);
@@ -220,12 +303,19 @@ Template.allContracts.events({
   },
   'click .validateAu'() {
     var contract = Contracts_Authorization.findOne({ "_id" : this._id });
-    Contracts_Authorization.update({'_id' : contract._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+    if (userAuthorized(contract.inputter)) {
+      Contracts_Authorization.update({'_id' : contract._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : getDateNow() }});
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .authorizeAu'() {
     settingLanguage();
     var oldContract = Contracts_Live.findOne({ "_id" : this._id });
     var newContract = Contracts_Authorization.findOne({ "_id" : this._id });
+    // We didn't call verify function (if verify(newContract)) bz the user can create new contract
+    // in date X and authorize it in date X+10 for example
+    verify(newContract);
     Session.set("Contract_Authorization", newContract);
     if(oldContract == undefined){
       Session.set("OldContract",null);
@@ -236,6 +326,7 @@ Template.allContracts.events({
       var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
       var clients = "";
       if(oldContract.client.length > 17){
+        // >17 to test if it's a contract with one client or more
         var clientsID = oldContract.client.split("#");
         for (var i = 0; i < clientsID.length; i++) {
           if(clientsID[i].length > 5){
@@ -261,10 +352,15 @@ Template.allContracts.events({
           'authorizer': oldContract.authorizer,
           'dateTime': dat
       };
+      var inputter = Users_Live.findOne({ "_id" : contract1.inputter });
+      contract1.inputter = inputter.fname+" "+inputter.surname;
+      var authorizer = Users_Live.findOne({ "_id" : contract1.authorizer });
+      contract1.authorizer = authorizer.fname+" "+authorizer.surname;
       Session.set("OldContract", contract1);
     }
     var clients = "";
     if(newContract.client.length > 17){
+      // >17 to test if it's a contract with one client or more
       var clientsID = newContract.client.split("#");
       for (var i = 0; i < clientsID.length; i++) {
         if(clientsID[i].length > 5){
@@ -291,16 +387,14 @@ Template.allContracts.events({
         'authorizer': newContract.authorizer,
         'dateTime': newContract.dateTime
     };
+    var inputter = Users_Live.findOne({ "_id" : contract2.inputter });
+    contract2.inputter = inputter.fname+" "+inputter.surname;
     Session.set("NewContract", contract2);
     $('#checkAuthorising').modal();
   },
   'click .BtnAuthorize'() {
     authorize(Session.get("Contract_Authorization"));
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Authorization done !');
-    }else {
-      toastr.success('Avec succès','Autorisation fait !');
-    }
+    toastrAuthorizationDone();
   },
   'click .btn-delete'() {
     var article = Articles_Live.findOne({ "_id" : this._id });
@@ -319,11 +413,7 @@ Template.allContracts.events({
     article.dateTime = new Date();
     article.authorizer = null;
     Articles_Authorization.insert(article);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    toastrSuppression();
   },
   'click .btn-edit'() {
     Session.set("LIVE_OR_AUTH", "LIVE");
@@ -354,69 +444,101 @@ Template.allContracts.events({
     }
   },
   'click .detailsAu'() {
-    var article = Articles_Authorization.findOne({ "_id" : this._id });
-    var artTitle = "";
-    if(this.subSection.length > 0){
-      var articleX = Articles_Live.findOne({ "_id" : this.subSection });
-      artTitle = articleX.title;
-    }
-    var usr1 = Users_Live.findOne({ "_id" : this.inputter });
-    var art =
-      {
-        'title' : article.title,
-        'content' : article.content,
-        'subSection': artTitle,
-        'inputter': usr1.fname+" "+usr1.surname,
-        'authorizer': " ",
-        'dateTime': article.dateTime
-      };
-    Session.set("ArticleDetails", art);
-    $('#ArticleDetails').modal();
   },
   'click .editAu'() {
     Session.set("LIVE_OR_AUTH", "AUTH");
     var contract = Contracts_Authorization.findOne({ "_id" : this._id });
-    var clients = "";
-    var clts = [];
-    var clientsID = contract.client.split("#");
-    for (var i = 0; i < clientsID.length; i++) {
-      if(clientsID[i].length > 1){
-        var clt = Clients_Live.findOne({ "_id": clientsID[i] });
-        clients = clt.name+", "+clients;
+    if (userAuthorized(contract.inputter)) {
+      var clients = "";
+      var clts = [];
+      var clientsID = contract.client.split("#");
+      for (var i = 0; i < clientsID.length; i++) {
+        if(clientsID[i].length > 1){
+          var clt = Clients_Live.findOne({ "_id": clientsID[i] });
+          clients = clt.name+", "+clients;
+        }
       }
+      clients = clients.substring(0, clients.length-2);
+      Session.set("ARTICLES_SELECTED", getSelectedArticles(contract));
+      Session.set("ARTICLES_NOT_SELECTED", getNotSelectedArticles(contract));
+      Session.set("CLIENTS", clients);
+      Session.set("contractSelected", contract);
+      Router.go('editContract');
+    }else {
+      toastrWarningAccessDenied();
     }
-    clients = clients.substring(0, clients.length-2);
-    Session.set("ARTICLES_SELECTED", getSelectedArticles(contract));
-    Session.set("ARTICLES_NOT_SELECTED", getNotSelectedArticles(contract));
-    Session.set("CLIENTS", clients);
-    Session.set("contractSelected", contract);
-    Router.go('editContract');
   },
   'click .cancelAu'() {
     var contract = Contracts_Authorization.findOne({ "_id" : this._id });
-    Session.set("contractDeletingAuth", contract);
-    $('#checkCancel').modal();
+    if (userAuthorized(contract.inputter)) {
+      Session.set("contractDeletingAuth", contract);
+      $('#checkCancel').modal();
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .BtnCancel'() {
     var contract = Session.get("contractDeletingAuth");
     Contracts_Authorization.remove(contract._id);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion operation done ');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    toastrSuppression();
   },
   'click .btn-details'() {
-    $('#ContractDetails').modal();
+    var contract = Contracts_Live.findOne({ "_id" : this._id });
+    var articles = getListOfArticles(contract.articlesList , contract.language);
+    var array = getListOfArticlesWithSubsections(articles);
+    console.log(array.length);
+    for (var i = 0; i < array.length; i++) {
+      console.log("ARRAY["+i+"]  "+array[i].title+"  "+array[i].content);
+      console.log(array[i].subSections);
+      if (array[i].subSections != null) {
+        console.log("XX");
+        x = array[i].subSections;
+        for (var i = 0; i < x.length; i++) {
+          console.log("X["+i+"]  "+x[i].title+"  "+x[i].contentPivot);
+        }
+      }
+    }
+    /*var clients = "";
+    if(contract.client.length > 17){
+      // >17 to test if it's a contract with one client or more
+      var clientsID = contract.client.split("#");
+      for (var i = 0; i < clientsID.length; i++) {
+        if(clientsID[i].length > 5){
+          var clt = Clients_Live.findOne({ "_id": clientsID[i] });
+          clients = clt.name+", "+clients;
+        }
+      }
+    }else {
+      var clt = Clients_Live.findOne({ "_id": contract.client });
+      clients = clt.name;
+    }
+    var lang = Languages_Live.findOne({ "_id": contract.language });
+    var contract2 = {
+        '_id': contract._id,
+        'client' : clients,
+        'typeContract' : contract.typeContract,
+        'startDate': contract.startDate,
+        'endDate': contract.endDate,
+        'language': lang.languageName,
+        'amount': contract.amount,
+        'currency': contract.currency,
+        'articlesList': getListOfArticles(contract.articlesList , contract.language),
+        'inputter': contract.inputter,
+        'authorizer': contract.authorizer,
+        'dateTime': contract.dateTime
+    };
+    var inputter = Users_Live.findOne({ "_id" : contract2.inputter });
+    contract2.inputter = inputter.fname+" "+inputter.surname;
+    Session.set("ArticleDetails", contract2);
+    $('#ContractDetails').modal();*/
   },
-
 });
 Template.allContracts.helpers({
   languagesLive (){
-    return Languages_Live.find();
+    return Languages_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   },
   contractsLive (){
-    var contracts = Contracts_Live.find();
+    var contracts = Contracts_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
     var contractsLive = [];
     contracts.forEach(function(doc){
       var clients = "";
@@ -456,7 +578,7 @@ Template.allContracts.helpers({
     return contractsLive;
   },
   contractsAuthorization (){
-    var contracts = Contracts_Authorization.find();
+    var contracts = Contracts_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany });
     var contractsAuthorization = [];
     contracts.forEach(function(doc){
       var buttonDetails = true;
@@ -468,9 +590,10 @@ Template.allContracts.helpers({
       var clients = "";
       if(doc.client.length > 17){
         var clientsID = doc.client.split("#");
+        console.log(clientsID);
         for (var i = 0; i < clientsID.length; i++) {
           if(clientsID[i].length > 5){
-            var clt = Clients_Live.findOne({ "_id": clientsID[i] });
+            var clt = Clients_Live.findOne({ "_id": clientsID[i], "codeCompany": Session.get("UserLogged").codeCompany });
             clients = clt.name+", "+clients;
           }
         }
@@ -506,7 +629,7 @@ Template.allContracts.helpers({
     return contractsAuthorization;
   },
   currencies(){
-    return Currencies_Live.find();
+    return Currencies_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   },
   contractDetails(){
     return Session.get("ArticleDetails");
@@ -525,5 +648,23 @@ Template.allContracts.helpers({
   },
   notEquals: function(v1, v2) {
     return (v1 != v2);
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
+  },
+  printTitle(){
+    return printTitle();
   },
 });

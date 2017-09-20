@@ -1,6 +1,6 @@
 let handle = Meteor.subscribe('clientsLive');
 // A function which returns the amount converted to the currency puted in arguments
-function calculAmount(articles, currency, rate){
+calculAmount = function(articles, currency, rate, codeCompany){
   var sumOfAmounts = 0;
   var sumOfPercents = 0;
   for (var i = 0; i < articles.length; i++) {
@@ -16,20 +16,19 @@ function calculAmount(articles, currency, rate){
       }
     }
   }
-
   var finalSum = 0;
   if (sumOfPercents > 0) {
-    console.log("FINAL SUM WITH % ", finalSum);
+    //console.log("FINAL SUM WITH % ", finalSum);
     finalSum = sumOfAmounts-(sumOfAmounts*sumOfPercents/100);
   }else {
     finalSum = sumOfAmounts;
   }
-  console.log("FINAL SUM -> ", finalSum, "  FROM  ", getPivotCurrency().currencyCode, "TO  ",currency, " RATE  ", rate);
-  if(currency == getPivotCurrency().currencyCode){
+  //console.log("FINAL SUM -> ", finalSum, "  FROM  ", getPivotCurrency(codeCompany).currencyCode, "TO  ",currency, " RATE  ", rate);
+  if(currency == getPivotCurrency(codeCompany).currencyCode){
     return finalSum;
   }else {
-    return exchangeAmount(getPivotCurrency().currencyCode, finalSum, currency, null, getPivotCurrency().currencyCode, rate)
-    //return exchangeAmount("EUR", sumOfAmount, currency);
+    // exchangeAmount is an global function put in currencies.js file
+    return exchangeAmount(getPivotCurrency(codeCompany).currencyCode, finalSum, currency, null, getPivotCurrency(codeCompany).currencyCode, rate)
   }
 }
 function getValuesFromForm(){
@@ -64,7 +63,7 @@ function getValuesFromForm(){
   }
   // The user can force the exchangeRate by entering a specific rate from the form.
   var rate = null;
-  if ( parseFloat(Session.get("RATE")) > 0 ) {
+  if ( Session.get("RATE").length > 0 ) {
     rate = parseFloat(Session.get("RATE"));
   }
   // Convert the JSON to an array and concatenate all selected articles IDs
@@ -72,16 +71,24 @@ function getValuesFromForm(){
   var amount = 0;
   var articlesID = "";
   if (array.length > 0) {
-    amount = calculAmount(array, Session.get("CONTRACT_CURRENCY"), rate);
+    amount = calculAmount(array, Session.get("CONTRACT_CURRENCY"), rate, Session.get("UserLogged").codeCompany);
     for (var i = 0; i < array.length; i++) {
       articlesID = articlesID + array[i]+"#";
     }
   }
   var responsibles = Session.get("LIST_RESPONSIBLE");
+  if (responsibles.length > 17) {
+    responsibles = responsibles.substring(0, responsibles.length-1)
+  }
+  if (clientsID.length > 17) {
+    clientsID = clientsID.substring(0, clientsID.length-1)
+  }
+
   var contract =
     {
+      '_id': generateDateID(),
       'client' : clientsID,
-      'responsibles' : responsibles.substring(1, articlesID.length),
+      'responsibles' : responsibles,
       'typeContract' : typeContractID,
       'startDate': startDate,
       'endDate': endDate,
@@ -95,7 +102,8 @@ function getValuesFromForm(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': getDateNow()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return contract;
 }
@@ -117,7 +125,19 @@ function getValuesFromForm(){
   })
   return result;
 }*/
+function hasDuplicatesClientsID(array) {
+    var valuesSoFar = [];
+    for (var i = 0; i < array.length; ++i) {
+        var value = array[i];
+        if (valuesSoFar.indexOf(value) !== -1) {
+            return true;
+        }
+        valuesSoFar.push(value);
+    }
+    return false;
+}
 Template.contract.rendered = function(){
+  checkSession();
   Session.set("LANGUAGE", Session.get("CONFIGURATION").language);
   Session.set("CONTRACT_CURRENCY", Session.get("CONFIGURATION").currency);
   Session.set("CLIENT_NUMBER", Session.get("CONFIGURATION").clientsNumber);
@@ -133,6 +153,9 @@ Template.contract.rendered = function(){
       calendarWeeks: true,
       autoclose: true
   });
+  toastr.options = {
+    "closeButton": true
+  };
   $(document).ready(function () {
     $('#check').change(function () {
       if (!this.checked){
@@ -165,28 +188,31 @@ Template.contract.rendered = function(){
   // Display users in each client selection
   $('.select').on('change', function() {
     var client = Clients_Live.findOne({ "_id": this.value }); // this.value contains Client ID
-    var users = Users_Live.find({ "code": client.code });
+    if (client != undefined) {
+      var users = Users_Live.find({ "code": client.code });
 
-    if (users.count() == 0) {
-      Session.set("USER_RESPONSIBLE", null);
-      $('#warning').modal();
-    }else {
-      $('#selectUser').modal();
-      var usersList = [];
-      users.forEach(function(doc){
-        var user = {
-          '_id': doc._id,
-          'fname': doc._id,
-          'fname': doc.fname,
-          'surname': doc.surname
-        };
-        usersList.push(user);
-      });
-      Session.set("USER_RESPONSIBLE", usersList);
+      if (users.count() == 0) {
+        Session.set("USER_RESPONSIBLE", null);
+        $('#warning').modal();
+      }else {
+        $('#selectUser').modal();
+        var usersList = [];
+        users.forEach(function(doc){
+          var user = {
+            '_id': doc._id,
+            'fname': doc._id,
+            'fname': doc.fname,
+            'surname': doc.surname
+          };
+          usersList.push(user);
+        });
+        Session.set("USER_RESPONSIBLE", usersList);
+      }
+      Session.set("CLIENT_SELECTED", client.name);
     }
-    Session.set("CLIENT_SELECTED", client.name);
   });
 };
+
 Template.contract.events({
   'click .validateResponsable'() {
     var listOfRes = Session.get("LIST_RESPONSIBLE");
@@ -196,33 +222,39 @@ Template.contract.events({
   },
   'click .save'() {
     //alert(CurrencyConvetor(222, "EUR", "USD"));
-    $('#warning1').hide();
     var contract = getValuesFromForm();
-    if (contract.client.length == 0){
-      $('#warning1').show();
+    var result = 0;
+    var array = contract.client.split("#");
+    for (var i = 0; i < array.length; i++) {
+      if (array[i].length > 0) {
+        result++;
+      }
+    }
+    if (result < Session.get("CLIENT_NUMBER")){
+      toastrStillClientNotSelected();
     }else {
       Contracts_Authorization.insert(contract);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Saving done !');
-      }else {
-        toastr.success('Avec succès','Sauvegarde fait !');
-      }
+      toastrValidatonDone();
       Router.go('allContracts');
     }
   },
   'click .validate'() {
-    $('#warning1').hide();
     var contract = getValuesFromForm();
-    if (contract.client.length == 0){
-      $('#warning1').show();
+    var result = 0;
+    var array = contract.client.split("#");
+    for (var i = 0; i < array.length; i++) {
+      if (array[i].length > 0) {
+        result++;
+      }
+    }
+    if (result < Session.get("CLIENT_NUMBER")){
+      toastrStillClientNotSelected();
+    }else if (hasDuplicatesClientsID(array)) {
+      toastrContractClientRepeated();
     }else {
       contract.status = "INAU";
       Contracts_Authorization.insert(contract);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Saving done !');
-      }else {
-        toastr.success('Avec succès','Sauvegarde fait !');
-      }
+      toastrValidatonDone();
       Router.go('allContracts');
     }
   },
@@ -230,7 +262,18 @@ Template.contract.events({
 Template.contract.helpers({
   articles(){
     // list of articles without subSection (just article list, subsection not included)
-    return Session.get("Articles");
+    var articles = Articles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany }).fetch();
+    var articlesLive = [];
+    for (var i = 0; i < articles.length; i++) {
+      if (articles[i].subSection.length == 0 && articles[i].activated == true){
+        var article = {
+            '_id' : articles[i]._id,
+            'title': articles[i].titlePivot,
+          };
+        articlesLive.push(article);
+      }
+    }
+    return articlesLive;
   },
   numberOfArticles(){
     return Session.get("NumberOfArticles");
@@ -242,7 +285,7 @@ Template.contract.helpers({
     return Session.get("CLIENT_SELECTED");
   },
   clients(){
-    return Clients_Live.find();
+    return Clients_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   },
   configuration(){
     return Session.get("CONFIGURATION");

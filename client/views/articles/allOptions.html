@@ -45,12 +45,12 @@
                                                     <td>{{value}}</td>
                                                     <td>{{type}}</td>
                                                     <td class="center">
-                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="detailsTitle"><i class="fa fa-eye"></i></button>
                                                       {{#if equals role.firmwareUpdate true}}
-                                                        <a type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></a>
+                                                        <a type="button" class="btn btn-outline btn-primary btn-sm btn-edit" title="updateTitle"><i class="fa fa-pencil"></i></a>
                                                       {{/if}}
                                                       {{#if equals role.firmwareDelete true}}
-                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="deleteTitle"><i class="fa fa-trash"></i></button>
                                                       {{/if}}
                                                     </td>
                                                 </tr>
@@ -93,20 +93,18 @@
                                                 <td>{{type}}</td>
                                                 <td class="center">
                                                   {{#if equals buttonDetail true}}
-                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="detailsTitle"><i class="fa fa-eye"></i></button>
                                                   {{/if}}
                                                   {{#if equals buttonValidate true}}
-                                                    <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                    <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="validateTitle"><i class="fa fa-thumbs-up"></i></button>
                                                   {{/if}}
-                                                  {{#if equals role.articleValidate true}}
-                                                    {{#if equals buttonAuthorize true}}
-                                                      <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
-                                                    {{/if}}
+                                                  {{#if equals buttonAuthorize true}}
+                                                    <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="authorizeTitle"><i class="fa fa-angellist"></i></button>
                                                   {{/if}}
                                                   {{#if equals buttonEdit true}}
-                                                    <button type="button" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil" title="updateTitle"></i></button>
                                                   {{/if}}
-                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-trash" title="deleteTitle"></i></button>
                                                 </td>
                                               </tr>
                                             {{/each}}
@@ -269,14 +267,60 @@
   </div>
   <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
-          <div class="modal-content animated flipInY" style="top: 20px;">
+        {{#if equals oldOption null}}
+        <div class="modal-content animated flipInY" style="width: 450px; top: 20px;left: 65px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-i18n="common.authorization"></h4>
+            </div>
+            <div class="modal-body" style="height: 165px;">
+              <div class="col-lg-12">
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="optionsArticle.optionTitle"></label>  {{newOption.title}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="optionsArticle.optionValue"></label>  {{newOption.value}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="optionsArticle.typeOption"></label>  {{newOption.type}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="common.inputter"></label>  {{newOption.inputter}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="common.date"></label>  {{newOption.dateTime}}
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="button" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
+            </div>
+          </div>
+        {{else}}
+          <div class="modal-content animated flipInY" style="width: 670px;top:30px;left: -50px;">
               <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                   <h4 class="modal-title" data-i18n="common.authorization"></h4>
               </div>
               <div class="modal-body" style="height: 230px;">
-                {{#if equals oldOption null}}
-                  <div class="col-lg-12">
+                  <div class="col-lg-6">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <h2 data-i18n="optionsArticle.newOption"></h2>
+                        </div>
+                      </div>
                       <div class="row">
                         <div class="col-md-8">
                           <label for="title" data-i18n="optionsArticle.optionTitle"></label>  {{newOption.title}}
@@ -303,89 +347,56 @@
                         </div>
                       </div>
                   </div>
-                {{else}}
                   <div class="col-lg-6">
-                    <div class="row">
-                      <div class="col-md-8">
-                        <h2 data-i18n="optionsArticle.newOption"></h2>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <h2 data-i18n="optionsArticle.oldOption"></h2>
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="optionsArticle.optionTitle"></label>  {{newOption.title}}
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="optionsArticle.optionTitle"></label>  {{oldOption.title}}
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="optionsArticle.optionValue"></label>  {{newOption.value}}
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="optionsArticle.optionValue"></label>  {{oldOption.value}}
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="optionsArticle.typeOption"></label>  {{newOption.type}}
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="optionsArticle.typeOption"></label>  {{oldOption.type}}
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="common.inputter"></label>  {{newOption.inputter}}
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{oldOption.inputter}}
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="common.date"></label>  {{newOption.dateTime}}
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.authorizer"></label>  {{oldOption.authorizer}}
+                        </div>
                       </div>
-                    </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.date"></label>  {{oldOption.dateTime}}
+                        </div>
+                      </div>
                   </div>
-                  <div class="col-lg-6">
-                    <div class="row">
-                      <div class="col-md-8">
-                        <h2 data-i18n="optionsArticle.oldOption"></h2>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="optionsArticle.optionTitle"></label>  {{oldOption.title}}
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="optionsArticle.optionValue"></label>  {{oldOption.value}}
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="optionsArticle.typeOption"></label>  {{oldOption.type}}
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="common.inputter"></label>  {{oldOption.inputter}}
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="common.authorizer"></label>  {{oldOption.authorizer}}
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <label for="title" data-i18n="common.date"></label>  {{oldOption.dateTime}}
-                      </div>
-                    </div>
-                  </div>
-                {{/if}}
               </div>
               <div class="modal-footer">
                 <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
                   <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
-                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
+                  <button type="button" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
               </div>
-          </div>
+            </div>
+        {{/if}}
       </div>
   </div>
   <div class="modal inmodal" id="optionDetails" tabindex="-1" user="dialog" aria-hidden="false">
     <div class="modal-dialog">
-        <div class="modal-content animated bounceInRight" style="width:800px; left: -115px; top: -25px;">
+        <div class="modal-content animated bounceInRight" style="width:600px; left: -5px; top: -25px;">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -408,6 +419,11 @@
                   <div class="row">
                     <div class="col-md-8">
                       <label for="title" data-i18n="optionsArticle.typeOption"></label>  {{optionDetails.type}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <label for="title" data-i18n="optionsArticle.listOfArticles"></label>  {{optionDetails.listOfArticles}}
                     </div>
                   </div>
                   <div class="row">

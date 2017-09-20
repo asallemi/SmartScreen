@@ -1,10 +1,10 @@
 <template name="allCompanies">
-  <div class="row wrapper border-bottom white-bg page-heading">
-      <div class="col-lg-12">
-        <br>
-        <h3 data-i18n="company.title"></h3>
-      </div>
-  </div>
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-12">
+          <br>
+          <h3 data-i18n="company.title"></h3>
+        </div>
+    </div>
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-lg-12">
@@ -33,7 +33,7 @@
                                                   <th data-i18n="company.name"></th>
                                                   <th data-i18n="company.code"></th>
                                                   <th data-i18n="company.country"></th>
-                                                  <th data-i18n="common.action" style="width: 365px;"></th>
+                                                  <th data-i18n="common.action" style="width: 500px;"></th>
                                                 </tr>
                                               </thead>
                                               <tbody>
@@ -43,18 +43,39 @@
                                                     <td>{{code}}</td>
                                                     <td>{{country}}</td>
                                                     <td>
-                                                      <a class="btn btn-outline btn-success btn-sm btnRoles" href="{{pathFor route='companyRoles'}}"><i class="fa fa-key"></i></a>
-                                                      <a class="btn btn-outline btn-success btn-sm btnUsers" href="{{pathFor route='companyAccounts'}}"><i class="fa fa-male"></i></a>
-                                                      <a class="btn btn-outline btn-success btn-sm btnContrats" href="{{pathFor route='allContracts'}}"><i class="fa fa-clipboard"></i></a>
-                                                      <a class="btn btn-outline btn-success btn-sm btnScreens" href="{{pathFor route='allScreens'}}"><i class="fa fa-desktop"></i></a>
-                                                      <a class="btn btn-outline btn-success btn-sm btnCurrencies" href="{{pathFor route='currencies'}}"><i class="fa fa-money"></i></a>
-                                                      <a class="btn btn-outline btn-success btn-sm btnClients" href="{{pathFor route='allClients'}}"><i class="fa fa-users"></i></a>
-                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
-                                                      {{#if equals role.clientUpdate true}}
-                                                        <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></button>
+                                                      {{#if equals role.companyRoles true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnRoles" href="{{pathFor route='companyRoles'}}" title="{{rolesTitle}}"><i class="fa fa-key"></i></a>
                                                       {{/if}}
-                                                      {{#if equals role.clientDelete true}}
-                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                      {{#if equals role.companyUsers true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnUsers" href="{{pathFor route='companyAccounts'}}" title="{{usersTitle}}"><i class="fa fa-male"></i></a>
+                                                      {{/if}}
+                                                      {{#if equals role.companyContracts true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnContrats" href="{{pathFor route='#'}}" title="{{contractsTitle}}"><i class="fa fa-clipboard"></i></a>
+                                                      {{/if}}
+                                                      {{#if equals role.companyArticles true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnArticles" href="{{pathFor route='companyArticles'}}" title="{{articlesTitle}}"><i class="fa fa-list"></i></a>
+                                                      {{/if}}
+                                                      {{#if equals role.companyScreens true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnScreens" href="{{pathFor route='companyScreens'}}" title="{{screensTitle}}"><i class="fa fa-desktop"></i></a>
+                                                      {{/if}}
+                                                      {{#if equals role.companyFirmwares true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnFirmwares" href="{{pathFor route='companyFirmwares'}}" title="{{firmwaresTitle}}"><i class="fa fa-archive"></i></a>
+                                                      {{/if}}
+                                                      {{#if equals role.companySegments true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnSegments" href="{{pathFor route='companySegments'}}" title="{{segmentsTitle}}"><i class="fa fa-history"></i></a>
+                                                      {{/if}}
+                                                      {{#if equals role.companyCurrencies true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnCurrencies" href="{{pathFor route='companyCurrencies'}}" title="{{currenciesTitle}}"><i class="fa fa-money"></i></a>
+                                                      {{/if}}
+                                                      {{#if equals role.companyClients true}}
+                                                        <a class="btn btn-outline btn-success btn-sm btnClients" href="{{pathFor route='companyClients'}}" title="{{clientsTitle}}"><i class="fa fa-users"></i></a>
+                                                      {{/if}}
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
+                                                      {{#if equals role.companyUpdate true}}
+                                                        <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit" title="{{updateTitle}}"><i class="fa fa-pencil"></i></button>
+                                                      {{/if}}
+                                                      {{#if equals role.companyDelete true}}
+                                                        <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                       {{/if}}
                                                     </td>
                                                   </tr>
@@ -97,20 +118,18 @@
                                                   <td>{{country}}</td>
                                                   <td>
                                                     {{#if equals buttonDetail true}}
-                                                      <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                      <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="Details"><i class="fa fa-eye"></i></button>
                                                     {{/if}}
                                                     {{#if equals buttonValidate true}}
-                                                      <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                      <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="Validate"><i class="fa fa-thumbs-up"></i></button>
                                                     {{/if}}
-                                                    {{#if equals role.clientValidate true}}
-                                                        {{#if equals buttonAuthorize true}}
-                                                          <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
-                                                        {{/if}}
+                                                    {{#if equals buttonAuthorize true}}
+                                                      <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="Authorize"><i class="fa fa-angellist"></i></button>
                                                     {{/if}}
                                                     {{#if equals buttonEdit true}}
-                                                      <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></button>
+                                                      <button type="button" id="editAu" class="btn btn-outline btn-primary btn-sm editAu" title="Update"><i class="fa fa-pencil"></i></button>
                                                     {{/if}}
-                                                    <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu" title="Delete"><i class="fa fa-trash"></i></button>
                                                   </td>
                                                 </tr>
                                               {{/each}}
@@ -194,28 +213,6 @@
                     <div class="form-group"><label data-i18n="company.country"></label> <input type="text" id="country" class="form-control"></div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="message" data-i18n="company.pivotCurrency"></label>
-                      <select id="currency" class="select2_demo_1 form-control" style="width: 300px;">
-                        {{#each currencies}}
-                          {{#if equals isPivot true}}
-                            <option selected="" value="{{_id}}">{{currencyName}}</option>
-                          {{else}}
-                            <option value="{{_id}}">{{currencyName}}</option>
-                          {{/if}}
-                        {{/each}}
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="message" data-i18n="company.logo"></label><br>
-                      <button id="upload" class="btn btn-sm btn-success" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="company.upload"></strong></button>
-                    </div>
-                  </div>
-                </div>
               </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
@@ -238,7 +235,7 @@
               <div class="modal-body">
                 <div class="row">
                   <div class="col-md-4">
-                    <div class="form-group"><label data-i18n="company.name"></label> <input type="text" id="name1" value="{{companySelectedLive.name}}" class="form-control"></div>
+                    <div class="form-group"><label data-i18n="company.name"></label> <input type="text" id="name1" value="{{companySelectedLive.name}}" class="form-control" disabled></div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group"><label data-i18n="company.shortName"></label> <input type="text" id="shortName1" value="{{companySelectedLive.shortName}}" class="form-control"></div>
@@ -279,31 +276,6 @@
                   <div class="col-md-4">
                     <div class="form-group"><label data-i18n="company.country"></label> <input type="text" id="country1" value="{{companySelectedLive.country}}" class="form-control"></div>
                   </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="message" data-i18n="company.pivotCurrency"></label>
-                      <select id="currency1" class="select2_demo_1 form-control" style="width: 300px;">
-                        {{#each currenciesSelected}}
-                          {{#if equals status true}}
-                            <option value="{{_id}}" selected>{{currencyName}}</option>
-                          {{else}}
-                            <option value="{{_id}}">{{currencyName}}</option>
-                          {{/if}}
-                        {{/each}}
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="message" data-i18n="company.logo"></label><br>
-                      <button class="btn btn-sm btn-success" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="company.upload"></strong></button>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-
                 </div>
               </div>
               <div class="modal-footer">
@@ -372,28 +344,6 @@
                     <div class="form-group"><label data-i18n="company.country"></label> <input type="text" id="country2" value="{{companySelectedAu.country}}" class="form-control"></div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="message" data-i18n="company.pivotCurrency"></label>
-                      <select id="currency2" class="select2_demo_1 form-control" style="width: 300px;">
-                        {{#each currenciesSelected}}
-                          {{#if equals status true}}
-                            <option value="{{_id}}" selected>{{currencyName}}</option>
-                          {{else}}
-                            <option value="{{_id}}">{{currencyName}}</option>
-                          {{/if}}
-                        {{/each}}
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="message" data-i18n="company.logo"></label><br>
-                      <button class="btn btn-sm btn-success" type="submit"><i class="fa fa-cloud-upload"></i>     <strong data-i18n="company.upload"></strong></button>
-                    </div>
-                  </div>
-                </div>
               </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
@@ -416,11 +366,6 @@
                       <div class="ibox">
                         <div class="row">
                           <div class="col-md-8">
-                            <h2 data-i18n="common.newInfo"></h2>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-8">
                             <label for="title" data-i18n="company.name"></label>  {{newCompany.name}}
                           </div>
                         </div>
@@ -437,11 +382,6 @@
                         <div class="row">
                           <div class="col-md-8">
                             <label for="title" data-i18n="company.code"></label>  {{newCompany.code}}
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="company.pivotCurrency"></label>  {{newCompany.pivotCurrency}}
                           </div>
                         </div>
                         <div class="row">
@@ -486,6 +426,11 @@
                         </div>
                         <div class="row">
                           <div class="col-md-8">
+                            <label for="title" data-i18n="company.pivotCurrency"></label>  {{newCompany.pivotCurrency}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
                             <label for="title" data-i18n="common.inputter"></label>  {{newCompany.inputter}}
                           </div>
                         </div>
@@ -496,12 +441,12 @@
                         </div>
                       </div>
                   </div>
-                </div>
-                <div class="modal-footer">
-                  <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
-                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
-                    <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
-                </div>
+              </div>
+              <div class="modal-footer">
+                <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
+              </div>
             </div>
           {{else}}
             <div class="modal-content animated flipInY" style="width: 930px;top:-50px;left: -185px;">
@@ -535,11 +480,6 @@
                       <div class="row">
                         <div class="col-md-8">
                           <label for="title" data-i18n="company.code"></label>  {{newCompany.code}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-8">
-                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{newCompany.pivotCurrency}}
                         </div>
                       </div>
                       <div class="row">
@@ -584,6 +524,11 @@
                       </div>
                       <div class="row">
                         <div class="col-md-8">
+                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{newCompany.pivotCurrency}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
                           <label for="title" data-i18n="common.inputter"></label>  {{newCompany.inputter}}
                         </div>
                       </div>
@@ -619,11 +564,6 @@
                       <div class="row">
                         <div class="col-md-8">
                           <label for="title" data-i18n="company.code"></label>  {{oldCompany.code}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-8">
-                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{oldCompany.pivotCurrency}}
                         </div>
                       </div>
                       <div class="row">
@@ -664,6 +604,11 @@
                       <div class="row">
                         <div class="col-md-8">
                           <label for="title" data-i18n="company.country"></label>  {{oldCompany.country}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{oldCompany.pivotCurrency}}
                         </div>
                       </div>
                       <div class="row">
@@ -726,11 +671,6 @@
                       </div>
                       <div class="row">
                         <div class="col-md-8">
-                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{companyDetails.pivotCurrency}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-8">
                           <label for="title" data-i18n="company.email"></label>  {{companyDetails.email}}
                         </div>
                       </div>
@@ -771,6 +711,11 @@
                       </div>
                       <div class="row">
                         <div class="col-md-8">
+                          <label for="title" data-i18n="company.pivotCurrency"></label>  {{companyDetails.pivotCurrency}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
                           <label for="title" data-i18n="common.inputter"></label>  {{companyDetails.inputter}}
                         </div>
                       </div>
@@ -793,7 +738,6 @@
           </div>
       </div>
     </div>
-
     <div class="modal inmodal" id="checkDeleting" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content animated flipInY" style="top: 100px;">
@@ -878,6 +822,31 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal inmodal" id="displayScreen" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" >
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                  </button>
+                  <i class="fa fa-desktop modal-icon"></i>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <figure>
+                      <iframe width="425" height="349" src="http://www.youtube.com/embed/bwj2s_5e12U" frameborder="0" allowfullscreen></iframe>
+                  </figure>
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                  <button type="submit" class="ladda-button btn btn-primary validate" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                  <button type="submit" class="ladda-button btn btn-danger save" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
     </div>
 </template>
 <!--

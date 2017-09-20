@@ -1,0 +1,178 @@
+<template name="allActions">
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-12">
+          <br>
+          <h3 data-i18n="actions.title"></h3>
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="ibox float-e-margins">
+                  <a href="{{pathFor route='allModules'}}" class="btn btn-primary btn-xs"><i class="fa fa-reply-all"></i>       <span data-i18n="common.btn-back"></span></a>
+                  <div class="ibox-tools">
+                      <button type="button" class="btn btn-primary btn-xs newAction"><i class="fa fa-cog"></i>       <span data-i18n="actions.btn-newAction"></span></button>
+                  </div>
+                  <br>
+                  <div class="ibox-content">
+                      <input type="text" class="form-control input-sm m-b-xs" id="filter" data-i18n="[placeholder]common.placeholder_search">
+                      <table class="footable table table-stripped" data-page-size="15" data-filter=#filter>
+                        <thead>
+                        <tr>
+                          <th data-i18n="actions.name"></th>
+                          <th data-i18n="actions.description"></th>
+                          <th data-i18n="common.action" style="width: 150px;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {{#each actions}}
+                            <tr class="gradeX">
+                              <td>{{name}}</td>
+                              <td>{{description}}</td>
+                              <td class="center">
+                                <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
+                                <button type="button" class="btn btn-outline btn-primary btn-sm btn-edit" title="{{updateTitle}}"><i class="fa fa-pencil"></i></button>
+                                <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
+                              </td>
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="5">
+                              <ul class="pagination pull-right"></ul>
+                            </td>
+                        </tr>
+                        </tfoot>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="newAction" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width:940px; left: -175px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-cog modal-icon"></i>
+                <h4 class="modal-title" data-i18n="actions.newTitle"></h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div id="warning" class="alert alert-danger alert-dismissable" >
+                        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="actions.requiredActionName"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="title" data-i18n="actions.name"></label>
+                        <input id="name" type="text" class="form-control"/>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="message" data-i18n="actions.description"></label>
+                        <textarea class="form-control" id="description" rows="5"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="submit" class="ladda-button btn btn-primary save" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="editAction" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight" style="width:940px; left: -175px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-pencil modal-icon"></i>
+                <h2 class="modal-title" data-i18n="common.update"></h2>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="title" data-i18n="actions.name"></label>
+                        <input id="name_" type="text" value="{{ActionToUpdate.name}}" class="form-control"/>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="message" data-i18n="actions.description"></label>
+                        <textarea class="form-control" id="description_" value="{{ActionToUpdate.description}}" rows="5"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="submit" class="ladda-button btn btn-primary update" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-update"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="ActionDetails" tabindex="-1" user="dialog" aria-hidden="false">
+      <div class="modal-dialog">
+          <div class="modal-content animated bounceInRight">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h2 class="modal-title" data-i18n="common.details"></h2>
+              </div>
+              <div class="modal-body" >
+                <div class="row">
+                  <div class="col-lg-12">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="actions.name"></label>  {{ActionDetails.name}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <label for="title" data-i18n="actions.description"></label>
+                          <textarea class="form-control" id="description_" value="{{ActionDetails.description}}" rows="5" disabled></textarea>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{ActionDetails.inputter}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.date"></label>  {{ActionDetails.dateTime}}
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-close"></span></button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal inmodal" id="checkDeleting" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY" style="top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" data-i18n="common.alert"></h4>
+                </div>
+                <div class="modal-body">
+                    <p><strong><h3 data-i18n="common.delete_msg"></h3></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="submit" class="btn btn-danger BtnDelete" data-dismiss="modal"><span data-i18n="common.btn-delete"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

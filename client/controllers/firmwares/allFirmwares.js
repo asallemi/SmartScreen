@@ -13,9 +13,6 @@ function getValuesFromFormForAdd(){
   }else {
     var description = null;
   }
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var firmware =
     {
       'name' : name,
@@ -24,7 +21,8 @@ function getValuesFromFormForAdd(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': dat.toString()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return firmware;
 }
@@ -39,9 +37,6 @@ function getValuesFromFormForEdit(){
   }else {
     var description = null;
   }
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   var package =
     {
       'name' : name,
@@ -50,7 +45,8 @@ function getValuesFromFormForEdit(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': dat.toString()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return package;
 }
@@ -59,16 +55,13 @@ function authorize(firmware){
     firmware._id = firmware._id.replace("#D", "");
   }
   var firmwareX = Firmwares_Live.findOne({ "_id" : firmware._id });
-  var d = new Date().toString();
-  var res = d.split(" ");
-  var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   // entry validated and new entry
   if(firmwareX !== undefined && firmware.status == "INAU"){
     firmware.status = "LIVE";
     firmware.authorizer = Session.get("UserLogged")._id;
-    firmware.dateTime = dat.toString();
+    firmware.dateTime = getDateNow();
     firmwareX.status = 'HIS';
-    firmwareX.dateTime = dat.toString();
+    firmwareX.dateTime = getDateNow();
     firmwareX.currentNumber = firmware.currentNumber;
     firmwareX._id = firmware._id+"#"+(firmware.currentNumber-1);
     Firmwares_History.insert(firmwareX);
@@ -79,70 +72,64 @@ function authorize(firmware){
   }else if(firmwareX !== undefined && firmware.status == "RNAU"){
     firmware.authorizer= Session.get("UserLogged")._id;
     firmware.status = 'DEL';
-    firmware.dateTime = dat.toString();
+    firmware.dateTime = getDateNow();
     Firmwares_History.insert(firmware);
     Firmwares_Live.remove(firmwareX._id);
     Firmwares_Authorization.remove(firmware._id);
     Firmwares_Authorization.remove(firmware._id+"#D");
+    Meteor.call('deletePackage', firmware.name);
   }else{
     firmware.status = "LIVE";
     firmware.authorizer = Session.get("UserLogged")._id;
-    firmware.dateTime = dat.toString();
+    firmware.dateTime = getDateNow();
     Firmwares_Live.insert(firmware);
     Firmwares_Authorization.remove(firmware._id);
   }
 }
 function verifyDelete(id){
   var firmware = Firmwares_Authorization.findOne({ "_id" : id+"#D" });
-  if( firmware == undefined ){
-    return true;
-  }
-  return false;
+  return firmware == undefined;
 }
 function verifyEdit(id){
   var firmware = Firmwares_Authorization.findOne({ "_id" : id });
-  if(firmware == undefined){
-    return true;
-  }
-  return false;
+  return firmware == undefined;
 }
 Template.allFirmwares.onCreated(function () {
-
 });
 Template.allFirmwares.rendered = function(){
+  checkSession();
   settingLanguage();
   $('.footable').footable();
   $('.footable2').footable();
-
 };
 Template.allFirmwares.events({
   'click .upload'() {
     $('#upload').modal();
-    Meteor.call('newPackage', "/home/akrem/packages");
+    Meteor.call('newPackage', "/home/akrem/packages", Session.get("UserLogged")._id, Session.get("UserLogged").codeCompany, function(error, result){
+      if (result == 0) {
+        toastrPackageUploadedProblem();
+      }else {
+        toastrPackageUploaded();
+      }
+    });
   },
   'click .btn-details'() {
     var firmware = Firmwares_Live.findOne({ "_id" : this._id });
+    var inputter = Users_Live.findOne({ "_id" : firmware.inputter });
+    firmware.inputter = inputter.fname+" "+inputter.surname;
     Session.set("FirmwareDetails", firmware);
     $('#firmwareDetailsPopUp').modal();
   },
   'click .saveAdd'(){
     var firmware = getValuesFromFormForAdd();
     Firmwares_Authorization.insert(firmware);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Save done !');
-    }else {
-      toastr.success('Avec succès','Enregistrer fait !');
-    }
+    toastrSaveDone();
   },
   'click .validateAdd'(){
     var firmware = getValuesFromFormForAdd();
     firmware.status = "INAU";
     Firmwares_Authorization.insert(firmware);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Validation done !');
-    }else {
-      toastr.success('Avec succès','Validation fait !');
-    }
+    toastrValidatonDone();
   },
   'click .btn-edit'() {
     var firmware = Firmwares_Live.findOne({ "_id" : this._id });
@@ -153,11 +140,14 @@ Template.allFirmwares.events({
       var screens = Screens_Live.find({});
       var arrayOfObjects = [];
       screens.forEach(function(doc){
-        var screen = {
-          'name': doc.screenAddress,
-          'selected': false
+        // Verify if the COMPANY_CODE exist in the list of companies code
+        if( doc.codeCompanies.indexOf(Session.get("UserLogged").codeCompany) > -1 ){
+          var screen = {
+            'name': doc.screenAddress,
+            'selected': false
+          }
+          arrayOfObjects.push(screen);
         }
-        arrayOfObjects.push(screen);
       });
       // set in the session list of screens assigned to this firmware
       var list = firmware.screensID.split("#");
@@ -193,99 +183,131 @@ Template.allFirmwares.events({
     firmware._id = firmware._id+"#D"
     firmware.status = "RNAU";
     firmware.inputter = Session.get("UserLogged")._id;
-    firmware.dateTime = new Date();
+    firmware.dateTime = getDateNow();
     firmware.authorizer = null;
     Firmwares_Authorization.insert(firmware);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    toastrSuppression();
   },
   'click .detailsAu'() {
-    Session.set("FirmwareDetails", Firmwares_Authorization.findOne({ "_id" : this._id }));
+    var firmware = Firmwares_Authorization.findOne({ "_id" : this._id });
+    var listOfScreens = firmware.screensID.split("#");
+    var allScreens = "";
+    for (var i = 0; i < listOfScreens.length; i++) {
+      allScreens = allScreens + listOfScreens[i]+'\n';
+    }
+    Session.set("SCREENS_ASSIGNED_TO_FIRMWARE", allScreens);
+    var inputter = Users_Live.findOne({ "_id" : firmware.inputter });
+    firmware.inputter = inputter.fname+" "+inputter.surname;
+    Session.set("FirmwareDetails", firmware);
     $('#firmwareDetailsPopUp').modal();
   },
   'click .validateAu'() {
     var firmware = Firmwares_Authorization.findOne({ "_id" : this._id });
-    Firmwares_Authorization.update({'_id' : firmware._id }, {'$set':{ 'status' : 'INAU', 'inputter' :  Session.get("UserLogged")._id, 'dateTime' : new Date() }});
+    if (userAuthorized(firmware.inputter)) {
+      Firmwares_Authorization.update({'_id' : firmware._id }, {'$set':{ 'status' : 'INAU', 'inputter' :  Session.get("UserLogged")._id, 'dateTime' : getDateNow() }});
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .authorizeAu'() {
+    settingLanguage();
     var oldFirmware = Firmwares_Live.findOne({ "_id" : this._id });
     var newFirmware = Firmwares_Authorization.findOne({ "_id" : this._id });
-    if(oldFirmware == undefined){
-      Session.set("OldFirmware",null);
-    }else {
-      Session.set("OldFirmware",oldFirmware);
-    }
-    Session.set("NewFirmware",newFirmware);
-    $('#checkAuthorising').modal();
     Session.set("FirmwareAuthorized", newFirmware);
+    if(oldFirmware == undefined){
+      Session.set("OldFirmware", null);
+    }else {
+      var inputter = Users_Live.findOne({ "_id" : oldFirmware.inputter });
+      oldFirmware.inputter = inputter.fname+" "+inputter.surname;
+      var authorizer = Users_Live.findOne({ "_id" : oldFirmware.authorizer });
+      oldFirmware.authorizer = authorizer.fname+" "+authorizer.surname;
+      var listOfScreens = oldFirmware.screensID.split("#");
+      var allScreens = "";
+      for (var i = 0; i < listOfScreens.length; i++) {
+        allScreens = allScreens + listOfScreens[i]+'\n';
+      }
+      Session.set("SCREENS_ASSIGNED_TO_OLD_FIRMWARE", allScreens);
+      Session.set("OldFirmware", oldFirmware);
+    }
+    var listOfScreens = newFirmware.screensID.split("#");
+    var allScreens = "";
+    for (var i = 0; i < listOfScreens.length; i++) {
+      allScreens = allScreens + listOfScreens[i]+'\n';
+    }
+    Session.set("SCREENS_ASSIGNED_TO_NEW_FIRMWARE", allScreens);
+    var inputter = Users_Live.findOne({ "_id" : newFirmware.inputter });
+    newFirmware.inputter = inputter.fname+" "+inputter.surname;
+    Session.set("NewFirmware", newFirmware);
+    $('#checkAuthorising').modal();
   },
   'click .BtnAuthorize'() {
     if(Session.get("FirmwareAuthorized").screensID.length > 0){
       authorize(Session.get("FirmwareAuthorized"));
       Meteor.call('createRepo', Session.get("FirmwareAuthorized").name);
     }else {
-      if(Session.get("UserLogged").language == "en"){
-        toastr.error('Package must assign at least one screen');
-      }else {
-        toastr.error('Le paquet doit etre assigner au moins à un écran !');
-      }
+      toastrFirmwareAuthorized();
     }
 
   },
   'click .cancelAu'() {
-    Session.set("firmwareUserAu", Firmwares_Authorization.findOne({ "_id" : this._id }));
-    $('#checkCancel').modal();
+    var firmware = Firmwares_Authorization.findOne({ "_id" : this._id });
+    if (userAuthorized(firmware.inputter)) {
+      Session.set("firmwareUserAu", firmware);
+      $('#checkCancel').modal();
+    }else {
+      toastrWarningAccessDenied();
+    }
   },
   'click .editAu'() {
     Session.set("TypeEdict", "AUTH");
     var firmware = Firmwares_Authorization.findOne({ "_id" : this._id });
-    Session.set("FirmwareForEdit", firmware);
-    // Set all screens in an array
-    var screens = Screens_Live.find({});
-    var arrayOfObjects = [];
-    screens.forEach(function(doc){
-      var screen = {
-        'name': doc.screenAddress,
-        'selected': false
-      }
-      arrayOfObjects.push(screen);
-    });
-    // set in the session list of screens assigned to this firmware
-    var list = firmware.screensID.split("#");
-    var screens = [];
-    if(firmware.screensID.length > 0){
-      for(var i=0; i < list.length; i++){
-        for(var j=0; j < arrayOfObjects.length; j++){
-          if(list[i] == arrayOfObjects[j].name){
-            arrayOfObjects[j].selected = true;
+    if (userAuthorized(firmware.inputter)) {
+      Session.set("FirmwareForEdit", firmware);
+      // Set all screens in an array
+      var screens = Screens_Live.find({});
+      var arrayOfObjects = [];
+      screens.forEach(function(doc){
+        // Verify if the COMPANY_CODE exist in the list of companies code
+        if( doc.codeCompanies.indexOf(Session.get("UserLogged").codeCompany) > -1 ){
+          var screen = {
+            'name': doc.screenAddress,
+            'selected': false
+          }
+          arrayOfObjects.push(screen);
+        }
+      });
+      // set in the session list of screens assigned to this firmware
+      var list = firmware.screensID.split("#");
+      var screens = [];
+      if(firmware.screensID.length > 0){
+        for(var i=0; i < list.length; i++){
+          for(var j=0; j < arrayOfObjects.length; j++){
+            if(list[i] == arrayOfObjects[j].name){
+              arrayOfObjects[j].selected = true;
+            }
           }
         }
+        Session.set("ScreensList", arrayOfObjects);
+      }else {
+        Session.set("ScreensList", arrayOfObjects);
       }
-      Session.set("ScreensList", arrayOfObjects);
     }else {
-      Session.set("ScreensList", arrayOfObjects);
+      toastrWarningAccessDenied();
     }
   },
   'click .BtnCancel'() {
     var firmware = Session.get("firmwareUserAu");
     Firmwares_Authorization.remove(firmware._id);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion operation done ');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
-
+    Meteor.call('deletePackage', firmware.name);
+    toastrSuppression();
   },
 });
 Template.allFirmwares.helpers({
   firmwaresLive (){
-    return Firmwares_Live.find();
+    return Firmwares_Live.find({ 'codeCompany': Session.get("UserLogged").codeCompany });
   },
   firmwaresAuthorization (){
-    var firmwares = Firmwares_Authorization.find();
+    var firmwares = Firmwares_Authorization.find({ 'codeCompany': Session.get("UserLogged").codeCompany });
     var firmwaresAuthorization = [];
     firmwares.forEach(function(doc){
       var buttonDetails = true;
@@ -325,7 +347,31 @@ Template.allFirmwares.helpers({
   role(){
     return Session.get("USER_ROLE_XX");
   },
+  listOfScreens(){
+    return Session.get("SCREENS_ASSIGNED_TO_FIRMWARE");
+  },
+  listOfScreensOld(){
+    return Session.get("SCREENS_ASSIGNED_TO_OLD_FIRMWARE");
+  },
+  listOfScreensNew(){
+    return Session.get("SCREENS_ASSIGNED_TO_NEW_FIRMWARE");
+  },
   equals: function(v1, v2) {
     return (v1 == v2);
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

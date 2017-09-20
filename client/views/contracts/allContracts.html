@@ -37,7 +37,7 @@
                                                 <th data-i18n="contract.contractType"></th>
                                                 <th data-i18n="contract.startDate"></th>
                                                 <th data-i18n="contract.endDate"></th>
-                                                <th data-i18n="common.action" style="width: 200px;"></th>
+                                                <th data-i18n="common.action" style="width: 15%"></th>
                                               </tr>
                                             </thead>
                                             <tbody>
@@ -48,13 +48,16 @@
                                                   <td>{{startDate}}</td>
                                                   <td>{{endDate}}</td>
                                                   <td class="center">
-                                                    <button type="button" class="btn btn-outline btn-info btn-sm btn-details"><i class="fa fa-eye"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm btn-details" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                     {{#if equals role.contractUpdate true}}
-                                                      <a type="button" class="btn btn-outline btn-primary btn-sm btn-edit"><i class="fa fa-pencil"></i></a>
+                                                      <a type="button" class="btn btn-outline btn-primary btn-sm btn-edit" title="{{updateTitle}}"><i class="fa fa-pencil"></i></a>
                                                     {{/if}}
                                                     {{#if equals role.contractDelete true}}
-                                                      <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></button>
+                                                      <button type="button" class="btn btn-outline btn-danger btn-sm btn-delete" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                     {{/if}}
+                                                    <!--{{#if equals role.contractPrint true}}
+                                                      <a href="#" class="btn btn-outline btn-info btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="{{printTitle}}"><i class="fa fa-print"></i> </a>
+                                                    {{/if}}-->
                                                   </td>
                                                 </tr>
                                               {{/each}}
@@ -86,7 +89,7 @@
                                               <th data-i18n="contract.contractType"></th>
                                               <th data-i18n="contract.startDate"></th>
                                               <th data-i18n="contract.endDate"></th>
-                                              <th data-i18n="common.action" style="width: 200px;"></th>
+                                              <th data-i18n="common.action" style="width: 15%"></th>
                                             </tr>
                                           </thead>
                                           <tbody>
@@ -98,23 +101,18 @@
                                                 <td>{{endDate}}</td>
                                                 <td class="center">
                                                   {{#if equals buttonDetail true}}
-                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu"><i class="fa fa-eye"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm detailsAu" title="{{detailsTitle}}"><i class="fa fa-eye"></i></button>
                                                   {{/if}}
                                                   {{#if equals buttonValidate true}}
-                                                    <button type="button" id="validateAu" class="btn btn-outline btn-info btn-sm btn-default validateAu"><i class="fa fa-thumbs-up"></i></button>
+                                                    <button type="button" class="btn btn-outline btn-info btn-sm btn-default validateAu" title="{{validateTitle}}"><i class="fa fa-thumbs-up"></i></button>
                                                   {{/if}}
-                                                  {{#if equals role.contractValidate true}}
-                                                    {{#if equals buttonAuthorize true}}
-                                                      <button type="button" id="authorizeAu" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu"><i class="fa fa-angellist"></i></button>
+                                                  {{#if equals buttonAuthorize true}}
+                                                    {{#if equals role.contractAuthorize true}}
+                                                        <button type="button" class="btn btn-outline btn-info btn-sm btn-warning authorizeAu" title="{{authorizeTitle}}"><i class="fa fa-angellist"></i></button>
                                                     {{/if}}
                                                   {{/if}}
-                                                  {{#if equals buttonEdit true}}
-                                                    <a type="button" class="btn btn-outline btn-primary btn-sm editAu"><i class="fa fa-pencil"></i></a>
-                                                  {{/if}}
-                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu"><i class="fa fa-power-off"></i></button>
-                                                  {{#if equals role.contractPrint true}}
-                                                    <a href="#" class="btn btn-outline btn-info btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="Print email"><i class="fa fa-print"></i> </a>
-                                                  {{/if}}
+                                                  <a type="button" class="btn btn-outline btn-primary btn-sm editAu" title="{{updateTitle}}"><i class="fa fa-pencil"></i></a>
+                                                  <button type="button" class="btn btn-outline btn-danger btn-sm cancelAu" title="{{deleteTitle}}"><i class="fa fa-trash"></i></button>
                                                 </td>
                                               </tr>
                                             {{/each}}
@@ -152,7 +150,7 @@
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label for="message" data-i18n="contract.language"></label><br>
+                      <label data-i18n="contract.language"></label><br>
                       {{#each languagesLive}}
                         {{#if equals isPivot true}}
                           <div class="radio"><input type="radio" id="{{_id}}" value="{{_id}}" checked name="language"><label for="radio" data-i18n="article.{{languageName}}"></label></div>
@@ -195,148 +193,238 @@
   </div>
   <div class="modal inmodal" id="checkAuthorising" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
-          <div class="modal-content animated flipInY" style="width:1000px; left: -211px; top: -35px;">
+        {{#if equals oldContract null}}
+        <div class="modal-content animated flipInY" style="width: 600px;top:-45px;left: -25px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-i18n="common.authorization"></h4>
+            </div>
+            <div class="modal-body" style="height: 490px;">
+              <div class="col-lg-12">
+                  <div class="ibox">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <h2 data-i18n="contract.newContract"></h2>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.client"></label>  {{newContract.client}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.contractType"></label>  {{newContract.typeContract}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.startDate"></label>  {{newContract.startDate}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.endDate"></label>  {{newContract.endDate}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.created"></label>  {{newContract.dateTime}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="common.inputter"></label>  {{newContract.inputter}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.language"></label>  {{newContract.language}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.amount"></label>  {{newContract.amount}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.devise"></label>  {{newContract.currency}}
+                      </div>
+                    </div>
+                    <div class="row" style="overflow: auto;">
+                      <div class="col-md-8">
+                        <label for="title" data-i18n="contract.articlesList"></label><br>
+                        <div style="width:520px; height:150px; overflow: auto;" >
+                          {{#each newContract.articlesList}}
+                            {{_id}} - {{title}} <br>
+                          {{/each}}
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                <button type="button" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
+            </div>
+          </div>
+        {{else}}
+          <div class="modal-content animated flipInY" style="width: 930px;top:-50px;left: -185px;">
               <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                   <h4 class="modal-title" data-i18n="common.authorization"></h4>
               </div>
-              <div class="modal-body" style="height: 450px;">
-                {{#if equals oldContract null}}
-                  <div class="col-lg-12">
-                      <div class="ibox">
-                        <div class="row">
-                          <div class="col-md-8">
-                            <h2 data-i18n="contract.newContract"></h2>
-                          </div>
+              <div class="modal-body" style="height: 445px;">
+                <div class="col-lg-6">
+                    <div class="ibox">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <h2 data-i18n="contract.newContract"></h2>
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.client"></label>  {{newContract.client}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.client"></label>  {{newContract.client}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.contractType"></label>  {{newContract.typeContract}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.contractType"></label>  {{newContract.typeContract}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.startDate"></label>  {{newContract.startDate}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.startDate"></label>  {{newContract.startDate}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.endDate"></label>  {{newContract.endDate}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.endDate"></label>  {{newContract.endDate}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.created"></label>  {{newContract.dateTime}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.created"></label>  {{newContract.dateTime}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.language"></label>  {{newContract.language}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{newContract.inputter}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.amount"></label>  {{newContract.amount}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.language"></label>  {{newContract.language}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.devise"></label>  {{newContract.currency}}
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.amount"></label>  {{newContract.amount}}
                         </div>
-                        <div class="row">
-                          <div class="col-md-8">
-                            <label for="title" data-i18n="contract.articlesList"></label><br>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.devise"></label>  {{newContract.currency}}
+                        </div>
+                      </div>
+                      <div class="row" style="overflow: auto;">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.articlesList"></label><br>
+                          <div style="width:520px; height:150px; overflow: auto;" >
                             {{#each newContract.articlesList}}
                               {{_id}} - {{title}} <br>
                             {{/each}}
                           </div>
                         </div>
-                    </div>
+                      </div>
                   </div>
-                {{else}}
-                  <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
                     <div class="ibox">
-                        <div class="ibox-content text-left">
-                            <div>
-                              <h3 data-i18n="contract.client"></h3>
-                                {{newContract.client}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.contractType"></h3><br>
-                                {{newContract.typeContract}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.startDate"></h3><br>
-                                {{newContract.startDate}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.endDate"></h3><br>
-                                {{newContract.endDate}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.created"></h3><br>
-                                {{newContract.dateTime}}
-                            </div>
-                            <h3 data-i18n="contract.articlesList"></h3><br>
-                            <div>
-                                {{#each newContract.articlesList}}
-                                  {{_id}} - {{title}} <br>
-                                {{/each}}
-                            </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <h2 data-i18n="contract.oldContract"></h2>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.client"></label>  {{oldContract.client}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.contractType"></label>  {{oldContract.typeContract}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.startDate"></label>  {{oldContract.startDate}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.endDate"></label>  {{oldContract.endDate}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.created"></label>  {{oldContract.dateTime}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.inputter"></label>  {{oldContract.inputter}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="common.authorizer"></label>  {{oldContract.authorizer}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.language"></label>  {{oldContract.language}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.amount"></label>  {{oldContract.amount}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.devise"></label>  {{oldContract.currency}}
+                        </div>
+                      </div>
+                      <div class="row" style="overflow: auto;">
+                        <div class="col-md-8">
+                          <label for="title" data-i18n="contract.articlesList"></label><br>
+                          <div style="width:520px; height:150px; overflow: auto;" >
+                            {{#each oldContract.articlesList}}
+                              {{_id}} - {{title}} <br>
+                            {{/each}}
+                          </div>
                         </div>
                       </div>
                   </div>
-                  <div class="col-lg-6">
-                    <div class="ibox">
-                        <div class="ibox-content text-left">
-                            <div>
-                              <h3 data-i18n="contract.client"></h3>
-                                {{oldContract.client}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.contractType"></h3><br>
-                                {{oldContract.typeContract}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.startDate"></h3><br>
-                                {{oldContract.startDate}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.endDate"></h3><br>
-                                {{oldContract.endDate}}
-                            </div>
-                            <div>
-                              <h3 data-i18n="contract.created"></h3><br>
-                                {{oldContract.dateTime}}
-                            </div>
-                            <h3 data-i18n="contract.articlesList"></h3><br>
-                            <div>
-                                {{#each oldContract.articlesList}}
-                                  {{_id}} - {{title}} <br>
-                                {{/each}}
-                            </div>
-                        </div>
-                      </div>
-                  </div>
-                {{/if}}
-              </div>
-              <div class="modal-footer">
-                <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
-                  <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
-                  <button type="button" id="BtnAuthorize" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span> </button>
-              </div>
-          </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                  <p><strong><h3 data-i18n="common.auth_msg"></h3></strong></p>
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span data-i18n="common.btn-cancel"></span></button>
+                    <button type="button" class="btn btn-outline btn-info btn-sm btn-danger BtnAuthorize" data-dismiss="modal"><i class="fa fa-angellist"></i> <span data-i18n="common.btn-auth"></span></button>
+                </div>
+            </div>
+        {{/if}}
       </div>
   </div>
-  <div class="modal inmodal" id="ContractDetails" tabindex="-1" user="dialog" aria-hidden="false">
+
+  <div class="modal inmodal" id="ContractDetails" tabindex="-1" user="dialog" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content animated bounceInRight" style="width:800px; left: -115px; top: -25px;">
+        <div class="modal-content animated bounceInRight">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -348,17 +436,12 @@
                     <span class="text-muted"><i class="fa fa-clock-o"></i> 31/03/2017</span>
                 </div>
                 <div class="text-center article-title">
-
-
-                    <h1>
-                        CONTRAT DE PRESTATION DE SERVICE PUBLICITAIRE
-                    </h1>
+                    <h1> CONTRAT</h1>
                 </div>
                 <p>
                     Many desktop publishing packages and web page editors now use <strong>Lorem Ipsum as their
                     default model text</strong>, and a search for 'lorem ipsum' will uncover many web
                 </p>
-
                 <p>
                     One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in
                     his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a
@@ -372,42 +455,6 @@
                     magazine and housed in a nice, gilded frame. It showed a lady fitted out with a fur hat and
                     fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm
                     towards the viewer. Gregor then turned to look out the window at the dull weather. Drops
-                </p>
-
-                <p>
-                    <i>
-                        Far far away, behind the word mountains, far from the countries Vokalia and Consonantia,
-                        there live the blind texts. Separated they live in Bookmarksgrove right at the coast of
-                        the Semantics, a large language ocean. A small river named Duden flows by their place
-                        and supplies it with the necessary regelialia. It is a paradisematic country, in which
-                        roasted parts of sentences fly into your mouth.
-                    </i>
-                </p>
-
-                <p>
-                    The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild
-                    Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her
-                    seven versalia, put her initial into the belt and made herself on the way. When she reached
-                    the first hills of the Italic Mountains, she had a last view back on the skyline of her
-                    hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road,
-                    the Line Lane. Pityful a rethoric question ran over her cheek,
-                </p>
-
-                <p>
-                    Two driven jocks help fax my big quiz. Quick, Baz, get my woven flax jodhpurs! "Now fax quiz
-                    Jack!" my brave ghost pled. Five quacking zephyrs jolt my wax bed. Flummoxed by job,
-                    kvetching W. zaps Iraq. Cozy sphinx waves quart jug of bad milk. A very bad quack might jinx
-                    zippy fowls. Few quips galvanized the mock jury box. Quick brown dogs jump over the lazy
-                    fox. The jay, pig, fox, zebra, and my wolves quack! Blowzy red vixens fight for a quick
-                    jump. Joaquin Phoenix was gazed by MTV for luck. A wizard’s job is to vex chumps quickly in
-                    fog. Watch "Jeopardy!", Alex Trebek's fun TV quiz game. Woven silk pyjamas exchanged for
-                    blue quartz. Brawny gods just
-                </p>
-
-                <p>
-                    Brick quiz whangs jumpy veldt fox. Bright vixens jump; dozy fowl quack. Quick wafting
-                    zephyrs vex bold Jim. Quick zephyrs blow, vexing daft Jim. Sex-charged fop blew my junk TV
-                    quiz. How quickly daft jumping zebras vex.
                 </p>
                 <hr>
                 <div class="row">

@@ -1,5 +1,5 @@
 Meteor.methods({
-    'newContent': function(url, code, inputter){
+    'newContent': function(url, code, codeCompany, inputter){
     // Dropzone uploading
       Future = Npm.require('fibers/future');
       var getDuration = Npm.require('get-video-duration');
@@ -26,6 +26,11 @@ Meteor.methods({
           }else{
             var duration = '-';
           }
+          // format the date
+          var date = new Date();
+          date.setHours(date.getHours()+1);
+          date = date.toISOString().slice(0,19).replace("T"," ");
+          // For exapmle the file.name = POL5002411#pub_samsung_drole.mp4, we need just the real name "pub_samsung_drole.mp4"= contentName
           var name = file.name.split("#");
           var contentName = name[1];
           var content =
@@ -34,13 +39,13 @@ Meteor.methods({
               'contentSize': file.size,
               'contentType': file.type,
               'contentDuration': duration,
-              'uploadedDate': new Date(),
               'currentNumber': 1,
               'status': 'HLD',
               'inputter': inputter,
               'authorizer': null,
-              'dateTime': new Date(),
-              'code': code
+              'dateTime': date,
+              'code': code,
+              'codeCompany': codeCompany
             };
             Contents_Authorization.insert(content);
             console.log("Content added !");
@@ -65,30 +70,42 @@ Meteor.methods({
       });
       return 1;
     },
-    'moveContent': function(fileName, code) {
+    'moveContent': function(fileName, code, codeCompany) {
       const child_process = Npm.require('child_process');
       const exec = child_process.exec;
-      var cmd = 'mv -f /home/akrem/sshfs/tmp/'+code+'#'+fileName+' /home/akrem/sshfs/display/'+code+'/'+fileName;
+      var cmd = 'mv -f /home/akrem/sshfs/tmp/'+code+'#'+fileName+' /home/akrem/sshfs/display/'+codeCompany+'/'+code+'/'+fileName;
       exec(cmd, {shell: '/bin/bash'},function (error, stdout, stderr) {
         //console.log("STDOUT"+stdout);
         console.log("ERROR"+error);
       });
       return 1;
     },
-    'createClientDirectory': function(code) {
+    'createCompanyDirectory': function(codeCompany) {
       const child_process = Npm.require('child_process');
       const exec = child_process.exec;
-      var cmd = 'mkdir /home/akrem/sshfs/display/'+code;
+      var cmd = 'mkdir /home/akrem/sshfs/display/'+codeCompany;
       exec(cmd, {shell: '/bin/bash'},function (error, stdout, stderr) {
         //console.log("STDOUT"+stdout);
         console.log("ERROR"+error);
       });
     },
-    'newPackage': function(url, id){
-    // Dropzone uploading
-      Future = Npm.require('fibers/future');
+    'createClientDirectory': function(codeClient, codeCompany) {
+      const child_process = Npm.require('child_process');
+      const exec = child_process.exec;
+      var cmd = 'mkdir /home/akrem/sshfs/display/'+codeCompany+'/'+codeClient;
+      exec(cmd, {shell: '/bin/bash'},function (error, stdout, stderr) {
+        //console.log("STDOUT"+stdout);
+        console.log("ERROR"+error);
+      });
+    },
+    'newPackage': function(url, inputter, codeCompany){
+      // Dropzone uploading
       var getDuration = Npm.require('get-video-duration');
+      // Future help us to return the result of newPackage function (0 or 1) 1 = positif & 0 = nagative
+      Future = Npm.require('fibers/future');
       var future = new Future();
+      const child_process = Npm.require('child_process');
+      const exec = child_process.exec;
       UploadServer.init({
         tmpDir: '/home/akrem/packages',
         uploadDir: '/home/akrem/packages/',
@@ -96,25 +113,35 @@ Meteor.methods({
         uploadUrl: url,
         finished: function(file, formData){
           console.log("File name : "+file.name);
-          var realName = file.name.replace(".noarch.rpm", "");
-          console.log("File saved with name ", realName);
-          var d = new Date().toString();
-          var res = d.split(" ");
-          var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
-          var firmware =
-            {
-              'name' : realName,
-              'description' : "",
-              'screensID': "",
-              'currentNumber': 0,
-              'status': 'HLD',
-              'inputter': id,
-              'authorizer': null,
-              'dateTime': dat.toString()
-            };
-          Firmwares_Authorization.insert(firmware);
+          //var realName = file.name.replace(".noarch.rpm", "");
+          //console.log("File saved with name ", realName);
+          var firmwareLive = Firmwares_Live.findOne({ "codeCompany": codeCompany, "name": file.name });
+          var firmwareAuth = Firmwares_Authorization.findOne({ "codeCompany": codeCompany, "name": file.name });
+          if (firmwareLive != undefined || firmwareAuth != undefined || file.name.indexOf(" ") > 0) {
+            future.return(0);
+          }else {
+            // format the date
+            var date = new Date();
+            date.setHours(date.getHours()+1);
+            date = date.toISOString().slice(0,19).replace("T"," ");
+            var firmware =
+              {
+                'name' : file.name,
+                'description' : "",
+                'screensID': "",
+                'currentNumber': 0,
+                'status': 'HLD',
+                'inputter': inputter,
+                'authorizer': null,
+                'dateTime': date,
+                'codeCompany': codeCompany
+              };
+            Firmwares_Authorization.insert(firmware);
+            future.return(1);
+          }
         }
       });
+      return future.wait();
     },
     'createRepo': function(fileName) {
       const child_process = Npm.require('child_process');
@@ -124,6 +151,26 @@ Meteor.methods({
       exec(cmd , function (error, stdout, stderr) {
         //console.log("STDOUT"+stdout);
         console.log("ERROR"+error);
+      });
+    },
+    'deletePackage': function(fileName) {
+      const child_process = Npm.require('child_process');
+      const exec = child_process.exec;
+      var cmd = "rm -r /home/akrem/packages/"+fileName;
+      // We installed "apt-get install createrepo"
+      exec(cmd , function (error, stdout, stderr) {
+        //console.log("STDOUT"+stdout);
+        console.log("ERROR"+error);
+      });
+    },
+    // This function remove all packages uploded by the users which contain un space ( the app don't allow uploading packges with space)
+    'cleanPackages': function() {
+      const child_process = Npm.require('child_process');
+      const exec = child_process.exec;
+      var cmd = "cd /home/akrem/packages;find . -regex '.* .*' -delete";
+      exec(cmd , function (error, stdout, stderr) {
+        //console.log("STDOUT"+stdout);
+        //console.log("ERROR"+error);
       });
     },
     // A function which the responsable of synchronization of contents between Web Server and FTP server. This function executed when the user authorize the content.

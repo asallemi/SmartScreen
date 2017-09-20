@@ -25,7 +25,8 @@ function getValuesFromFormEditLive(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': getDateNow()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return option;
 }
@@ -46,21 +47,22 @@ function getValuesFromForm(){
   }else {
     type = "Percent";
     if (document.getElementById('value2') != null) {
-      var optionValue = document.getElementById("value2").value;
+      var optionValue = document.getElementById("value2").value.trim();
     }else {
       var optionValue = null;
     }
   }
   var option =
     {
-      'title' : optionTitle,
-      'type': type,
+      'title' : optionTitle.trim(),
+      'type': type.trim(),
       'value' : parseFloat(optionValue),
       'currentNumber': 0,
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': getDateNow()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return option;
 }
@@ -88,7 +90,8 @@ function getValuesFromFormEditAuth(){
       'status': 'HLD',
       'inputter': Session.get("UserLogged")._id,
       'authorizer': null,
-      'dateTime': getDateNow()
+      'dateTime': getDateNow(),
+      'codeCompany': Session.get("UserLogged").codeCompany
     };
   return option;
 }
@@ -102,7 +105,7 @@ function authorize(option){
   var dat = res[0]+" "+res[1]+" "+res[2]+" "+res[4]+" "+res[3];
   // entry validated and new entry
   if(optionX !== undefined && option.status == "INAU"){
-    optionoption.status = "LIVE";
+    option.status = "LIVE";
     option.authorizer = Session.get("UserLogged")._id;
     option.dateTime = getDateNow();
     optionX.status = 'HIS';
@@ -139,7 +142,50 @@ function verifyEdit(id){
   return option == undefined;
 }
 
+//This function return true if the option counted (amount or percent) when an contract is waiting an authorization
+//(User can delete an option when other user is ready to construct a new contract)
+function verifyOptionCanBeDeleted(optionID){
+  var articles = Articles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "option": optionID });
+  var contracts = Contracts_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany });
+  // arrayArticlesID will contain all articles Id (not duplicated IDs)
+  var arrayArticlesID = [];
+  contracts.forEach(function(contract){
+    if (contract.articlesList.length > 0) {
+      var array = contract.articlesList.split("#");
+      for (var i = 0; i < array.length; i++) {
+        if (arrayArticlesID.indexOf(array[i]) == -1) {
+          arrayArticlesID.push(array[i]);
+        }
+      }
+    }
+  });
+  //console.log("ALL "+articles.fetch());
+  //console.log("ArrayArticlesID "+arrayArticlesID);
+  //check if article Id exist in the array of all articles ID of all not authorized contracts
+  articles.forEach(function(article){
+    //console.log("Article._id "+ article._id);
+    if(arrayArticlesID.indexOf(article._id) > 0){
+      return true;
+    }
+  });
+  return false;
+}
+// A function which returns list of articles affected by the option (puted in the param)
+function getListOfArticles(optionID){
+  var listOfArticles = "";
+  var articles = Articles_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany, "option": optionID });
+  if (articles != undefined) {
+    articles.forEach(function(article){
+      listOfArticles = listOfArticles+" "+ article.titlePivot;
+    });
+    return listOfArticles;
+  }else {
+    return 0;
+  }
+}
+
 Template.allOptions.rendered = function(){
+  checkSession();
   settingLanguage();
   $('.footable').footable();
   $('.footable2').footable();
@@ -160,7 +206,7 @@ Template.allOptions.rendered = function(){
       max: 100000000000,
       step: 0.1,
       decimals: 2,
-      postfix: '€'
+      postfix: ''
   });
   $('#percentValue').hide();
 };
@@ -186,11 +232,7 @@ Template.allOptions.events({
     }else {
       $('#newOption').modal('hide');
       Articles_Options_Authorization.insert(option);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Saving done !');
-      }else {
-        toastr.success('Avec succès','Enregistrement fait !');
-      }
+      toastrSaveDone();
     }
   },
   'click .validate'() {
@@ -201,11 +243,7 @@ Template.allOptions.events({
       $('#newOption').modal('hide');
       option.status = "INAU";
       Articles_Options_Authorization.insert(option);
-      if(Session.get("UserLogged").language == "en"){
-        toastr.success('With success','Validating done !');
-      }else {
-        toastr.success('Avec succès','Validation fait !');
-      }
+      toastrValidatonDone();
     }
   },
   'click .validateAu'() {
@@ -213,6 +251,7 @@ Template.allOptions.events({
     Articles_Options_Authorization.update({'_id' : option._id }, {'$set':{ 'status' : 'INAU', 'inputter' : Session.get("UserLogged")._id , 'dateTime' : new Date() }});
   },
   'click .authorizeAu'() {
+    settingLanguage();
     var oldOption = Articles_Options_Live.findOne({ "_id" : this._id });
     var newOption = Articles_Options_Authorization.findOne({ "_id" : this._id });
     Session.set("Option_Authorization", newOption);
@@ -232,20 +271,20 @@ Template.allOptions.events({
   },
   'click .BtnAuthorize'() {
     authorize(Session.get("Option_Authorization"));
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Authorization done !');
-    }else {
-      toastr.success('Avec succès','Autorisation fait !');
-    }
+    toastrAuthorizationDone();
   },
   'click .btn-delete'() {
     var option = Articles_Options_Live.findOne({ "_id" : this._id });
-    if (verifyDelete(option._id)){
-      $('#checkDeleting').modal();
-      Session.set("OptionForDelete", option);
-    }else{
-      $('#deletionState').modal();
-    }
+    //if (!verifyOptionCanBeDeleted(option._id)) {
+      if (verifyDelete(option._id)){
+        $('#checkDeleting').modal();
+        Session.set("OptionForDelete", option);
+      }else{
+        $('#deletionState').modal();
+      }
+    /*}else {
+      toastrOptionInUse();
+    }*/
   },
   'click .BtnDelete'() {
     var option = Session.get("OptionForDelete");
@@ -255,11 +294,7 @@ Template.allOptions.events({
     option.dateTime = getDateNow();
     option.authorizer = null;
     Articles_Options_Authorization.insert(option);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    toastrSuppression();
   },
   'click .btn-edit'() {
     var option = Articles_Options_Live.findOne({ "_id" : this._id });
@@ -277,11 +312,7 @@ Template.allOptions.events({
     option.currentNumber = opt.currentNumber + 1;
     option.dateTime = getDateNow();
     Articles_Options_Authorization.insert(option);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Update done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationSaved();
   },
   'click .validateUpdateLive'() {
     var option = getValuesFromFormEditLive();
@@ -291,11 +322,7 @@ Template.allOptions.events({
     option.currentNumber = opt.currentNumber + 1;
     option.dateTime = getDateNow();
     Articles_Options_Authorization.insert(option);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Update done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationValidated();
   },
   'click .detailsAu'() {
     var option = Articles_Options_Authorization.findOne({ "_id" : this._id });
@@ -324,11 +351,7 @@ Template.allOptions.events({
     option._id = opt._id;
     option.dateTime = getDateNow();
     Articles_Options_Authorization.insert(option);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Update done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationSaved();
   },
   'click .validateUpdateAuth'() {
     var option = getValuesFromFormEditAuth();
@@ -338,11 +361,7 @@ Template.allOptions.events({
     option.status = "INAU";
     option.dateTime = getDateNow();
     Articles_Options_Authorization.insert(option);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Update done !');
-    }else {
-      toastr.success('Avec succès','Modification fait !');
-    }
+    toastrModificationValidated();
   },
   'click .cancelAu'() {
     var option = Articles_Options_Authorization.findOne({ "_id" : this._id });
@@ -352,18 +371,13 @@ Template.allOptions.events({
   'click .BtnCancel'() {
     var option = Session.get("optionDeletingAuth");
     Articles_Options_Authorization.remove(option._id);
-    if(Session.get("UserLogged").language == "en"){
-      toastr.success('With success','Deletion operation done !');
-    }else {
-      toastr.success('Avec succès','Suppression fait !');
-    }
+    toastrSuppression();
   },
   'click .btn-details'() {
     var option = Articles_Options_Live.findOne({ "_id" : this._id });
     var usr1 = Users_Live.findOne({ "_id" : option.inputter });
     var usr2 = Users_Live.findOne({ "_id" : option.authorizer });
-    var opt =
-      {
+    var opt = {
         'title' : option.title,
         'type': option.type,
         'value' : option.value,
@@ -371,17 +385,17 @@ Template.allOptions.events({
         'authorizer': usr2.fname+" "+usr2.surname,
         'dateTime': option.dateTime
     };
+    opt.listOfArticles = getListOfArticles(option._id);
     Session.set("OptionDetails", opt);
     $('#optionDetails').modal();
   },
-
 });
 Template.allOptions.helpers({
   optionsLive (){
-    return Articles_Options_Live.find();
+    return Articles_Options_Live.find({ "codeCompany": Session.get("UserLogged").codeCompany });
   },
   optionsAuthorization (){
-    var options = Articles_Options_Authorization.find();
+    var options = Articles_Options_Authorization.find({ "codeCompany": Session.get("UserLogged").codeCompany });
     var optionsAuthorization = [];
     options.forEach(function(doc){
       var buttonDetails = true;
@@ -431,5 +445,20 @@ Template.allOptions.helpers({
   },
   notEquals: function(v1, v2) {
     return (v1 != v2);
+  },
+  updateTitle(){
+    return updateTitle();
+  },
+  deleteTitle(){
+    return deleteTitle();
+  },
+  validateTitle(){
+    return validateTitle();
+  },
+  authorizeTitle(){
+    return authorizeTitle();
+  },
+  detailsTitle(){
+    return detailsTitle();
   },
 });

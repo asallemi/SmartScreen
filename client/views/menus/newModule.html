@@ -1,0 +1,66 @@
+<template name="newModule">
+  <div class="row wrapper border-bottom white-bg page-heading">
+      <div class="col-lg-12">
+        <br>
+        <h3 data-i18n="modules.newModule"></h3>
+      </div>
+  </div>
+  <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="ibox float-e-margins">
+                  <a href="{{pathFor route='allModules'}}" class="btn btn-primary btn-xs"><i class="fa fa-reply-all"></i>       <span data-i18n="common.btn-back"></span></a>
+                  <br>
+                  <br>
+                  <div class="ibox-content">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div id="warning" class="alert alert-danger alert-dismissable" >
+                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> <span data-i18n="actions.requiredActionName"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="title" data-i18n="modules.name"></label>
+                            <input id="name" type="text" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="message" data-i18n="modules.description"></label>
+                            <textarea class="form-control" id="description" rows="8"></textarea>
+                        </div>
+                      </div>
+                      <div class="col-md-8">
+                        <label for="message" data-i18n="modules.listOfAction"></label>
+                        <div id="select">
+                          <select id="selectBox" class="select2_demo_2 form-control selectBox" multiple="multiple">
+                            {{#each actions}}
+                              <option value="{{name}}">{{name}}</option>
+                            {{/each}}
+                          </select>
+                        </div>
+                        <br>
+                      </div>
+                      <div class="col-md-8">
+                        <label for="message" data-i18n="modules.concerned"></label>
+                        <div id="select_">
+                          <select id="selectBox_" class="select2_demo_2 form-control selectBox" multiple="multiple">
+                            <option value="swallow-labs">Swallow-labs</option>
+                            <option value="company">Company</option>
+                            <option value="client">Client</option>
+                          </select>
+                        </div>
+                        <br>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <button type="submit" class="ladda-button btn btn-primary validate" data-style="expand-right"><i class="fa fa-gavel"></i>    <span data-i18n="common.btn-validate"></span></button>
+                          <button type="submit" class="ladda-button btn btn-danger save" data-style="expand-right"><i class="fa fa-database"></i>    <span data-i18n="common.btn-save"></span></button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</template>
